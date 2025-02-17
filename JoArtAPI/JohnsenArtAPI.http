@@ -1,0 +1,6 @@
+@JohnsenArtAPI_HostAddress = http://localhost:5109
+
+GET {{JohnsenArtAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
