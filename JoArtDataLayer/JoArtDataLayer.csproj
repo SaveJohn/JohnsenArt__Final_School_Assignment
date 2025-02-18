@@ -6,4 +6,12 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\JoArtClassLib\JoArtClassLib.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="DbMigration\" />
+    </ItemGroup>
+
 </Project>

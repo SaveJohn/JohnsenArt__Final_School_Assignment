@@ -1,5 +1,6 @@
 ﻿namespace JoArtDataLayer;
 
-public class Class1
+public class JoArtDbContext
 {
+    
 }

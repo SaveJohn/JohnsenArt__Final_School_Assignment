@@ -18,4 +18,14 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\JoArtClassLib\JoArtClassLib.csproj" />
+      <ProjectReference Include="..\JoArtDataLayer\JoArtDataLayer.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\" />
+      <Folder Include="Middleware\" />
+    </ItemGroup>
+
 </Project>

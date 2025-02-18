@@ -1,5 +1,6 @@
 ﻿namespace JoArtClassLib;
 
-public class Class1
+public class Admin
 {
+    
 }
