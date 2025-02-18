@@ -14,4 +14,10 @@
       <Folder Include="DbMigration\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Repositories\OrderRepository.cs">
+        <DependentUpon>ArtRepository.cs</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>
