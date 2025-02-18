@@ -1,23 +1,40 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
+﻿
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["JohnsenArtAPI/JohnsenArtAPI.csproj", "JohnsenArtAPI/"]
-RUN dotnet restore "JohnsenArtAPI/JohnsenArtAPI.csproj"
+
+
+COPY ["JoArtAPI/JoArtAPI.csproj", "JoArtAPI/"]
+COPY ["JoArtClassLib/JoArtClassLib.csproj", "JoArtClassLib/"]
+COPY ["JoArtDataLayer/JoArtDataLayer.csproj", "JoArtDataLayer/"]
+
+
+WORKDIR /src/JoArtAPI  
+RUN dotnet restore
+
+
+WORKDIR /src
 COPY . .
-WORKDIR "/src/JohnsenArtAPI"
-RUN dotnet build "JohnsenArtAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR /src/JoArtAPI
+
+
+RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "JohnsenArtAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "JohnsenArtAPI.dll"]
+
+
+ENTRYPOINT ["dotnet", "JoArtAPI.dll"]
