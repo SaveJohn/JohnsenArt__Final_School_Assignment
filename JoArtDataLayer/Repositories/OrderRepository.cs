@@ -1,4 +1,4 @@
-﻿namespace JoArtDataLayer.Repositories;
+namespace JoArtDataLayer.Repositories;
 
 public class OrderRepository
 {
