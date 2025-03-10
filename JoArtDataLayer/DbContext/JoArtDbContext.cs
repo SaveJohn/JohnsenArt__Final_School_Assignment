@@ -9,7 +9,7 @@ public class JoArtDbContext : DbContext
     {
     }
 
-    public DbSet<Listing> Listings { get; set; }
+    public DbSet<Artwork> Listings { get; set; }
 
     public DbSet<Admin> Admins { get; set; }
 
@@ -18,8 +18,8 @@ public class JoArtDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Order>()
-            .HasOne(o => o.Listing)
-            .WithOne(l => l.Order)
-            .HasForeignKey<Order>(o => o.ListingId);
+            .HasOne(o => o.Artwork)
+            .WithOne(a => a.Order)
+            .HasForeignKey<Order>(o => o.ArtworkId);
     }
 }

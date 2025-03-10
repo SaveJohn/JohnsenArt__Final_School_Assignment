@@ -7,7 +7,7 @@ public class Order
 {
     [Key] public int OrderId { get; set; }
 
-    [ForeignKey("ListingId")] public int ListingId { get; set; }
+    [ForeignKey("ListingId")] public int ArtworkId { get; set; }
 
     [Required] [MaxLength(256)] public string Name { get; set; } = string.Empty;
     [Required] [MaxLength(256)] public string Address { get; set; } = string.Empty;
@@ -15,5 +15,5 @@ public class Order
     [Required] [MaxLength(256)] public string Email { get; set; } = string.Empty;
 
     // Navigation Properties
-    public virtual Listing Listing { get; set; }
+    public virtual Artwork Artwork { get; set; }
 }

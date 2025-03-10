@@ -1,6 +1,6 @@
 ﻿namespace JoArtClassLib;
 
-public class ListingDTO
+public class ArtworkDTO
 {
     
 }
