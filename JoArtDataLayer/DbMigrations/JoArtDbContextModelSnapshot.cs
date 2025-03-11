@@ -49,6 +49,31 @@ namespace JoArtDataLayer.DbMigrations
                     b.ToTable("Admins");
                 });
 
+            modelBuilder.Entity("JoArtClassLib.Art.ArtworkImage", b =>
+                {
+                    b.Property<int>("ImageId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ImageId"));
+
+                    b.Property<int>("ArtworkId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsWallPreview")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("URL")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("ImageId");
+
+                    b.HasIndex("ArtworkId");
+
+                    b.ToTable("ArtworkImages");
+                });
+
             modelBuilder.Entity("JoArtClassLib.Artwork", b =>
                 {
                     b.Property<int>("ArtworkId")
@@ -56,11 +81,6 @@ namespace JoArtDataLayer.DbMigrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ArtworkId"));
-
-                    b.Property<string>("ArtAuthor")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ArtDescription")
                         .HasMaxLength(50)
@@ -70,6 +90,11 @@ namespace JoArtDataLayer.DbMigrations
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("ArtTitle")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Artist")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
@@ -85,7 +110,7 @@ namespace JoArtDataLayer.DbMigrations
 
                     b.HasKey("ArtworkId");
 
-                    b.ToTable("Listings");
+                    b.ToTable("Artworks");
                 });
 
             modelBuilder.Entity("JoArtClassLib.Order", b =>
@@ -127,6 +152,17 @@ namespace JoArtDataLayer.DbMigrations
                     b.ToTable("Orders");
                 });
 
+            modelBuilder.Entity("JoArtClassLib.Art.ArtworkImage", b =>
+                {
+                    b.HasOne("JoArtClassLib.Artwork", "Artwork")
+                        .WithMany("Images")
+                        .HasForeignKey("ArtworkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artwork");
+                });
+
             modelBuilder.Entity("JoArtClassLib.Order", b =>
                 {
                     b.HasOne("JoArtClassLib.Artwork", "Artwork")
@@ -140,6 +176,8 @@ namespace JoArtDataLayer.DbMigrations
 
             modelBuilder.Entity("JoArtClassLib.Artwork", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("Order")
                         .IsRequired();
                 });

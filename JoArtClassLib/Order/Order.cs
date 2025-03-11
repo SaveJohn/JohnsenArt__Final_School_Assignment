@@ -7,7 +7,8 @@ public class Order
 {
     [Key] public int OrderId { get; set; }
 
-    [ForeignKey("ListingId")] public int ArtworkId { get; set; }
+    [ForeignKey(nameof(ArtworkId))] 
+    public int ArtworkId { get; set; }
 
     [Required] [MaxLength(256)] public string Name { get; set; } = string.Empty;
     [Required] [MaxLength(256)] public string Address { get; set; } = string.Empty;
