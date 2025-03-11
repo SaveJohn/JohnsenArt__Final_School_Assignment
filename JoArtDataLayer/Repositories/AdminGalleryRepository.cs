@@ -1,6 +1,6 @@
 ﻿namespace JoArtDataLayer.Repositories;
 
-public class AdminRepository
+public class AdminGalleryRepository
 {
     
 }

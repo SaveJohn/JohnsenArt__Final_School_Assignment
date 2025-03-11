@@ -1,4 +1,5 @@
 ﻿using JoArtClassLib;
+using JoArtClassLib.Art;
 using Microsoft.EntityFrameworkCore;
 
 namespace JoArtDataLayer;
@@ -9,7 +10,9 @@ public class JoArtDbContext : DbContext
     {
     }
 
-    public DbSet<Artwork> Listings { get; set; }
+    public DbSet<Artwork> Artworks { get; set; }
+    
+    public DbSet<ArtworkImage> ArtworkImages { get; set; }
 
     public DbSet<Admin> Admins { get; set; }
 
@@ -21,5 +24,10 @@ public class JoArtDbContext : DbContext
             .HasOne(o => o.Artwork)
             .WithOne(a => a.Order)
             .HasForeignKey<Order>(o => o.ArtworkId);
+        
+        modelBuilder.Entity<ArtworkImage>()
+            .HasOne(i => i.Artwork)
+            .WithMany(a => a.Images)
+            .HasForeignKey(i => i.ArtworkId);
     }
 }

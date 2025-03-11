@@ -1,6 +1,6 @@
 ﻿namespace JohnsenArtAPI.Controllers;
 
-public class ArtController
+public class AdminAboutArtistController
 {
     
 }
