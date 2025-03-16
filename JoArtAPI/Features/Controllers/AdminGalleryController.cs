@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using JoArtClassLib;
 using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +25,11 @@ public class AdminGalleryController : ControllerBase
     
     // Upload artwork
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadArtwork([FromForm] IFormFile imageFile)
+    public async Task<IActionResult> UploadArtwork(
+        [FromForm] IFormFile file, 
+        [FromForm] ArtworkDTO artworkDto)
     {
-        if (imageFile == null || imageFile.Length == 0)
+        if (file == null || file.Length == 0 || artworkDto == null)
         {
             _logger.LogWarning("UploadArtwork: No file provided.");
             return BadRequest("File is required.");
@@ -34,21 +37,18 @@ public class AdminGalleryController : ControllerBase
 
         try
         {
-            var response = await _adminGalleryService.UploadArtworkAsync(imageFile);
-
-            if (response == HttpStatusCode.OK || response == HttpStatusCode.Created)
-            {
-                _logger.LogInformation("UploadArtwork: File {FileName} uploaded successfully.", imageFile.FileName);
-                return Ok(new { Message = "Upload successful", FileName = imageFile.FileName });
-            }
-
-            _logger.LogError("UploadArtwork: Upload failed for {FileName}, StatusCode: {StatusCode}", 
-                imageFile.FileName, response);
-            return StatusCode((int)response, "Upload failed.");
+            var response = await _adminGalleryService.UploadArtworkAsync(file, artworkDto);
+            
+            _logger.LogInformation($"UploadArtwork: {response}");
+            
+            return response is null 
+                    ? BadRequest("UploadArtwork Failed")
+                    : Ok(response);
+            
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "UploadArtwork: Error uploading {FileName}", imageFile?.FileName);
+            _logger.LogError(ex, "UploadArtwork: Error uploading {FileName}", file?.FileName);
             return StatusCode(500, "Internal server error.");
         }
     }

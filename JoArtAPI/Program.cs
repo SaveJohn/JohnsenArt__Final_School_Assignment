@@ -1,5 +1,8 @@
 using Amazon.S3;
+using AutoMapper;
 using JoArtDataLayer;
+using JoArtDataLayer.Repositories;
+using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Configuration;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Services;
@@ -23,6 +26,13 @@ builder.Services.AddSwaggerGen();
 
 // Service injections
 builder.Services.AddScoped<IAdminGalleryService, AdminGalleryService>();
+
+// Mapper injections
+builder.Services.AddAutoMapper(typeof(Program));
+
+// Repository injections
+builder.Services.AddScoped<IAdminGalleryRepository, AdminGalleryRepository>();
+
 
 // AWS
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
@@ -71,6 +81,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    
     app.UseSwagger(options =>    {
         options.RouteTemplate = "/openapi/{documentName}.json";
     });
@@ -79,6 +90,7 @@ if (app.Environment.IsDevelopment())
      * app.UseSwagger();
      * app.UseSwaggerUI();
      */
+    
     
 }
 
