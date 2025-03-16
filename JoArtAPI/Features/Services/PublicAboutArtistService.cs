@@ -1,6 +1,6 @@
 ﻿namespace JohnsenArtAPI.Services;
 
-public class ArtService
+public class PublicAboutArtistService
 {
     
 }

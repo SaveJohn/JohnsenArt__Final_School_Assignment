@@ -1,6 +1,9 @@
+using Amazon.S3;
 using JoArtDataLayer;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Services;
+using JohnsenArtAPI.Services;
+using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -14,9 +17,15 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Service injections
+builder.Services.AddScoped<IAdminGalleryService, AdminGalleryService>();
+
+// Add AWS SDK and configure the region
+builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonS3>();
 
 // Database context
 builder.Services.AddDbContext<JoArtDbContext>(options =>

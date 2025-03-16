@@ -1,6 +1,6 @@
 ﻿namespace JohnsenArtAPI.Services;
 
-public class OrderService
+public class PublicGalleryService
 {
     
 }

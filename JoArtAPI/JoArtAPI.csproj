@@ -9,6 +9,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Amazon.Lambda.Core" Version="2.5.1" />
+        <PackageReference Include="Amazon.Lambda.S3Events" Version="3.1.0" />
+        <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4" />
+        <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
+        <PackageReference Include="AWSSDK.S3" Version="3.7.415.18" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Eris.Serilog.Formatting.Json" Version="1.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
@@ -43,6 +48,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Features\Mappers\Interfaces\" />
       <Folder Include="Middleware\" />
     </ItemGroup>
 
