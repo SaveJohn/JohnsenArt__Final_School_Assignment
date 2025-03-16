@@ -1,5 +1,6 @@
 using Amazon.S3;
 using JoArtDataLayer;
+using JohnsenArtAPI.Configuration;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Services;
 using JohnsenArtAPI.Services;
@@ -23,9 +24,11 @@ builder.Services.AddSwaggerGen();
 // Service injections
 builder.Services.AddScoped<IAdminGalleryService, AdminGalleryService>();
 
-// Add AWS SDK and configure the region
+// AWS
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonS3>();
+builder.Services.Configure<AwsS3Settings>(builder.Configuration.GetSection("AwsS3Settings"));
+
 
 // Database context
 builder.Services.AddDbContext<JoArtDbContext>(options =>
