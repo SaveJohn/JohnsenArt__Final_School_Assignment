@@ -63,7 +63,7 @@ namespace JoArtDataLayer.DbMigrations
                     b.Property<bool>("IsWallPreview")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("URL")
+                    b.Property<string>("ObjectKey")
                         .IsRequired()
                         .HasColumnType("longtext");
 

@@ -2,6 +2,6 @@
 
 public class ArtworkImageDTO
 {
-    public string URL { get; set; }
+    public string ObjectKey { get; set; }
     public bool IsWallPreview { get; set; }
 }

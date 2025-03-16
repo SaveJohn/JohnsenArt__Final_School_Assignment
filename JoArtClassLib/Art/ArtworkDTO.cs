@@ -10,5 +10,5 @@ public class ArtworkDTO
     public double WidthDimension { get; set; }
     public bool ForSale { get; set; }
     
-    public List<ArtworkImageDTO> Images { get; set; } = new List<ArtworkImageDTO>();
+    public List<ArtworkImageDTO> Images { get; set; } = new();
 }

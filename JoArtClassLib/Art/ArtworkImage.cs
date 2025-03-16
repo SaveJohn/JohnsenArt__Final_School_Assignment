@@ -6,7 +6,7 @@ namespace JoArtClassLib.Art;
 public class ArtworkImage
 {
     [Key] public int ImageId { get; set; }
-    [Required] public string URL { get; set; }
+    [Required] public string ObjectKey  { get; set; } // S3 file path
     public bool IsWallPreview { get; set; }  
 
     [ForeignKey(nameof(ArtworkId))]
