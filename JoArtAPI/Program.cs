@@ -4,6 +4,7 @@ using JohnsenArtAPI.Features.Authentication.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,8 +59,15 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(options =>    {
+        options.RouteTemplate = "/openapi/{documentName}.json";
+    });
+    app.MapScalarApiReference();
+    /*
+     * app.UseSwagger();
+     * app.UseSwaggerUI();
+     */
+    
 }
 
 app.UseHttpsRedirection();
