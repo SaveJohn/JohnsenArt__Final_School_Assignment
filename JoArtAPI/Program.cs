@@ -6,6 +6,7 @@ using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Configuration;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Services;
+using JohnsenArtAPI.Health;
 using JohnsenArtAPI.Services;
 using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,6 +39,10 @@ builder.Services.AddScoped<IAdminGalleryRepository, AdminGalleryRepository>();
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.Configure<AwsS3Settings>(builder.Configuration.GetSection("AwsS3Settings"));
+
+// API Health Check
+builder.Services.AddHealthChecks()
+    .AddCheck<APIHealthCheck>("api");
 
 
 // Database context
@@ -78,6 +83,9 @@ builder.Host.UseSerilog((context, services, configuration) =>
 
 var app = builder.Build();
 
+//API Health Check
+app.MapHealthChecks("/health");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -100,4 +108,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
