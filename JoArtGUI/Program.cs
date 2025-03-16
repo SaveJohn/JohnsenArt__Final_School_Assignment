@@ -1,6 +1,14 @@
 using JohnsenArtGUI.Components;
+using Blazored.LocalStorage;
 
 var builder = WebApplication.CreateBuilder(args);
+// temporary logging increase
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
+
+// Dependency Injections
+builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddHttpClient();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -9,12 +17,22 @@ builder.Services.AddRazorComponents()
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+app.UseExceptionHandler(errorApp =>
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+    errorApp.Run(async context =>
+    {
+        var exceptionHandlerPathFeature =
+            context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+        if (exceptionHandlerPathFeature?.Error != null)
+        {
+            Console.WriteLine($"Blazor Error: {exceptionHandlerPathFeature.Error.Message}");
+        }
+
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync("An unhandled error occurred.");
+    });
+});
+
 
 app.UseHttpsRedirection();
 
@@ -24,4 +42,5 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+
+await app.RunAsync();

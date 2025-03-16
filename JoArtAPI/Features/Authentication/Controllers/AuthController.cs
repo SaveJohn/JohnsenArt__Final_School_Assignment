@@ -19,6 +19,8 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
+        Console.WriteLine("Auth controller - endpoint login hit");
+
         var response = await _authService.LoginAsync(loginRequest);
         if (response == null)
         {
