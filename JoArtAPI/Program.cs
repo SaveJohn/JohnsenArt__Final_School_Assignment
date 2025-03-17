@@ -6,6 +6,10 @@ using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Configuration;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Services;
+using JohnsenArtAPI.Features.Gallery.Aws;
+using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
+using JohnsenArtAPI.Features.Gallery.Common;
+using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Health;
 using JohnsenArtAPI.Services;
 using JohnsenArtAPI.Services.Interfaces;
@@ -18,22 +22,23 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 // Dependency Injection
-builder.Services.AddScoped<IAuthService, AuthService>();
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Service injections
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminGalleryService, AdminGalleryService>();
+builder.Services.AddScoped<IGalleryService, GalleryService>();
+builder.Services.AddScoped<IAwsService, AwsService>();
 
 // Mapper injections
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Repository injections
 builder.Services.AddScoped<IAdminGalleryRepository, AdminGalleryRepository>();
-
+builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 
 // AWS
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());

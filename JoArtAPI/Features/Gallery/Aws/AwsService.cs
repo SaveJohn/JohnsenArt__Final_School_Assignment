@@ -1,92 +1,34 @@
-﻿using System.Net;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
-using AutoMapper;
-using Google.Protobuf.WellKnownTypes;
-using JoArtClassLib;
-using JoArtClassLib.Art;
-using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Configuration;
-using JohnsenArtAPI.Services.Interfaces;
+using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
+using JohnsenArtAPI.Services;
 using Microsoft.Extensions.Options;
 
-namespace JohnsenArtAPI.Services;
+namespace JohnsenArtAPI.Features.Gallery.Aws;
 
-public class AdminGalleryService : IAdminGalleryService
+public class AwsService : IAwsService
 {
-    private readonly IAdminGalleryRepository _repository;
-    private readonly IMapper _mapper;
     private readonly IAmazonS3 _s3Client;
+    private readonly IOptions<AwsS3Settings> _config;
     private readonly ILogger<AdminGalleryService> _logger;
     private readonly int _expirationInSeconds = 0;
     private readonly string _bucketName;
 
-    public AdminGalleryService(
-        IAdminGalleryRepository repository,
-        IMapper mapper,
+    public AwsService(
         IAmazonS3 s3Client, 
         IOptions<AwsS3Settings> config, 
         ILogger<AdminGalleryService> logger)
     {
-        _repository = repository;
-        _mapper = mapper;
         _s3Client = s3Client;
         _logger = logger;
         _expirationInSeconds = config.Value.FileExpireInSeconds;
         _bucketName = config.Value.BucketName;
     }
     
-    // UPLOAD Artwork
-    public async Task<ArtworkResponse> UploadArtworkAsync(ArtworkRequest request)
-    {
-
-        _logger.LogDebug($"Number of images in the request: {request.Images?.Count}");
-
-
-
-        // Making sure bucket exists (It declared in appsettings.json)
-        await CheckIfS3BucketExists();
-
-        // Map DTO to Entity
-        var artwork = _mapper.Map<Artwork>(request);
-        artwork.Images.Clear(); // Remove Automapper placeholders
-
-        // Uploading image(s) to S3 bucket
-        foreach (var image in request.Images)
-        {
-            _logger.LogDebug("Entering image upload loop.");
-
-            _logger.LogDebug($"Processing image: {image.ImageFile?.FileName ?? "No file"}");
-
-            if (image.ImageFile != null)
-            {
-                var objectKey = await UploadImageToS3(image.ImageFile);
-
-                // Adding ObjectKey property value to Artwork entity
-                artwork.Images.Add(new ArtworkImage { ObjectKey = objectKey, IsWallPreview = image.IsWallPreview });
-            }
-        }
-
-        foreach (var image in artwork.Images)
-        {
-            _logger.LogDebug($"Uploading image {image.ObjectKey}");
-        }
-
-
-        // Saving to database through repository
-        var savedArtwork = await _repository.AddArtworkAsync(artwork);
-
-        // Return DTO
-        return _mapper.Map<ArtworkResponse>(savedArtwork);
-    }
-
-   
-    
-    // AWS -------------------------------------------------------------------------
-    
     // S3 Bucket exists
-    private async Task<bool> CheckIfS3BucketExists()
+    public async Task<bool> CheckIfS3BucketExists()
     {
         var bucketExist = await AmazonS3Util.DoesS3BucketExistV2Async(_s3Client, _bucketName);
         if (!bucketExist)
@@ -102,7 +44,7 @@ public class AdminGalleryService : IAdminGalleryService
     }
     
     // Uploading ObjectRequest (image) to S3 Bucket
-    private async Task<string> UploadImageToS3(IFormFile imageFile)
+    public async Task<string> UploadImageToS3(IFormFile imageFile)
     {
         _logger.LogInformation($"Uploading {imageFile.FileName} to S3...");
 
@@ -132,7 +74,7 @@ public class AdminGalleryService : IAdminGalleryService
     }
     
     // Generate Image Pre-signed URL
-    private string GeneratePresignedUrl(string objectKey)
+    public string GeneratePresignedUrl(string objectKey)
     {
         try
         {
@@ -151,6 +93,4 @@ public class AdminGalleryService : IAdminGalleryService
             return null;
         }
     }
-
-    
 }
