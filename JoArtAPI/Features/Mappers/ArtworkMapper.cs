@@ -7,7 +7,11 @@ public class ArtworkMapper : Profile
 {
     public ArtworkMapper()
     {
-        CreateMap<Artwork, ArtworkDTO>().ReverseMap();
-        CreateMap<ArtworkImage, ArtworkImageDTO>().ReverseMap();
+        
+        CreateMap<Artwork, ArtworkRequest>().ReverseMap();
+        CreateMap<ArtworkImage, ImageRequest>().ReverseMap();
+        CreateMap<Artwork, ArtworkResponse>().ReverseMap();
+        CreateMap<ArtworkImage, ImageResponse>().ReverseMap();
+        
     }
 }

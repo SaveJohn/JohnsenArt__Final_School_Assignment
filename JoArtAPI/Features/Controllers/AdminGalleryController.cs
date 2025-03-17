@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using JoArtClassLib;
+using JoArtClassLib.Art;
 using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,30 +26,27 @@ public class AdminGalleryController : ControllerBase
     
     // Upload artwork
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadArtwork(
-        [FromForm] IFormFile file, 
-        [FromForm] ArtworkDTO artworkDto)
+    public async Task<IActionResult> UploadArtwork([FromForm] ArtworkRequest request)
     {
-        if (file == null || file.Length == 0 || artworkDto == null)
+        if (request == null || request.Images == null || request.Images.Count == 0)
         {
-            _logger.LogWarning("UploadArtwork: No file provided.");
-            return BadRequest("File is required.");
+            _logger.LogWarning("UploadArtwork: No file or image details provided.");
+            return BadRequest("File(s) are required.");
         }
 
         try
         {
-            var response = await _adminGalleryService.UploadArtworkAsync(file, artworkDto);
-            
+            var response = await _adminGalleryService.UploadArtworkAsync(request);
+
             _logger.LogInformation($"UploadArtwork: {response}");
-            
+
             return response is null 
-                    ? BadRequest("UploadArtwork Failed")
-                    : Ok(response);
-            
+                ? BadRequest("UploadArtwork Failed") 
+                : Ok(response);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "UploadArtwork: Error uploading {FileName}", file?.FileName);
+            _logger.LogError(ex, "UploadArtwork: Error uploading artwork with file(s).");
             return StatusCode(500, "Internal server error.");
         }
     }

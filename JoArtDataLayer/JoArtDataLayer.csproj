@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <Folder Include="DbMigrations\" />
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
 </Project>

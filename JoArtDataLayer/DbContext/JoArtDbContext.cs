@@ -16,18 +16,22 @@ public class JoArtDbContext : DbContext
 
     public DbSet<Admin> Admins { get; set; }
 
-    public DbSet<Order> Orders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Order>()
-            .HasOne(o => o.Artwork)
-            .WithOne(a => a.Order)
-            .HasForeignKey<Order>(o => o.ArtworkId);
         
+        // Configure the primary key for Artwork
+        modelBuilder.Entity<Artwork>()
+            .HasKey(a => a.ArtworkId); // ArtworkId is the primary key
+
+        // Configure the primary key for ArtworkImage
         modelBuilder.Entity<ArtworkImage>()
-            .HasOne(i => i.Artwork)
+            .HasKey(ai => ai.ImageId); // ArtworkImageId is the primary key
+
+        // Define the relationship between Artwork and ArtworkImage
+        modelBuilder.Entity<ArtworkImage>()
+            .HasOne(ai => ai.Artwork)
             .WithMany(a => a.Images)
-            .HasForeignKey(i => i.ArtworkId);
+            .HasForeignKey(ai => ai.ArtworkId); // FK for ArtworkImage references Artwork
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace JoArtClassLib;
+﻿namespace JoArtClassLib.Art;
 
-public class ArtworkDTO
+public class ArtworkRequest
 {
     public string ArtTitle { get; set; }
     public string? ArtDescription { get; set; }
@@ -10,5 +10,5 @@ public class ArtworkDTO
     public double WidthDimension { get; set; }
     public bool ForSale { get; set; }
     
-    public List<ArtworkImageDTO> Images { get; set; } = new();
+    public virtual List<ImageRequest> Images { get; set; } = new();
 }

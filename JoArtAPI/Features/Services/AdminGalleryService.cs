@@ -3,6 +3,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using AutoMapper;
+using Google.Protobuf.WellKnownTypes;
 using JoArtClassLib;
 using JoArtClassLib.Art;
 using JoArtDataLayer.Repositories.Interfaces;
@@ -37,23 +38,47 @@ public class AdminGalleryService : IAdminGalleryService
     }
     
     // UPLOAD Artwork
-    public async Task<ArtworkDTO> UploadArtworkAsync(IFormFile imageFile, ArtworkDTO artworkDto)
-    {   
+    public async Task<ArtworkResponse> UploadArtworkAsync(ArtworkRequest request)
+    {
+
+        _logger.LogDebug($"Number of images in the request: {request.Images?.Count}");
+
+
+
         // Making sure bucket exists (It declared in appsettings.json)
         await CheckIfS3BucketExists();
-        
-        // Uploading image to S3 bucket
-        var objectKey = await UploadImageToS3(imageFile);
-        
+
         // Map DTO to Entity
-        var artwork = _mapper.Map<Artwork>(artworkDto);
-        artwork.Images.Add(new ArtworkImage{ ObjectKey = objectKey });
-        
+        var artwork = _mapper.Map<Artwork>(request);
+        artwork.Images.Clear(); // Remove Automapper placeholders
+
+        // Uploading image(s) to S3 bucket
+        foreach (var image in request.Images)
+        {
+            _logger.LogDebug("Entering image upload loop.");
+
+            _logger.LogDebug($"Processing image: {image.ImageFile?.FileName ?? "No file"}");
+
+            if (image.ImageFile != null)
+            {
+                var objectKey = await UploadImageToS3(image.ImageFile);
+
+                // Adding ObjectKey property value to Artwork entity
+                artwork.Images.Add(new ArtworkImage { ObjectKey = objectKey, IsWallPreview = image.IsWallPreview });
+            }
+        }
+
+        foreach (var image in artwork.Images)
+        {
+            _logger.LogDebug($"Uploading image {image.ObjectKey}");
+        }
+
+
         // Saving to database through repository
         var savedArtwork = await _repository.AddArtworkAsync(artwork);
-        
+
         // Return DTO
-        return _mapper.Map<ArtworkDTO>(savedArtwork);
+        return _mapper.Map<ArtworkResponse>(savedArtwork);
     }
 
    
@@ -79,8 +104,12 @@ public class AdminGalleryService : IAdminGalleryService
     // Uploading ObjectRequest (image) to S3 Bucket
     private async Task<string> UploadImageToS3(IFormFile imageFile)
     {
+        _logger.LogInformation($"Uploading {imageFile.FileName} to S3...");
+
         // Creating S3 ObjectRequest
         var objectKey = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
+        _logger.LogInformation($"Generated object key: {objectKey}");
+
         var objectRequest = new PutObjectRequest()
         {
             BucketName = _bucketName, // Using the injected value

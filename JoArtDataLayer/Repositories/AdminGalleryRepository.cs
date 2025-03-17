@@ -21,6 +21,10 @@ public class AdminGalleryRepository : IAdminGalleryRepository
     // Upload a Artwork
     public async Task<Artwork> AddArtworkAsync(Artwork artwork)
     {
+        foreach (var image in artwork.Images)
+        {
+            _logger.LogInformation("ObjectKey {objectKey}", image.ObjectKey);
+        }
         // Trying to save Artwork to Database
         try
         {
