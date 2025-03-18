@@ -21,22 +21,29 @@ public class AdminGalleryRepository : IAdminGalleryRepository
     // Upload a Artwork
     public async Task<Artwork> AddArtworkAsync(Artwork artwork)
     {
-        foreach (var image in artwork.Images)
-        {
-            _logger.LogInformation("ObjectKey {objectKey}", image.ObjectKey);
-        }
+        _logger.LogInformation("-------------------- \n Repository AddArtwork:");
         // Trying to save Artwork to Database
         try
         {
             _context.Artworks.Add(artwork);
             await _context.SaveChangesAsync();
         }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Database update failed while saving artwork {artworkTitle}.", artwork.ArtTitle);
+            throw new Exception("Failed to save artwork due to database error. Please try again.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "Invalid operation while saving artwork {artworkTitle}.", artwork.ArtTitle);
+            throw;
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
-            throw; // Could not save Artwork to Database
+            _logger.LogError(ex, "Unexpected error occurred while saving artwork {artworkTitle}.", artwork.ArtTitle);
+            throw;
         }
-        // Return artwork
+        
         return artwork;
     }
     

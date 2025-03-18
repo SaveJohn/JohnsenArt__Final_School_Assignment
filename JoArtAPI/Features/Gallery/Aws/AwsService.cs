@@ -30,9 +30,12 @@ public class AwsService : IAwsService
     // S3 Bucket exists
     public async Task<bool> CheckIfS3BucketExists()
     {
+        _logger.LogInformation($"-------------------- \n AWS: CheckIfS3BucketExists: {_bucketName}");
+        
         var bucketExist = await AmazonS3Util.DoesS3BucketExistV2Async(_s3Client, _bucketName);
         if (!bucketExist)
         {
+            _logger.LogWarning($"Bucket did not exist. Creating new bucket: {_bucketName}");
             var createBucketRequest = new PutBucketRequest()
             {
                 BucketName = _bucketName,
@@ -46,12 +49,13 @@ public class AwsService : IAwsService
     // Uploading ObjectRequest (image) to S3 Bucket
     public async Task<string> UploadImageToS3(IFormFile imageFile)
     {
-        _logger.LogInformation($"Uploading {imageFile.FileName} to S3...");
-
-        // Creating S3 ObjectRequest
+        _logger.LogInformation($"-------------------- \n AWS: UploadImageToS3: \n File: {imageFile.FileName}:");
+        
+        // Creating Object Key
         var objectKey = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
         _logger.LogInformation($"Generated object key: {objectKey}");
-
+        
+        // Creating S3 ObjectRequest
         var objectRequest = new PutObjectRequest()
         {
             BucketName = _bucketName, // Using the injected value
@@ -73,9 +77,11 @@ public class AwsService : IAwsService
         return objectKey;
     }
     
+    
     // Generate Image Pre-signed URL
     public string GeneratePresignedUrl(string objectKey)
     {
+        _logger.LogInformation($"-------------------- \n AWS: GeneratePresignedUrl: \n ObjectKey: {objectKey}:");
         try
         {
             var request = new GetPreSignedUrlRequest
@@ -84,7 +90,6 @@ public class AwsService : IAwsService
                 Key = objectKey,
                 Expires = DateTime.UtcNow.AddSeconds(_expirationInSeconds)
             };
-            _logger.LogInformation($"Getting pre-signed url for {objectKey}: {request}");
             return _s3Client.GetPreSignedURL(request);
         }
         catch (Exception ex)

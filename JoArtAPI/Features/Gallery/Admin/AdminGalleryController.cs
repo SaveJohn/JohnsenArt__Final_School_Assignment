@@ -9,6 +9,7 @@ namespace JohnsenArtAPI.Controllers;
 
 
 [Route("admin/api/[controller]")]
+[ApiController]
 public class AdminGalleryController : ControllerBase 
 {
     private readonly IAdminGalleryService _adminGalleryService;
@@ -28,6 +29,8 @@ public class AdminGalleryController : ControllerBase
     [HttpPost("upload")]
     public async Task<IActionResult> UploadArtwork([FromForm] ArtworkRequest request)
     {
+        _logger.LogInformation("Endpoint : UploadArtwork called");
+        
         if (request == null || request.Images == null || request.Images.Count == 0)
         {
             _logger.LogWarning("UploadArtwork: No file or image details provided.");
@@ -37,9 +40,7 @@ public class AdminGalleryController : ControllerBase
         try
         {
             var response = await _adminGalleryService.UploadArtworkAsync(request);
-
-            _logger.LogInformation($"UploadArtwork: {response}");
-
+            
             return response is null 
                 ? BadRequest("UploadArtwork Failed") 
                 : Ok(response);
