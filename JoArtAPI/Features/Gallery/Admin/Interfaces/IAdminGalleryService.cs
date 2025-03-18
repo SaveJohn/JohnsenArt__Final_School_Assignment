@@ -7,4 +7,8 @@ namespace JohnsenArtAPI.Services.Interfaces;
 public interface IAdminGalleryService
 {
     Task<ArtworkResponse> UploadArtworkAsync(ArtworkRequest request);
+    
+    public Task<ArtworkResponse?> UpdateArtworkAsync(ArtworkRequest request);
+    
+    public Task<ArtworkResponse?> DeleteArtworkAsync(int artId);
 }
