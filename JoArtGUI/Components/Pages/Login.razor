@@ -3,29 +3,34 @@
 @inject NavigationManager Navigation
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
 
-<h3 class="tex2t-primary">Login page</h3>
+<div class="container login-container">
+    <h3 class="text-primary text-center">Temporary Login Page</h3>
 
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    <p style="color: red;">@ErrorMessage</p>
-}
+    @if (!string.IsNullOrEmpty(ErrorMessage))
+    {
+    <p class="alert alert-danger">@ErrorMessage</p>
+    }
 
-<input @bind="Email" placeholder="Email"/>
-<input @bind="Password" placeholder="Password" type="password"/>
-<button @onclick="PerformLogin">Login</button>
+    <input class="form-control mb-2" @bind="Email" placeholder="Email"/>
+    <input class="form-control mb-2" @bind="Password" placeholder="Password" type="password"/>
+    <button class="btn btn-primary w-100" @onclick="PerformLogin">Login</button>
+
+    <hr />
+
+    <button class="btn btn-secondary w-100 mt-2" @onclick="TestStorage">Test LocalStorage</button>
+    <p class="mt-2 text-muted">@TestResult</p>
+
+    @if (LocalStorage == null)
+    {
+    <p class="text-danger">LocalStorage service is NOT available!</p>
+    }
+    else
+    {
+    <p class="text-success">LocalStorage services is AVAILABLE.</p>
+    }
+</div>
 
 
-@if (LocalStorage == null)
-{
-    <p style="color: red;">LocalStorage service is NOT available!</p>
-}
-else
-{
-    <p style="color: green;">LocalStorage service is AVAILABLE.</p>
-}
-
-
-<button @onclick="TestStorage">Test LocalStorage</button>
 
 
 <p>@TestResult</p>
