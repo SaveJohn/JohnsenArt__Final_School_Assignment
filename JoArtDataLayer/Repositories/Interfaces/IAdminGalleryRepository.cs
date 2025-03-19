@@ -10,5 +10,7 @@ public interface IAdminGalleryRepository
     
     public Task<Artwork?> DeleteArtworkAsync(int artId);
 
-    
+    public Task<string?> GetObjectKeyByImageIdAsync(int? imageId);
+
+
 }

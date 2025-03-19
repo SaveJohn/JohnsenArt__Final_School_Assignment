@@ -54,6 +54,7 @@ public class GalleryService : IGalleryService
         _logger.LogInformation($"-------------------- \n Service: GetArtworkById {artId}:");
 
         // Getting artwork from database (mapped to response)
+        var artwork = await _repository.GetArtworkByIdAsync(artId);
         var response = _mapper.Map<ArtworkResponse>(
             await _repository.GetArtworkByIdAsync(artId)
         );

@@ -5,11 +5,11 @@ namespace JoArtClassLib.Art;
 
 public class ArtworkImage
 {
-    [Key] public int ImageId { get; set; }
+    [Key] public int Id { get; set; }
     [Required] public required string ObjectKey  { get; set; } // S3 file path
     public bool IsWallPreview { get; set; }  
 
-    [ForeignKey(nameof(ArtworkId))]
+    [ForeignKey(nameof(Id))]
     public int ArtworkId { get; set; }
-    public virtual Artwork? Artwork { get; set; }
+    public virtual JoArtClassLib.Artwork? Artwork { get; set; }
 }

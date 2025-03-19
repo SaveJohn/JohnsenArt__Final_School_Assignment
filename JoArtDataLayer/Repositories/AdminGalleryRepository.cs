@@ -17,7 +17,7 @@ public class AdminGalleryRepository : IAdminGalleryRepository
         _context = context;
         _logger = logger;
     }
-    
+
     // ADD Artwork
     public async Task<Artwork> AddArtworkAsync(Artwork artwork)
     {
@@ -30,75 +30,75 @@ public class AdminGalleryRepository : IAdminGalleryRepository
         }
         catch (DbUpdateException ex)
         {
-            _logger.LogError(ex, "Database update failed while saving artwork {artworkTitle}.", artwork.ArtTitle);
+            _logger.LogError(ex, "Database update failed while saving artwork {artworkTitle}.", artwork.Title);
             throw new Exception("Failed to save artwork due to database error. Please try again.");
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogError(ex, "Invalid operation while saving artwork {artworkTitle}.", artwork.ArtTitle);
+            _logger.LogError(ex, "Invalid operation while saving artwork {artworkTitle}.", artwork.Title);
             throw;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error occurred while saving artwork {artworkTitle}.", artwork.ArtTitle);
+            _logger.LogError(ex, "Unexpected error occurred while saving artwork {artworkTitle}.", artwork.Title);
             throw;
         }
-        
+
         return artwork;
     }
-    
+
     // UPDATE Artwork
     public async Task<Artwork?> UpdateArtworkAsync(Artwork artwork)
     {
         _logger.LogInformation("-------------------- \n Repository : UpdateArtwork:");
         // Checking if Artwork exists in database
-        var existingArtwork = await _context.Artworks.FindAsync(artwork.ArtworkId);
+        var existingArtwork = await _context.Artworks.FindAsync(artwork.Id);
         if (existingArtwork == null)
         {
-            _logger.LogWarning("Attempted to update non-existing artwork with ID {artworkId}", artwork.ArtworkId);
-            return null; 
+            _logger.LogWarning("Attempted to update non-existing artwork with ID {artworkId}", artwork.Id);
+            return null;
         }
-        
+
         // Updating Artwork in database
         try
         {
             _context.Entry(existingArtwork).CurrentValues.SetValues(artwork);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Successfully updated artwork {artworkId}", artwork.ArtworkId);
+            _logger.LogInformation("Successfully updated artwork {artworkId}", artwork.Id);
             return artwork;
         }
         catch (DbUpdateException ex)
         {
-            _logger.LogError(ex, "Database update failed for artwork {artworkId}", artwork.ArtworkId);
+            _logger.LogError(ex, "Database update failed for artwork {artworkId}", artwork.Id);
             throw new Exception("Failed to update artwork due to a database error.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error occurred while updating artwork {artworkId}", artwork.ArtworkId);
+            _logger.LogError(ex, "Unexpected error occurred while updating artwork {artworkId}", artwork.Id);
             throw;
         }
-        
+
     }
-    
+
     // DELETE Artwork
     public async Task<Artwork?> DeleteArtworkAsync(int artId)
     {
         _logger.LogInformation("-------------------- \n Repository : DeleteArtwork:");
-        
+
         var existingArtwork = await _context.Artworks.FindAsync(artId);
         if (existingArtwork == null)
         {
             _logger.LogWarning("Attempted to delete non-existing artwork with ID {artId}", artId);
-            return null; 
+            return null;
         }
-        
+
         try
         {
             await _context.Artworks
-                .Where(a => a.ArtworkId == artId)
+                .Where(a => a.Id == artId)
                 .ExecuteDeleteAsync();
-            
+
             _logger.LogInformation("Successfully deleted artwork {artId}", artId);
             return existingArtwork;
         }
@@ -112,5 +112,59 @@ public class AdminGalleryRepository : IAdminGalleryRepository
             _logger.LogError(ex, "Unexpected error occurred while deleting artwork {artId}", artId);
             throw;
         }
+
+
     }
+    
+    // GET Artwork by Id
+    public async Task<Artwork?> GetArtworkByIdAsync(int artId)
+    {
+        _logger.LogInformation($"-------------------- \n Repository : GetArtworkById: {artId}:");
+
+        try
+        {
+            _logger.LogInformation($"Retrieving Artwork by ID: {artId}");
+            return await _context.Artworks
+                .Include(a => a.Images)
+                .Where(a => a.Id == artId)
+                .FirstOrDefaultAsync();
+            
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "Database query failed due to an invalid operation.");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve Artworks from the database.");
+            throw;
+        }
+        
+    }
+
+    // GET Image Object Key
+    public async Task<string?> GetObjectKeyByImageIdAsync(int? imageId)
+    {
+        _logger.LogInformation($"-------------------- \n Repository : GetObjectKeyByImageId: {imageId}:");
+        try
+        {
+            return await _context.ArtworkImages
+                .Where(i => i.Id == imageId)
+                .Select(i => i.ObjectKey)
+                .FirstOrDefaultAsync();
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "Database query failed due to an invalid operation.");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve object key from the database.");
+            throw;
+        }
+
+    }
+
 }

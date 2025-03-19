@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using System.Net;
+using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using JohnsenArtAPI.Configuration;
@@ -27,7 +28,7 @@ public class AwsService : IAwsService
         _bucketName = config.Value.BucketName;
     }
     
-    // S3 Bucket exists
+    // CHECK If S3 Bucket Exists
     public async Task<bool> CheckIfS3BucketExists()
     {
         _logger.LogInformation($"-------------------- \n AWS: CheckIfS3BucketExists: {_bucketName}");
@@ -36,7 +37,7 @@ public class AwsService : IAwsService
         if (!bucketExist)
         {
             _logger.LogWarning($"Bucket did not exist. Creating new bucket: {_bucketName}");
-            var createBucketRequest = new PutBucketRequest()
+            var createBucketRequest = new PutBucketRequest
             {
                 BucketName = _bucketName,
                 UseClientRegion = true
@@ -46,7 +47,7 @@ public class AwsService : IAwsService
         return bucketExist;
     }
     
-    // Uploading ObjectRequest (image) to S3 Bucket
+    // UPLOAD Image to S3 Bucket
     public async Task<string> UploadImageToS3(IFormFile imageFile)
     {
         _logger.LogInformation($"-------------------- \n AWS: UploadImageToS3: \n File: {imageFile.FileName}:");
@@ -56,7 +57,7 @@ public class AwsService : IAwsService
         _logger.LogInformation($"Generated object key: {objectKey}");
         
         // Creating S3 ObjectRequest
-        var objectRequest = new PutObjectRequest()
+        var objectRequest = new PutObjectRequest
         {
             BucketName = _bucketName, // Using the injected value
             Key = objectKey,
@@ -76,9 +77,39 @@ public class AwsService : IAwsService
         }
         return objectKey;
     }
-    
-    
-    // Generate Image Pre-signed URL
+
+    // DELETE Image From S3
+    public async Task<bool> DeleteImageFromS3(string objectKey)
+    {
+        _logger.LogInformation($"-------------------- \n AWS: DeleteImageFromS3: \n  {objectKey}:");
+
+        try
+        {
+            var DeleteObjectRequest = new DeleteObjectRequest
+            {
+                BucketName = _bucketName,
+                Key = objectKey
+            };
+            var deleteObjectResponse = await _s3Client.DeleteObjectAsync(DeleteObjectRequest);
+            _logger.LogInformation($"Deleted object key: {objectKey}");
+            
+            return deleteObjectResponse.HttpStatusCode == HttpStatusCode.OK;
+        }
+        catch (AmazonS3Exception ex)
+        {
+            _logger.LogError($"Error encountered on server. Message:'{ex.Message}' when deleting an object.");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error encountered on server. Message:{ex.Message}");
+            throw;
+        }
+        
+    }
+
+
+    // GENERATE Image Pre-signed URL
     public string GeneratePresignedUrl(string objectKey)
     {
         _logger.LogInformation($"-------------------- \n AWS: GeneratePresignedUrl: \n ObjectKey: {objectKey}:");

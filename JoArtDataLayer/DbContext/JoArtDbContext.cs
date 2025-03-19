@@ -22,11 +22,11 @@ public class JoArtDbContext : DbContext
         
         // Configure the primary key for Artwork
         modelBuilder.Entity<Artwork>()
-            .HasKey(a => a.ArtworkId); // ArtworkId is the primary key
+            .HasKey(a => a.Id); // Id is the primary key
 
         // Configure the primary key for ArtworkImage
         modelBuilder.Entity<ArtworkImage>()
-            .HasKey(ai => ai.ImageId); // ArtworkImageId is the primary key
+            .HasKey(ai => ai.Id); // Id is the primary key
 
         // Define the relationship between Artwork and ArtworkImage
         modelBuilder.Entity<ArtworkImage>()

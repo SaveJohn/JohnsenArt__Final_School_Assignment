@@ -18,6 +18,7 @@ public class GalleryRepository : IGalleryRepository
         _logger = logger;
     }
     
+    // GET Artworks
     public async Task<IEnumerable<Artwork>> GetArtworksAsync(int page, int perPage, bool? newest, bool? forSale)
     {
         _logger.LogInformation($"-------------------- \n Repository : GetArtworks:");
@@ -39,8 +40,8 @@ public class GalleryRepository : IGalleryRepository
 
             // Apply sorting
             query = newest == true
-                ? query.OrderByDescending(a => a.ArtworkId) // Newest first
-                : query.OrderBy(a => a.ArtworkId); // Oldest first
+                ? query.OrderByDescending(a => a.Id) // Newest first
+                : query.OrderBy(a => a.Id); // Oldest first
 
             _logger.LogInformation("Successfully retrieved Artworks from the database.");
 
@@ -63,7 +64,8 @@ public class GalleryRepository : IGalleryRepository
         }
         
     }
-
+    
+    // GET Artwork by Id
     public async Task<Artwork?> GetArtworkByIdAsync(int artId)
     {
         _logger.LogInformation($"-------------------- \n Repository : GetArtworkById: {artId}:");
@@ -73,7 +75,7 @@ public class GalleryRepository : IGalleryRepository
             _logger.LogInformation($"Retrieving Artwork by ID: {artId}");
             return await _context.Artworks
                 .Include(a => a.Images)
-                .Where(a => a.ArtworkId == artId)
+                .Where(a => a.Id == artId)
                 .FirstOrDefaultAsync();
             
         }
@@ -89,4 +91,6 @@ public class GalleryRepository : IGalleryRepository
         }
         
     }
+    
+    
 }

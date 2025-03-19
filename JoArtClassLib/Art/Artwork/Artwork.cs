@@ -6,13 +6,13 @@ namespace JoArtClassLib;
 
 public class Artwork
 {
-    [Key] public int ArtworkId { get; set; }
+    [Key] public int Id { get; set; }
 
-    [Required] [MaxLength(100)] public required string ArtTitle { get; set; }
-    [MaxLength(2000)] public string? ArtDescription { get; set; }
+    [Required] [MaxLength(100)] public required string Title { get; set; }
+    [MaxLength(2000)] public string? Description { get; set; }
     [MaxLength(50)] public string? Artist { get; set; }
     
-    public decimal? ArtPrice { get; set; }
+    public decimal? Price { get; set; }
     public double? HeightDimension { get; set; }
     public double? WidthDimension { get; set; }
     [Required] public bool ForSale { get; set; }

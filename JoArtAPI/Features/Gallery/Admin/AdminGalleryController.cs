@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using JoArtClassLib;
 using JoArtClassLib.Art;
+using JoArtClassLib.Art.Artwork;
 using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,25 +9,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace JohnsenArtAPI.Controllers;
 
 
-[Route("admin/api/[controller]")]
+[Route("admin/api/Gallery")]
 [ApiController]
 public class AdminGalleryController : ControllerBase 
 {
-    private readonly IAdminGalleryService _adminGalleryService;
+    private readonly IAdminGalleryService _service;
     private readonly ILogger<AdminGalleryController> _logger;
 
     public AdminGalleryController(
-        IAdminGalleryService adminGalleryService, 
+        IAdminGalleryService service, 
         ILogger<AdminGalleryController> logger)
     {
-        _adminGalleryService = adminGalleryService;
+        _service = service;
         _logger = logger;
     }
     
-    // Get artwork
     
-    // Upload artwork
-    [HttpPost("upload")]
+    // UPLOAD artwork
+    [HttpPost("uploadArtwork")]
     public async Task<IActionResult> UploadArtwork([FromForm] ArtworkRequest request)
     {
         _logger.LogInformation("Endpoint : UploadArtwork called");
@@ -39,10 +39,10 @@ public class AdminGalleryController : ControllerBase
 
         try
         {
-            var response = await _adminGalleryService.UploadArtworkAsync(request);
+            var response = await _service.UploadArtworkAsync(request);
             
             return response is null 
-                ? BadRequest("UploadArtwork Failed") 
+                ? BadRequest("Upload Artwork Failed") 
                 : Ok(response);
         }
         catch (Exception ex)
@@ -53,8 +53,45 @@ public class AdminGalleryController : ControllerBase
     }
 
     
-    // Edit artwork 
+    // UPDATE artwork 
+    [HttpPut("EditArtwork/{id}")]
+    public async Task<IActionResult> UpdateArtwork(int id, [FromForm] UpdateArtworkRequest request)
+    {
+        _logger.LogInformation("Endpoint : EditArtwork called");
+        try
+        {
+            var response = await _service.UpdateArtworkAsync(id, request);
+
+            return response is null
+                ? BadRequest("Update Artwork Failed")
+                : Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "EditArtwork: Error updating artwork with file(s).");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
     
-    // Delete artwork
+    // DELETE artwork
+    [HttpDelete("EditArtwork/{id}")]
+    public async Task<IActionResult> DeleteArtwork(int id)
+    {
+        _logger.LogInformation("Endpoint : DeleteArtwork called");
+
+        try
+        {
+            var response = await _service.DeleteArtworkAsync(id);
+
+            return response is null
+                ? BadRequest("Delete Artwork Failed")
+                : Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "DeleteArtwork: Error deleting artwork with file(s).");
+            return StatusCode(500, "Internal server error.");
+        }
+    }
     
 }
