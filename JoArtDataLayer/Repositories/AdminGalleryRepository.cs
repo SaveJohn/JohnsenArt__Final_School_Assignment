@@ -116,32 +116,7 @@ public class AdminGalleryRepository : IAdminGalleryRepository
 
     }
     
-    // GET Artwork by Id
-    public async Task<Artwork?> GetArtworkByIdAsync(int artId)
-    {
-        _logger.LogInformation($"-------------------- \n Repository : GetArtworkById: {artId}:");
-
-        try
-        {
-            _logger.LogInformation($"Retrieving Artwork by ID: {artId}");
-            return await _context.Artworks
-                .Include(a => a.Images)
-                .Where(a => a.Id == artId)
-                .FirstOrDefaultAsync();
-            
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogError(ex, "Database query failed due to an invalid operation.");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to retrieve Artworks from the database.");
-            throw;
-        }
-        
-    }
+    
 
     // GET Image Object Key
     public async Task<string?> GetObjectKeyByImageIdAsync(int? imageId)

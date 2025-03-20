@@ -1,14 +1,12 @@
-﻿
-using AutoMapper;
+﻿using AutoMapper;
 using JoArtClassLib;
 using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
 using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
-using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Services.Interfaces;
 
-namespace JohnsenArtAPI.Services;
+namespace JohnsenArtAPI.Features.Gallery.Admin;
 
 public class AdminGalleryService : IAdminGalleryService
 {
@@ -44,6 +42,8 @@ public class AdminGalleryService : IAdminGalleryService
 
         // Map DTO to Entity
         var artwork = _mapper.Map<Artwork>(request);
+        if (!request.ForSale) artwork.Price = null;
+        
         artwork.Images.Clear(); // Remove Automapper placeholders
 
         // Uploading image(s) to S3 bucket
@@ -85,100 +85,65 @@ public class AdminGalleryService : IAdminGalleryService
             return null;
         }
 
-        _logger.LogDebug($"Number of images in the request: {request.Images?.Count}");
-
-        // Only update properties that are explicitly provided in the request
-        if (request.Title is not null) existingArtwork.Title = request.Title;
-        if (request.Description is not null) existingArtwork.Description = request.Description;
-        if (request.Artist is not null) existingArtwork.Artist = request.Artist;
-        if (request.Price.HasValue) existingArtwork.Price = request.Price;
-        if (request.HeightDimension is not null) existingArtwork.HeightDimension = request.HeightDimension;
-        if (request.WidthDimension is not null) existingArtwork.WidthDimension = request.WidthDimension;
-        if (request.ForSale is not null) existingArtwork.Price = request.Price;
+        
+        _mapper.Map(request, existingArtwork);
+        existingArtwork.Id = artId;
+        if (!request.ForSale) existingArtwork.Price = null;
+        existingArtwork.Images.Clear();
         
         // Handle images (managing updates and deletions separately)
-        UpdateArtworkImages(existingArtwork, request.Images);
+        await UpdateArtworkImages(existingArtwork, request.Images);
 
         var savedArtwork = await _repository.UpdateArtworkAsync(existingArtwork);
         return _mapper.Map<ArtworkResponse>(savedArtwork);
     }
 
-    private async void UpdateArtworkImages(Artwork existingArtwork, List<UpdateImageRequest> images)
+    private async Task UpdateArtworkImages(Artwork existingArtwork, List<UpdateImageRequest> images)
     {
+        _logger.LogInformation($"------------------- \n Service: UpdateArtworkImages ");
+        _logger.LogDebug($"Number of images in the request: {images.Count}");
         
-        foreach (var image in images)
+        // Storing old Object Keys to delete from S3 if update in database is successful 
+        var oldObjectKeys = new List<string>();
+        foreach (var image in existingArtwork.Images)
         {
-            if (image.ImageFile == null) continue;
-
-            if (image.Id is null)
-            {
-                _logger.LogWarning($"No image ID provided, skipping image update.");
-                continue;
-            }
-            
-            // Replace existing image object
-            var newImage = new ArtworkImage
-            {
-                ObjectKey = _aws.UploadImageToS3(image.ImageFile).Result, // Upload image
-                IsWallPreview = image.IsWallPreview
-            };
-            
-            // Adding images to existing artwork
-            existingArtwork.Images.Add(newImage);
-            
-            // Getting object key from database
-            var oldObjectKey = await _repository.GetObjectKeyByImageIdAsync(image.Id);
-            
-            // Deleting old image for S3
-            await _aws.DeleteImageFromS3(oldObjectKey!);
-            
-            
-            
+            oldObjectKeys.Add(image.ObjectKey);
         }
+
+        try
+        {
+            foreach (var image in images)
+            {
+                if (image.ImageFile == null) continue;
+                
+                // Replace existing image object
+                var newImage = new ArtworkImage
+                {
+                    Id = image.Id,
+                    ArtworkId = existingArtwork.Id,
+                    ObjectKey = _aws.UploadImageToS3(image.ImageFile).Result, // Upload image
+                    IsWallPreview = image.IsWallPreview
+                };
+
+                // Adding images to existing artwork
+                existingArtwork.Images.Add(newImage);
+
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error occured while updating images: {ex.Message}");
+            throw;
+        }
+        
+        // Deleting old images from S3
+        foreach (var objectKey in oldObjectKeys)
+        {
+            await _aws.DeleteImageFromS3(objectKey);
+        }
+        
     }
-    /*
-    public async Task<ArtworkResponse?> UpdateArtworkAsync(int artId, ArtworkRequest request)
-    {
-        _logger.LogInformation($"------------------- \n Service: UpdateArtwork ");
-        
-        // Map DTO to Entity
-        var artwork = _mapper.Map<Artwork>(request);
-        artwork.Images.Clear(); // Remove Automapper placeholders
-        artwork.Id = artId;
-        
-        // Uploading image(s) to S3 bucket
-        foreach (var image in request.Images)
-        {
-            _logger.LogDebug("Entering image upload loop.");
-            _logger.LogDebug($"Processing image: {image.ImageFile?.FileName ?? "No file"}");
-            
-            // If image is not being updated -> exit loop
-            if (image.ImageFile == null) continue;
-            
-            // If no image ID is provided -> exit loop
-            if (image.Id is null)
-            {
-                _logger.LogWarning($"No image ID provided from client, no image will be updated.");
-                continue;
-            }
-            
-            // Getting object key from database
-            var oldObjectKey = await _repository.GetObjectKeyByImageIdAsync(image.Id);
-            
-            // Deleting old image for S3
-            await _aws.DeleteImageFromS3(oldObjectKey!);
-            
-            // Uploading new image to S3
-            var newObjectKey = await _aws.UploadImageToS3(image.ImageFile);
-
-            // Adding new ObjectKey property value to Artwork entity
-            artwork.Images.Add(new ArtworkImage { ObjectKey = newObjectKey, IsWallPreview = image.IsWallPreview });
-        }
-        
-        var savedArtwork = await _repository.UpdateArtworkAsync(artwork);
-        return _mapper.Map<ArtworkResponse>(savedArtwork);
-        
-    }*/
+    
     
     // DELETE Artwork
     public async Task<ArtworkResponse?> DeleteArtworkAsync(int artId)

@@ -3,6 +3,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using JohnsenArtAPI.Configuration;
+using JohnsenArtAPI.Features.Gallery.Admin;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
 using JohnsenArtAPI.Services;
 using Microsoft.Extensions.Options;
@@ -85,12 +86,12 @@ public class AwsService : IAwsService
 
         try
         {
-            var DeleteObjectRequest = new DeleteObjectRequest
+            var deleteObjectRequest = new DeleteObjectRequest
             {
                 BucketName = _bucketName,
                 Key = objectKey
             };
-            var deleteObjectResponse = await _s3Client.DeleteObjectAsync(DeleteObjectRequest);
+            var deleteObjectResponse = await _s3Client.DeleteObjectAsync(deleteObjectRequest);
             _logger.LogInformation($"Deleted object key: {objectKey}");
             
             return deleteObjectResponse.HttpStatusCode == HttpStatusCode.OK;

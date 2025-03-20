@@ -6,6 +6,7 @@ using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Configuration;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Services;
+using JohnsenArtAPI.Features.Gallery.Admin;
 using JohnsenArtAPI.Features.Gallery.Aws;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common;
