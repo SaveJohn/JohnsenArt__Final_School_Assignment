@@ -12,5 +12,5 @@ public class Admin
 
     [Required]
     [Column(TypeName = "varchar(64)")]
-    public string HashedPassword { get; set; } = string.Empty;
+    public string HashedPassword { get; init; } = string.Empty;
 }
