@@ -1,5 +1,6 @@
 ﻿using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Models;
+using JohnsenArtAPI.Features.Authentication.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JohnsenArtAPI.Features.Authentication.Controllers;
@@ -9,24 +10,30 @@ namespace JohnsenArtAPI.Features.Authentication.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, ILogger<AuthController> logger)
     {
         _authService = authService;
+        _logger = logger;
     }
 
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
     {
-        Console.WriteLine("Auth controller - endpoint login hit");
+        _logger.LogInformation("Auth Controller - endpoint login hit");
 
         var response = await _authService.LoginAsync(loginRequest);
-        if (response == null)
+        if (response == null || !response.WasSuccessful)
         {
-            return Unauthorized("Invalid email or password.");
+            return Unauthorized(new
+            {
+                ErrorMessage = response?.ErrorMessage ?? "Login request failed"
+            });
         }
 
-        return Ok(response);
+        return Ok(new { Token = response.Token });
+        
     }
 }

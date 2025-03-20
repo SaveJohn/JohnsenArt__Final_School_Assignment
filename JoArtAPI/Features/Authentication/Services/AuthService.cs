@@ -31,11 +31,23 @@ public class AuthService : IAuthService
 
         if (admin == null)
         {
-            return null;
+            _logger.LogWarning("Login request failed: No user found with email/username '{Email}'", loginRequest.Email);
+            return new AuthResponse
+            {
+                ErrorMessage = "Invalid email/username."
+            };
         }
 
-        var user = new UserDTO { Email = loginRequest.Email, AdminId = 1 };
         bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginRequest.Password, admin.HashedPassword);
+
+        if (!isPasswordValid)
+        {
+            _logger.LogWarning("Login request failed: Invalid password entered.");
+            return new AuthResponse
+            {
+                ErrorMessage = "Invalid password entered."
+            };
+        }
 
         var user = new UserDTO
         {
