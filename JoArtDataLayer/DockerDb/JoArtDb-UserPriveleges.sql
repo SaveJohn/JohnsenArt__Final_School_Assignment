@@ -1,0 +1,8 @@
+﻿CREATE DATABASE IF NOT EXISTS JoArtDB;
+CREATE USER IF NOT EXISTS 'admin'@'JoArtDB' IDENTIFIED BY 'YouShallNotPass';
+CREATE USER IF NOT EXISTS 'admin'@'%' IDENTIFIED BY 'YouShallNotPass';
+
+GRANT ALL privileges ON JoArtDB.* TO 'admin'@'%';
+GRANT ALL privileges ON JoArtDB.* TO 'admin'@'JoArtDB';
+
+FLUSH PRIVILEGES;
