@@ -1,6 +1,7 @@
 using Amazon.S3;
 using AutoMapper;
 using JoArtDataLayer;
+using JoArtDataLayer.Health;
 using JoArtDataLayer.Repositories;
 using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Configuration;
@@ -46,9 +47,11 @@ builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.Configure<AwsS3Settings>(builder.Configuration.GetSection("AwsS3Settings"));
 
-// API Health Check
+// Health Checks
 builder.Services.AddHealthChecks()
     .AddCheck<APIHealthCheck>("api");
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>("database");
 
 
 // Database context
@@ -109,6 +112,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseHealthChecks("/health");
 app.UseAuthentication();
 app.UseAuthorization();
 
