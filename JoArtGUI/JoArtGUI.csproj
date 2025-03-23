@@ -23,4 +23,15 @@
       <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="wwwroot\Images\149458602_10225025021030780_9116841385297836132_n.jpg" />
+      <None Include="wwwroot\Images\IMG_1480.jpeg" />
+      <None Include="wwwroot\Images\IMG_1481.jpeg" />
+      <None Include="wwwroot\Images\JohnsenArt.pdf" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Materials\" />
+    </ItemGroup>
+
 </Project>
