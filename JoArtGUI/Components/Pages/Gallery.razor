@@ -1,6 +1,74 @@
 ﻿@page "/Gallery"
-<h3>Gallery</h3>
+@using JoArtClassLib.Art
+@inject HttpClient Http
+<h3 class="text-center my-4">Kunstverk</h3>
+<p class="text-center text-muted">@artworks?.Count</p>
+
+@if (artworks == null)
+{
+    <p class="text-center">Kunstverk laster ...</p>
+}
+else
+{
+    <div class="container">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            @foreach (var artwork in artworks)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        @if (artwork.Images?.Any() == true)
+                        {
+                            var img = artwork.Images.FirstOrDefault();
+                            string imageUrl = !string.IsNullOrEmpty(img?.ImageUrl)
+                                ? img.ImageUrl
+                                : $"https://joart-s3-images.s3.eu-north-1.amazonaws.com/{img?.ObjectKey}";
+
+                            <img src="@imageUrl"
+                                 class="card-img-top"
+                                 style="height: 250px; object-fit: cover;"
+                                 alt="Kunstverk"/>
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-secondary text-white text-center p-5">
+                                <p>Ingen bilde funnet</p>
+                            </div>
+                        }
+
+
+                        <div class="card-body">
+                            <h5 class="card-title">@artwork.Title</h5>
+                            <p class="card-text" style="font-size: 0.9rem; max-height: 80px; overflow: hidden; text-overflow: ellipsis;">
+                                @artwork.Description
+                            </p>
+                        </div>
+                        @if (artwork.ForSale)
+                        {
+                            <div class="card-footer text-center fw-bold">
+                                <p> Til salgs: @artwork.Price ,-kr</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
 
 @code {
-    
+    private List<ArtworkResponse>? artworks = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            artworks = await Http.GetFromJsonAsync<List<ArtworkResponse>>("api/PublicGallery/artworks");
+        }
+        catch (Exception exep)
+        {
+            Console.WriteLine(exep);
+            throw;
+        }
+    }
+
 }
