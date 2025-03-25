@@ -1,11 +1,12 @@
 ﻿using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
 using JohnsenArtAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JohnsenArtAPI.Features.Gallery.Admin;
 
-
+[Authorize]
 [Route("admin/api/Gallery")]
 [ApiController]
 public class AdminGalleryController : ControllerBase 
