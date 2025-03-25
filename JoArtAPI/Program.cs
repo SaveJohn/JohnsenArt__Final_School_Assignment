@@ -51,8 +51,7 @@ builder.Services.Configure<AwsS3Settings>(builder.Configuration.GetSection("AwsS
 
 // Health Checks
 builder.Services.AddHealthChecks()
-    .AddCheck<APIHealthCheck>("api");
-builder.Services.AddHealthChecks()
+    .AddCheck<APIHealthCheck>("api")
     .AddCheck<DatabaseHealthCheck>("database");
 
 
@@ -92,7 +91,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<GlobalExceptionHandling>()
     .UseHttpsRedirection()
-    .UseHealthChecks("/health")
     .UseAuthentication()
     .UseAuthorization();
 
