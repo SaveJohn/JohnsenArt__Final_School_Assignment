@@ -52,7 +52,6 @@
     <ItemGroup>
         <Folder Include="Features\Test\" />
         <Folder Include="logs\" />
-        <Folder Include="Middleware\"/>
         
     </ItemGroup>
 

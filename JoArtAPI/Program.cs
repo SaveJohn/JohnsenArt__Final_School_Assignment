@@ -13,6 +13,7 @@ using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Health;
+using JohnsenArtAPI.Middleware;
 using JohnsenArtAPI.Services;
 using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -111,10 +112,10 @@ if (app.Environment.IsDevelopment())
     
 }
 
-app.UseHttpsRedirection();
-app.UseHealthChecks("/health");
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseMiddleware<GlobalExceptionHandling>()
+    .UseHttpsRedirection()
+    .UseHealthChecks("/health")
+    .UseAuthorization();
 
 app.MapControllers();
 
