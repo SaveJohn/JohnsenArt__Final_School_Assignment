@@ -1,5 +1,5 @@
+using System.Text.Json;
 using Amazon.S3;
-using AutoMapper;
 using JoArtDataLayer;
 using JoArtDataLayer.Health;
 using JoArtDataLayer.Repositories;
@@ -15,11 +15,9 @@ using JohnsenArtAPI.Features.Gallery.Common;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Health;
 using JohnsenArtAPI.Middleware;
-using JohnsenArtAPI.Services;
 using JohnsenArtAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -72,8 +70,28 @@ builder.Host.UseSerilog((context, services, configuration) =>
 
 var app = builder.Build();
 
-//API Health Check
-app.MapHealthChecks("/health");
+//API Health Check -> Returning json with results for api and database separate 
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(entry => new
+            {
+                name = entry.Key,
+                status = entry.Value.Status.ToString(),
+                description = entry.Value.Description ?? "",
+                error = entry.Value.Exception?.Message
+            })
+        });
+
+        await context.Response.WriteAsync(result);
+    }
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
