@@ -5,6 +5,7 @@ using JoArtDataLayer.Health;
 using JoArtDataLayer.Repositories;
 using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Configuration;
+using JohnsenArtAPI.Extensions;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Services;
 using JohnsenArtAPI.Features.Gallery.Admin;
@@ -60,32 +61,11 @@ builder.Services.AddDbContext<JoArtDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
-// Retrieving and checking whether jwt key is present
-var jwtKey64 = builder.Configuration["Jwt:Key"];
-if (string.IsNullOrEmpty(jwtKey64))
-{
-    throw new InvalidOperationException("The JWT key is missing, check user secrets/appsettings.json.");
-}
 
-var key = new SymmetricSecurityKey(Convert.FromBase64String(builder.Configuration["Jwt:Key"]!));
 //JWT Set up
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = key,
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidateLifetime = true
-    };
-});
+builder.Services.AddJtwAuthentication(builder.Configuration);
+
+
 // Logging
 builder.Host.UseSerilog((context, services, configuration) => 
     configuration.ReadFrom.Configuration(context.Configuration)
@@ -99,7 +79,6 @@ app.MapHealthChecks("/health");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    
     app.UseSwagger(options =>    {
         options.RouteTemplate = "/openapi/{documentName}.json";
     });
@@ -109,12 +88,12 @@ if (app.Environment.IsDevelopment())
      * app.UseSwaggerUI();
      */
     
-    
 }
 
 app.UseMiddleware<GlobalExceptionHandling>()
     .UseHttpsRedirection()
     .UseHealthChecks("/health")
+    .UseAuthentication()
     .UseAuthorization();
 
 app.MapControllers();
