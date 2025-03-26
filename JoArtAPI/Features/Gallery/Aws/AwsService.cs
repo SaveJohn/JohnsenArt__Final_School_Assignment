@@ -122,7 +122,11 @@ public class AwsService : IAwsService
                 Key = objectKey,
                 Expires = DateTime.UtcNow.AddSeconds(_expirationInSeconds)
             };
-            return _s3Client.GetPreSignedURL(request);
+
+            var url = _s3Client.GetPreSignedURL(request);
+            _logger.LogInformation($"Generated pre-signed URL: {url}");
+
+            return url;
         }
         catch (Exception ex)
         {

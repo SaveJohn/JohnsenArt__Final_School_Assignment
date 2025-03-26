@@ -19,14 +19,19 @@ else
                         @if (artwork.Images?.Any() == true)
                         {
                             var img = artwork.Images.FirstOrDefault();
-                            string imageUrl = !string.IsNullOrEmpty(img?.ImageUrl)
-                                ? img.ImageUrl
-                                : $"https://joart-s3-images.s3.eu-north-1.amazonaws.com/{img?.ObjectKey}";
-
-                            <img src="@imageUrl"
-                                 class="card-img-top"
-                                 style="height: 250px; object-fit: cover;"
-                                 alt="Kunstverk"/>
+                            if (!string.IsNullOrEmpty(img?.ImageUrl))
+                            {
+                                <img src="@img.ImageUrl"
+                                     class="card-img-top"
+                                     style="height: 250px; object-fit: cover;"
+                                     alt="Kunstverk"/>
+                            }
+                            else
+                            {
+                                <div class="card-img-top bg-secondary text-white text-center p-5">
+                                    <p>Ingen bilde funnet</p>
+                                </div>
+                            }
                         }
                         else
                         {

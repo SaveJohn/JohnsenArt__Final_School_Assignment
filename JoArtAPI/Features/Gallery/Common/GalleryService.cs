@@ -49,6 +49,7 @@ public class GalleryService : IGalleryService
             {
                 image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
             }
+            _logger.LogInformation($"Found {response.Images.Count} images for artwork '{response.Title}'");
         }
 
         return responses;
@@ -77,6 +78,7 @@ public class GalleryService : IGalleryService
         foreach (var image in response.Images)
         {
             var imageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+            _logger.LogInformation($"Generated url {imageUrl}");
             image.ImageUrl = imageUrl;
         }
         
