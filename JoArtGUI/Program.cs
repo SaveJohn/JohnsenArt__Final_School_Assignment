@@ -8,7 +8,11 @@ builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 // Dependency Injections
 builder.Services.AddBlazoredLocalStorage();
-builder.Services.AddHttpClient();
+// TEMPORARY FIX TO PROBLEM I DO NOT KNOW HOW TO FIX YET
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("http://localhost:8080")
+});
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
