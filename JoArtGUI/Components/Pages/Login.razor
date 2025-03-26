@@ -5,33 +5,49 @@
 @inject NavigationManager Navigation
 @inject CustomAuthStateProvider AuthProvider
 
-<h3>Login</h3>
+<div class="login-container text-bg-light">
+    <div class="login-card">
+        <div class="login-avatar">
+            <i class="fas fa-user-circle fa-4x"></i>
+        </div>
+        <h4 class="text-center">Login</h4>
 
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    <div class="text-danger">@ErrorMessage</div>
-}
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="text-danger text-center">@ErrorMessage</div>
+        }
 
-<EditForm Model="_request" OnValidSubmit="HandleLogin">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+        <EditForm Model="_request" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-    <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <InputText id="username" class="form-control" @bind-Value="_request.Email" />
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <InputText class="form-control" @bind-Value="_request.Email" placeholder="Username" />
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <InputText type="@(_showPassword ? "text" : "password")" class="form-control" @bind-Value="_request.Password" placeholder="Password" />
+                <span class="input-group-text password-toggle" @onclick="TogglePassword">
+                    <i class="fas @( _showPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                </span>
+            </div>
+
+            <button class="btn btn-primary w-100" type="submit">Log in</button>
+        </EditForm>
     </div>
-
-    <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <InputText id="password" type="password" class="form-control" @bind-Value="_request.Password" />
-    </div>
-
-    <button class="btn btn-primary" type="submit">Log in</button>
-</EditForm>
+</div>
 
 @code {
     private LoginRequest _request = new();
     private string? ErrorMessage;
+    private bool _showPassword = false;
+
+    private void TogglePassword()
+    {
+        _showPassword = !_showPassword;
+    }
 
     private async Task HandleLogin()
     {
@@ -66,5 +82,4 @@
             ErrorMessage = $"An error occurred: {ex.Message}";
         }
     }
-    
 }

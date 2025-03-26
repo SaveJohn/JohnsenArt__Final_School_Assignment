@@ -1,31 +1,29 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="text-center" style="margin-top: 1rem; margin-bottom: -3rem;">
+<!-- Centered logo -->
+<div class="text-center py-4">
     <img src="Images/JohnsenArt-removebg-preview.png"
          alt="Johnsen Art logo"
-         style="height: 75px; transform: translateX(-560px);" />
+         style="height: 120px;" />
 </div>
 
-<div class="h1Font">
-    <div class="container-fluid p-0">
-        <header class="text-center py-4">
-            <h1 class="fw- m-0">BJARNE JOHNSEN</h1>
-        </header>
-    </div>
-</div>
-
-<!-- Fixed the `dic` tag to `div` -->
-<div class="top-row px-4">
+<!-- Top row login/logout -->
+<div class="top-row px-4 text-end">
     <AuthorizeView>
         <NotAuthorized>
-            <a href="/login">Login</a>
+            <span class="nav-item">
+                <a class="nav-link" href="/login">Login</a>
+            </span>
         </NotAuthorized>
         <Authorized>
-            <a href="/logout">Logout</a>
+            <span class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+            </span>
         </Authorized>
     </AuthorizeView>
 </div>
 
+<!-- Navigation bar -->
 <div class="navbarFont">
     <nav class="navbar navbar-expand border-top border-bottom py-2">
         <div class="container justify-content-center">
@@ -54,16 +52,19 @@
     </nav>
 </div>
 
+<!-- Main content with light grey background -->
 <div style="background-color: lightgrey">
     @Body
 </div>
 
+<!-- Error UI -->
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
 
+<!-- Footer -->
 <footer class="text-center py-3">
     <small>&copy; 2025 Bjarne Johnsen</small>
 </footer>
