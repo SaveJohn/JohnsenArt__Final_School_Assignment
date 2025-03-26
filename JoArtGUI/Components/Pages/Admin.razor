@@ -1,5 +1,8 @@
 ﻿@page "/Admin"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @inject HttpClient Http
+
 <h3>Admin Panel</h3>
 
 @code {

@@ -3,19 +3,28 @@
 <div class="text-center" style="margin-top: 1rem; margin-bottom: -3rem;">
     <img src="Images/JohnsenArt-removebg-preview.png"
          alt="Johnsen Art logo"
-         style="height: 75px; transform: translateX(-560px);"/>
+         style="height: 75px; transform: translateX(-560px);" />
 </div>
+
 <div class="h1Font">
     <div class="container-fluid p-0">
-
         <header class="text-center py-4">
             <h1 class="fw- m-0">BJARNE JOHNSEN</h1>
         </header>
     </div>
 </div>
 
-
-
+<!-- Fixed the `dic` tag to `div` -->
+<div class="top-row px-4">
+    <AuthorizeView>
+        <NotAuthorized>
+            <a href="/login">Login</a>
+        </NotAuthorized>
+        <Authorized>
+            <a href="/logout">Logout</a>
+        </Authorized>
+    </AuthorizeView>
+</div>
 
 <div class="navbarFont">
     <nav class="navbar navbar-expand border-top border-bottom py-2">
@@ -25,32 +34,35 @@
                     <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Hjem</NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Gallery">Kunstverk</NavLink>
+                    <NavLink class="nav-link" href="/gallery">Kunstverk</NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Biography">Biografi</NavLink>
+                    <NavLink class="nav-link" href="/biography">Biografi</NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Contact">Kontakt</NavLink>
+                    <NavLink class="nav-link" href="/contact">Kontakt</NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Login">Login</NavLink>
+                    <AuthorizeView>
+                        <Authorized>
+                            <NavLink class="nav-link" href="/admin">Admin</NavLink>
+                        </Authorized>
+                    </AuthorizeView>
                 </li>
             </ul>
         </div>
     </nav>
 </div>
+
 <div style="background-color: lightgrey">
     @Body
 </div>
-
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
-
 
 <footer class="text-center py-3">
     <small>&copy; 2025 Bjarne Johnsen</small>
