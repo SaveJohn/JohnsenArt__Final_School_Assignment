@@ -24,29 +24,37 @@ public class GalleryService : IGalleryService
         _mapper = mapper;
         _logger = logger;
     }
-    
-    // Get All Artworks
-    public async Task<IEnumerable<ArtworkResponse?>> GetArtworksAsync(int page, int perPage, bool? newest, bool? forSale)
+
+    // Get all artworks
+    public async Task<IEnumerable<ArtworkResponse?>> GetArtworksAsync(
+        int page, int perPage, bool? newest, bool? forSale)
     {
         _logger.LogInformation($"-------------------- \n Service: GetArtworks:");
+
+        // Get artworks from repository and map to response DTO
         var responses = _mapper.Map<List<ArtworkResponse>>(
             await _repository.GetArtworksAsync(page, perPage, newest, forSale));
-        
+
         // No artworks found
         if (responses.Count == 0)
         {
-            _logger.LogWarning($"No artworks found");
+            _logger.LogWarning("No artworks found");
             return responses;
         }
-        
-        // Setting Pre-Singed Url for each image
-        responses.ForEach(response => 
-            response.Images.ForEach(image => 
-                image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey)));
 
-        
+        // Set pre siged ImageUrl for each image (clearer, avoids nested lambdas)
+        foreach (var response in responses)
+        {
+            foreach (var image in response.Images)
+            {
+                image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+            }
+            _logger.LogInformation($"Found {response.Images.Count} images for artwork '{response.Title}'");
+        }
+
         return responses;
     }
+
     
     // Get Artwork By ID
     public async Task<ArtworkResponse?> GetArtworkByIdAsync(int artId)
@@ -70,6 +78,7 @@ public class GalleryService : IGalleryService
         foreach (var image in response.Images)
         {
             var imageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+            _logger.LogInformation($"Generated url {imageUrl}");
             image.ImageUrl = imageUrl;
         }
         

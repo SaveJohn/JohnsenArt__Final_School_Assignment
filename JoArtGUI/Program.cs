@@ -13,6 +13,7 @@ builder.Services.AddRazorComponents()
 // temporary logging increase
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
+
 // Dependency Injections
 builder.Services.AddHttpClient();
 
