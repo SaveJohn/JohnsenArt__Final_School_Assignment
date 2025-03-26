@@ -29,6 +29,9 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Server=db;Database=JoArtDB;User ID=admin;Password=YouShallNotPass;
       - ASPNETCORE_URLS=http://+:8080
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
     ports:
       - "8080:8080"
 
