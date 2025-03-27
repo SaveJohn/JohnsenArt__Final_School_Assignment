@@ -2,6 +2,7 @@ using JohnsenArtGUI.Components;
 using Blazored.LocalStorage;
 using JohnsenArtGUI.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 // Dependency Injections
 builder.Services.AddHttpClient();
+builder.Services.AddSyncfusionBlazor();
+
 
 // Authentication and Authorization
 builder.Services.AddAuthorizationCore();

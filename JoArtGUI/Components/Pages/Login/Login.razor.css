@@ -1,9 +1,8 @@
 ﻿.login-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: calc(100vh - 150px); /* leave space for nav + footer */
-    padding: 2rem;
+    padding-top: 4rem;
+    padding-bottom: 2rem;
 }
 
 .login-card {

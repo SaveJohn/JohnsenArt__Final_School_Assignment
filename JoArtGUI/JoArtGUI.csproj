@@ -21,6 +21,7 @@
 
     <ItemGroup>
       <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+      <PackageReference Include="Syncfusion.Blazor.Buttons" Version="29.1.33" />
     </ItemGroup>
 
     <ItemGroup>
@@ -32,6 +33,11 @@
 
     <ItemGroup>
       <Folder Include="Materials\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Pages\Admin\Admin.razor" />
+      <AdditionalFiles Include="Components\Pages\Login\Login.razor" />
     </ItemGroup>
 
 </Project>

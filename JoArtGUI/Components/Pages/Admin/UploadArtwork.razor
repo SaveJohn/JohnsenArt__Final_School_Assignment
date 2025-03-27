@@ -1,5 +1,7 @@
-﻿@page "/admin/lastoppkunstverk"
+﻿@page "/admin/upload-artwork"
+@attribute [Authorize]
 @using JoArtClassLib.Art
+@using Microsoft.AspNetCore.Authorization
 <h3>Lastopp nytt kunstverk</h3>
 
 @code {

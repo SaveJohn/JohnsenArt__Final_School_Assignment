@@ -1,0 +1,32 @@
+﻿@page "/Admin"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<h3>Admin Panel</h3>
+
+<SfButton CssClass="e-flat"
+          IsPrimary="true"
+          IconCss="e-icons e-pluss-icon"
+          Content="Legg Til Kunstverk"
+          @onclick="NavigateToUploadArtwork">
+</SfButton>
+<SfButton CssClass="e-flat"
+          IsPrimary="true"
+          IconCss="e-icons e-pluss-icon"
+          Content="Endre Kunstverk"
+          @onclick="NavigateToEditGallery">
+</SfButton>
+
+@code {
+    private void NavigateToUploadArtwork()
+    {
+        Navigation.NavigateTo("/admin/upload-artwork");
+    }
+    private void NavigateToEditGallery()
+    {
+        Navigation.NavigateTo("/admin/edit-gallery");
+    }
+}

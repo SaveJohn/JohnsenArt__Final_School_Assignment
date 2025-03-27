@@ -1886,3 +1886,289 @@
  ObjectKey: ed7eb0a7-4f6d-4a9a-85ed-c1d3cff34376.jpeg:
 2025-03-26 23:07:36.021 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/ed7eb0a7-4f6d-4a9a-85ed-c1d3cff34376.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T220736Z&X-Amz-SignedHeaders=host&X-Amz-Signature=447b714ef388481c8e1a5e81092f8d62a0ea950a20d8f6d674c453962c3d3ce5
 2025-03-26 23:07:36.022 +01:00 [INF] Found 2 images for artwork 'Sunset Beach'
+2025-03-26 23:19:57.343 +01:00 [INF] Auth Controller - endpoint login hit
+2025-03-26 23:20:07.852 +01:00 [INF] Found credentials using the AWS SDK's default credential search
+2025-03-26 23:20:08.057 +01:00 [INF] Endpoint : GetGalleryArtworks called
+2025-03-26 23:20:08.060 +01:00 [INF] -------------------- 
+ Service: GetArtworks:
+2025-03-26 23:20:08.062 +01:00 [INF] -------------------- 
+ Repository : GetArtworks:
+2025-03-26 23:20:08.088 +01:00 [INF] Successfully retrieved Artworks from the database.
+2025-03-26 23:20:08.284 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 08594391-a7e1-466d-8494-a351be221a60.jpeg:
+2025-03-26 23:20:08.449 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/08594391-a7e1-466d-8494-a351be221a60.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=b461b41d4af89b02c8592de20c61f398272e30aa5b9d309a99dcbd62ecc289c4
+2025-03-26 23:20:08.452 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 21689851-3a0d-4091-b303-2a5ba5b98787.jpeg:
+2025-03-26 23:20:08.453 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/21689851-3a0d-4091-b303-2a5ba5b98787.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=770c7ca7174089e298f15b048cc6d8fa377415118c60d3c8e9050dbb14566a2d
+2025-03-26 23:20:08.455 +01:00 [INF] Found 2 images for artwork 'Light in the Sky'
+2025-03-26 23:20:08.455 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 1f01487c-fbe9-468a-a307-447cea349ae9.jpeg:
+2025-03-26 23:20:08.457 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/1f01487c-fbe9-468a-a307-447cea349ae9.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=667e555fdd97f7df1e062c8f75b73e3de59cbeb2b1d73335c05efb1bcf636baf
+2025-03-26 23:20:08.457 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 476aad88-dc6e-45c9-9da5-92ff05ecd0ff.jpeg:
+2025-03-26 23:20:08.459 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/476aad88-dc6e-45c9-9da5-92ff05ecd0ff.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=6a6e1e28820e99291e2cdbe87aea1d6a641ac89e01fef55042aceb5ed45d95c9
+2025-03-26 23:20:08.459 +01:00 [INF] Found 2 images for artwork 'Sailing On The Ocean'
+2025-03-26 23:20:08.460 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: bd7bc223-fc9f-4303-b950-ff5a42093131.jpeg:
+2025-03-26 23:20:08.461 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/bd7bc223-fc9f-4303-b950-ff5a42093131.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=feb3879b170fc9d5de79a3b40d0d1b2461c3f002356da1c618f37ac4834a222e
+2025-03-26 23:20:08.462 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 134ae0fa-6bb4-41f2-9d6a-de5981531771.jpeg:
+2025-03-26 23:20:08.463 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/134ae0fa-6bb4-41f2-9d6a-de5981531771.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=1f806d29ef7f12ce2f16b364260a2694f6ef2bf017b7a32aba09c972dbe71865
+2025-03-26 23:20:08.463 +01:00 [INF] Found 2 images for artwork 'Tulips In A Glass Of Water'
+2025-03-26 23:20:08.464 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: e80596e6-2169-4e38-85bf-2e628e337f65.jpeg:
+2025-03-26 23:20:08.465 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/e80596e6-2169-4e38-85bf-2e628e337f65.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=bdd888875e03fad19bbdaed924a812f7a050f2faf60bd3b37eab06c5f2863816
+2025-03-26 23:20:08.465 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: abb724d0-838e-4937-861b-9d719ec81849.jpeg:
+2025-03-26 23:20:08.466 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/abb724d0-838e-4937-861b-9d719ec81849.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=d8e38a663ccc85c47f636e5ed14459e6a6d04fedfc0a17eef2f5647d463d9610
+2025-03-26 23:20:08.467 +01:00 [INF] Found 2 images for artwork 'The First Snow'
+2025-03-26 23:20:08.468 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 61ad703b-c205-4acb-b043-4d79d8630109.jpeg:
+2025-03-26 23:20:08.469 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/61ad703b-c205-4acb-b043-4d79d8630109.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=51a796533c70a9114a4a9a1b776c430ec445108442273f1dc154255474e06a70
+2025-03-26 23:20:08.469 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 5718c98e-d4f0-4fd2-abb7-cd47f745982e.jpeg:
+2025-03-26 23:20:08.470 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/5718c98e-d4f0-4fd2-abb7-cd47f745982e.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=0c0a63b3b3b69ac0f79f4847deefa352085724a9d77928d308d1933f2c698ac6
+2025-03-26 23:20:08.472 +01:00 [INF] Found 2 images for artwork 'The Rose Bush'
+2025-03-26 23:20:08.472 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 5f16db27-c7a2-4bf0-aed8-42255554e310.jpeg:
+2025-03-26 23:20:08.473 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/5f16db27-c7a2-4bf0-aed8-42255554e310.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=2de6df01657048979d5ef7f55af55776b65830d553f3bc34e4f9e8dc302ed596
+2025-03-26 23:20:08.474 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: cb11c680-41cd-42e5-8865-8a9442ed740d.jpeg:
+2025-03-26 23:20:08.475 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/cb11c680-41cd-42e5-8865-8a9442ed740d.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=401f4388b6f369e94381d62e0ece735eb826434a2f2a1b442369fc9450b19e1a
+2025-03-26 23:20:08.476 +01:00 [INF] Found 2 images for artwork 'Colours Of Nature'
+2025-03-26 23:20:08.476 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 4256ee0c-069a-47f2-b3d4-5cd9c18dbfc9.jpeg:
+2025-03-26 23:20:08.477 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/4256ee0c-069a-47f2-b3d4-5cd9c18dbfc9.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=d61e8397c902a4c50ff34760a17bbddc7da10dce6bbe6713b67f01579b82330f
+2025-03-26 23:20:08.478 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 7c666b23-5c65-463b-9c8f-5566927da43e.jpeg:
+2025-03-26 23:20:08.479 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/7c666b23-5c65-463b-9c8f-5566927da43e.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=bed5de1b0111f7919ab3ae12654ce5cb21c3ac2f4e29242541f76cd7bbe54600
+2025-03-26 23:20:08.480 +01:00 [INF] Found 2 images for artwork 'Deer in the woods'
+2025-03-26 23:20:08.481 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 5d6c1786-a459-4182-b33c-161a77ec7966.jpeg:
+2025-03-26 23:20:08.482 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/5d6c1786-a459-4182-b33c-161a77ec7966.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=ab0d42dc3b27cdf0bd95a5874f2df650657f3caceab215be29aeafc91272c544
+2025-03-26 23:20:08.483 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: f01da2a8-0a54-41b1-b2b6-bd8d99bbd384.jpeg:
+2025-03-26 23:20:08.484 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/f01da2a8-0a54-41b1-b2b6-bd8d99bbd384.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=55118feab441d86370e37175d3dca037c65e4df7c83c020e1bc06117d8991c16
+2025-03-26 23:20:08.485 +01:00 [INF] Found 2 images for artwork 'Horse'
+2025-03-26 23:20:08.485 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: aa60ec6c-3de6-46fc-8a8c-39b94c9cda45.jpeg:
+2025-03-26 23:20:08.486 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/aa60ec6c-3de6-46fc-8a8c-39b94c9cda45.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=bcbb080e2c3effa2755525a182414c6690370cee83e8154d0082edbae12c04c0
+2025-03-26 23:20:08.487 +01:00 [INF] Found 1 images for artwork 'Swans'
+2025-03-26 23:20:08.487 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 1fccfdeb-02c1-4519-bcbb-a521f3256548.jpeg:
+2025-03-26 23:20:08.488 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/1fccfdeb-02c1-4519-bcbb-a521f3256548.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=74fcf5113be36983f86dc7bb62300c44580f5bb2ae1c4f8883adbd92da6485ed
+2025-03-26 23:20:08.489 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 05d2cf58-10ed-4cc4-b3ce-ec1f257ba5e1.jpeg:
+2025-03-26 23:20:08.490 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/05d2cf58-10ed-4cc4-b3ce-ec1f257ba5e1.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=ab31692ebb0bdf699da814c9dc668611fe858f334c89cd0b81beed57350d8479
+2025-03-26 23:20:08.490 +01:00 [INF] Found 2 images for artwork 'The Lonely Tree'
+2025-03-26 23:20:08.491 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: d6a5fe99-af0f-4910-8c00-432427bff625.jpeg:
+2025-03-26 23:20:08.492 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/d6a5fe99-af0f-4910-8c00-432427bff625.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=b4b9a9d93bbc369328c2ce8d5e53b2703ecd268a2fbd5ce0d617e385c58b198c
+2025-03-26 23:20:08.492 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: e69e30c4-0dc8-4f6d-a8cd-716222ce9879.jpeg:
+2025-03-26 23:20:08.493 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/e69e30c4-0dc8-4f6d-a8cd-716222ce9879.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=f7469c055abc736e6c79d8bd14f3cc37aec8befb9752a9ad66761ea2085d15fc
+2025-03-26 23:20:08.495 +01:00 [INF] Found 2 images for artwork 'Three Little Trees'
+2025-03-26 23:20:08.495 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 8c237475-c04b-412d-a9dd-c0a1ff9dff99.jpeg:
+2025-03-26 23:20:08.496 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/8c237475-c04b-412d-a9dd-c0a1ff9dff99.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=6465e2a84019285b55cb25de0866f1e136ef2ef3435badc5797d4fa65a007d0b
+2025-03-26 23:20:08.497 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: b7f2e75a-0e89-4433-983e-3149fb1da82b.jpeg:
+2025-03-26 23:20:08.498 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/b7f2e75a-0e89-4433-983e-3149fb1da82b.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=456629df91a5292af299c5cbd06832122c6dce66888e44068c590a2360792c5c
+2025-03-26 23:20:08.499 +01:00 [INF] Found 2 images for artwork 'Cold Sunset'
+2025-03-26 23:20:08.499 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 35078a68-c112-42d2-921e-937efc894bf0.jpeg:
+2025-03-26 23:20:08.500 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/35078a68-c112-42d2-921e-937efc894bf0.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=070bb64cb7e4011bd2cc2cb23c0b27bdbaa21ff06ef3428c59bd5f37d05b49d7
+2025-03-26 23:20:08.501 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 7b2bebb3-c691-40c7-88a8-2d04991015bf.jpeg:
+2025-03-26 23:20:08.502 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/7b2bebb3-c691-40c7-88a8-2d04991015bf.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=7e2f9b15c003fbe17cb2f109d4c0a74c62462716d5bd35c1cf78a54d563fd56a
+2025-03-26 23:20:08.503 +01:00 [INF] Found 2 images for artwork 'Crashing Waves'
+2025-03-26 23:20:08.503 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 329a05f2-79a4-4c43-91f4-ce3af9ca10f3.jpeg:
+2025-03-26 23:20:08.504 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/329a05f2-79a4-4c43-91f4-ce3af9ca10f3.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=378e75eb690255ca443d46d719fb563ff78867f9dd521998c91dfdda0172510d
+2025-03-26 23:20:08.505 +01:00 [INF] Found 1 images for artwork 'Waterfall'
+2025-03-26 23:20:08.506 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 7c337b7a-66e7-4e1f-aabe-c479e720d859.jpeg:
+2025-03-26 23:20:08.507 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/7c337b7a-66e7-4e1f-aabe-c479e720d859.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=2863fe50902bb05396f6e7f1b9930b47ab494164191e4de6cfd33f8cd704b590
+2025-03-26 23:20:08.507 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: ca598449-4551-4efd-a2f0-9a335e5d20e8.jpeg:
+2025-03-26 23:20:08.508 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/ca598449-4551-4efd-a2f0-9a335e5d20e8.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=2a25e31283237d5493983bdcad9ed19c319684cd4d54a6b94467d0bf04d233fb
+2025-03-26 23:20:08.509 +01:00 [INF] Found 2 images for artwork 'Home'
+2025-03-26 23:20:08.509 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 756d517d-a702-41ae-99c6-059e72bfb5b5.jpg:
+2025-03-26 23:20:08.510 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/756d517d-a702-41ae-99c6-059e72bfb5b5.jpg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=a392f4b78ae08ca3a33a2b21b933cfadb2ff75d4905e1fb2da9951f084de02f0
+2025-03-26 23:20:08.511 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: ed7eb0a7-4f6d-4a9a-85ed-c1d3cff34376.jpeg:
+2025-03-26 23:20:08.512 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/ed7eb0a7-4f6d-4a9a-85ed-c1d3cff34376.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222008Z&X-Amz-SignedHeaders=host&X-Amz-Signature=2675fbf3fac5d673bb25e1692b625aaa11d691f6b2193a24c051c22ddd415025
+2025-03-26 23:20:08.512 +01:00 [INF] Found 2 images for artwork 'Sunset Beach'
+2025-03-26 23:20:09.175 +01:00 [INF] Endpoint : GetGalleryArtworks called
+2025-03-26 23:20:09.176 +01:00 [INF] -------------------- 
+ Service: GetArtworks:
+2025-03-26 23:20:09.177 +01:00 [INF] -------------------- 
+ Repository : GetArtworks:
+2025-03-26 23:20:09.233 +01:00 [INF] Successfully retrieved Artworks from the database.
+2025-03-26 23:20:09.243 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 08594391-a7e1-466d-8494-a351be221a60.jpeg:
+2025-03-26 23:20:09.245 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/08594391-a7e1-466d-8494-a351be221a60.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=28c8b63185519ffc4938727e2206f9c491260594142fa5be44fcbf1e11b10923
+2025-03-26 23:20:09.246 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 21689851-3a0d-4091-b303-2a5ba5b98787.jpeg:
+2025-03-26 23:20:09.247 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/21689851-3a0d-4091-b303-2a5ba5b98787.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=c502f03110da6607f4dc1f7e9f62c80abb217061e836ab5c4f4abe377ae5b325
+2025-03-26 23:20:09.248 +01:00 [INF] Found 2 images for artwork 'Light in the Sky'
+2025-03-26 23:20:09.248 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 1f01487c-fbe9-468a-a307-447cea349ae9.jpeg:
+2025-03-26 23:20:09.249 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/1f01487c-fbe9-468a-a307-447cea349ae9.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=38259893b9b3217773a4eb8860a1bce2409ff2b514ae5731a258eef8000929ce
+2025-03-26 23:20:09.250 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 476aad88-dc6e-45c9-9da5-92ff05ecd0ff.jpeg:
+2025-03-26 23:20:09.251 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/476aad88-dc6e-45c9-9da5-92ff05ecd0ff.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=0bbe8b34be023bf0cec844e69f79447ac4cf3e3793b7310fc8108fe640ab53f6
+2025-03-26 23:20:09.251 +01:00 [INF] Found 2 images for artwork 'Sailing On The Ocean'
+2025-03-26 23:20:09.252 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: bd7bc223-fc9f-4303-b950-ff5a42093131.jpeg:
+2025-03-26 23:20:09.253 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/bd7bc223-fc9f-4303-b950-ff5a42093131.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=376873ffe0ee3490bb3202c4f70fd77bab05275e64197eefbc1d29a5dfb33653
+2025-03-26 23:20:09.253 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 134ae0fa-6bb4-41f2-9d6a-de5981531771.jpeg:
+2025-03-26 23:20:09.254 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/134ae0fa-6bb4-41f2-9d6a-de5981531771.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=8217f4d2a789f9f7a6f3f76e7f2903366860829128c05cd4670933e94b8e9507
+2025-03-26 23:20:09.255 +01:00 [INF] Found 2 images for artwork 'Tulips In A Glass Of Water'
+2025-03-26 23:20:09.255 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: e80596e6-2169-4e38-85bf-2e628e337f65.jpeg:
+2025-03-26 23:20:09.256 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/e80596e6-2169-4e38-85bf-2e628e337f65.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=3fc9c43d83d9c3079d8e1dcd01798bd24532065717e079b1105fb12ed835d0e6
+2025-03-26 23:20:09.257 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: abb724d0-838e-4937-861b-9d719ec81849.jpeg:
+2025-03-26 23:20:09.257 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/abb724d0-838e-4937-861b-9d719ec81849.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=0fce93fd8492ec0d6bb861a35b9707cbf60b64ac549d4f833ca41cef7f948d34
+2025-03-26 23:20:09.258 +01:00 [INF] Found 2 images for artwork 'The First Snow'
+2025-03-26 23:20:09.258 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 61ad703b-c205-4acb-b043-4d79d8630109.jpeg:
+2025-03-26 23:20:09.259 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/61ad703b-c205-4acb-b043-4d79d8630109.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=7b4392065023f9172f7808849077f489ffab83b382a0dbf707075c5fafe6f735
+2025-03-26 23:20:09.260 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 5718c98e-d4f0-4fd2-abb7-cd47f745982e.jpeg:
+2025-03-26 23:20:09.261 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/5718c98e-d4f0-4fd2-abb7-cd47f745982e.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=eed30e3e89529b5b674ecb693487fd1163fbbc0de267787e02a8173070b587b9
+2025-03-26 23:20:09.261 +01:00 [INF] Found 2 images for artwork 'The Rose Bush'
+2025-03-26 23:20:09.262 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 5f16db27-c7a2-4bf0-aed8-42255554e310.jpeg:
+2025-03-26 23:20:09.263 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/5f16db27-c7a2-4bf0-aed8-42255554e310.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=4eb128eeba59aea09354e09157b9036adc42f974ba9ba3ae775733eec749201e
+2025-03-26 23:20:09.263 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: cb11c680-41cd-42e5-8865-8a9442ed740d.jpeg:
+2025-03-26 23:20:09.264 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/cb11c680-41cd-42e5-8865-8a9442ed740d.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=879d82262dd071f7a92c72d82b994b6c6a119eeb92fe8f6f3fbc8aaacf7d611c
+2025-03-26 23:20:09.265 +01:00 [INF] Found 2 images for artwork 'Colours Of Nature'
+2025-03-26 23:20:09.266 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 4256ee0c-069a-47f2-b3d4-5cd9c18dbfc9.jpeg:
+2025-03-26 23:20:09.266 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/4256ee0c-069a-47f2-b3d4-5cd9c18dbfc9.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=a769387a1d46146af45c4fa690b2cb23dbbb7b779ce25714c71760163d077cac
+2025-03-26 23:20:09.267 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 7c666b23-5c65-463b-9c8f-5566927da43e.jpeg:
+2025-03-26 23:20:09.268 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/7c666b23-5c65-463b-9c8f-5566927da43e.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=ee78414c9da85e7c7790c7b8f7c4ef54aebb7b62c8ffb49ec16cadcc691372d2
+2025-03-26 23:20:09.268 +01:00 [INF] Found 2 images for artwork 'Deer in the woods'
+2025-03-26 23:20:09.269 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 5d6c1786-a459-4182-b33c-161a77ec7966.jpeg:
+2025-03-26 23:20:09.270 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/5d6c1786-a459-4182-b33c-161a77ec7966.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=b8c2aa244a25c69727adaeb1db9f48c87bdff209f06793b6104bec03e38d77a5
+2025-03-26 23:20:09.270 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: f01da2a8-0a54-41b1-b2b6-bd8d99bbd384.jpeg:
+2025-03-26 23:20:09.271 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/f01da2a8-0a54-41b1-b2b6-bd8d99bbd384.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=eea6eb1c151f1b77c6270e1adb3230d4261dde29c9fcac26c62990246a70c452
+2025-03-26 23:20:09.272 +01:00 [INF] Found 2 images for artwork 'Horse'
+2025-03-26 23:20:09.272 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: aa60ec6c-3de6-46fc-8a8c-39b94c9cda45.jpeg:
+2025-03-26 23:20:09.273 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/aa60ec6c-3de6-46fc-8a8c-39b94c9cda45.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=b48edc2f69182841978f572ad8ce6430a92f6e8b267bb9771fcd6b158fb51c06
+2025-03-26 23:20:09.273 +01:00 [INF] Found 1 images for artwork 'Swans'
+2025-03-26 23:20:09.274 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 1fccfdeb-02c1-4519-bcbb-a521f3256548.jpeg:
+2025-03-26 23:20:09.275 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/1fccfdeb-02c1-4519-bcbb-a521f3256548.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=e607873ba4e0b582ceecd388c6216f7ef68809efae4440b3c4a57a5614326b58
+2025-03-26 23:20:09.276 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 05d2cf58-10ed-4cc4-b3ce-ec1f257ba5e1.jpeg:
+2025-03-26 23:20:09.276 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/05d2cf58-10ed-4cc4-b3ce-ec1f257ba5e1.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=ea8ba4558f34db52986ca0dd05724a7f2cede57673cc0d8d8169baf5a7d5812a
+2025-03-26 23:20:09.277 +01:00 [INF] Found 2 images for artwork 'The Lonely Tree'
+2025-03-26 23:20:09.278 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: d6a5fe99-af0f-4910-8c00-432427bff625.jpeg:
+2025-03-26 23:20:09.278 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/d6a5fe99-af0f-4910-8c00-432427bff625.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=d0b34370892abae31c0f68666ca549ee141c4ad88baf05f78d6e8b35d0aba2c5
+2025-03-26 23:20:09.279 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: e69e30c4-0dc8-4f6d-a8cd-716222ce9879.jpeg:
+2025-03-26 23:20:09.280 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/e69e30c4-0dc8-4f6d-a8cd-716222ce9879.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=dfb2583c394d86abfb257ab652c36880c71d277012a66c57edb600d6d193f92f
+2025-03-26 23:20:09.281 +01:00 [INF] Found 2 images for artwork 'Three Little Trees'
+2025-03-26 23:20:09.281 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 8c237475-c04b-412d-a9dd-c0a1ff9dff99.jpeg:
+2025-03-26 23:20:09.282 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/8c237475-c04b-412d-a9dd-c0a1ff9dff99.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=d35449e27a90ce820cf71960da02f890964b59e7875bd2157614d430b7989144
+2025-03-26 23:20:09.283 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: b7f2e75a-0e89-4433-983e-3149fb1da82b.jpeg:
+2025-03-26 23:20:09.284 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/b7f2e75a-0e89-4433-983e-3149fb1da82b.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=29b69ca18fbde959a14e79ba5f97ff4141b69ee82afc41c89c2e188fe3ad8eb0
+2025-03-26 23:20:09.284 +01:00 [INF] Found 2 images for artwork 'Cold Sunset'
+2025-03-26 23:20:09.285 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 35078a68-c112-42d2-921e-937efc894bf0.jpeg:
+2025-03-26 23:20:09.286 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/35078a68-c112-42d2-921e-937efc894bf0.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=9b767784d595dd5abe5709e06d2edf002b789ecc7f1188de095f1e84efa83e56
+2025-03-26 23:20:09.286 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 7b2bebb3-c691-40c7-88a8-2d04991015bf.jpeg:
+2025-03-26 23:20:09.287 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/7b2bebb3-c691-40c7-88a8-2d04991015bf.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=904bcb4530e2aaede41841a0f606e325370e0aa1b43e19f9fcede8cfe595d40b
+2025-03-26 23:20:09.288 +01:00 [INF] Found 2 images for artwork 'Crashing Waves'
+2025-03-26 23:20:09.288 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 329a05f2-79a4-4c43-91f4-ce3af9ca10f3.jpeg:
+2025-03-26 23:20:09.289 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/329a05f2-79a4-4c43-91f4-ce3af9ca10f3.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=276612131b75120a090428160d82df53aedacbb680da1eab0f8415880b43409c
+2025-03-26 23:20:09.290 +01:00 [INF] Found 1 images for artwork 'Waterfall'
+2025-03-26 23:20:09.290 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 7c337b7a-66e7-4e1f-aabe-c479e720d859.jpeg:
+2025-03-26 23:20:09.291 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/7c337b7a-66e7-4e1f-aabe-c479e720d859.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=18a0e9fac03858d48bb0fe32651f60161d32d8c1b1be6c120de071ecd2a5c0a5
+2025-03-26 23:20:09.292 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: ca598449-4551-4efd-a2f0-9a335e5d20e8.jpeg:
+2025-03-26 23:20:09.293 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/ca598449-4551-4efd-a2f0-9a335e5d20e8.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=9e76225d135aca766d8302fdb2af9ac9abeaca6dca7e202f47768e394ff694ec
+2025-03-26 23:20:09.293 +01:00 [INF] Found 2 images for artwork 'Home'
+2025-03-26 23:20:09.294 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: 756d517d-a702-41ae-99c6-059e72bfb5b5.jpg:
+2025-03-26 23:20:09.295 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/756d517d-a702-41ae-99c6-059e72bfb5b5.jpg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=18c029ce3429f9539789391fc85da46bc7f0b851e7428bce08cad906ee2178fe
+2025-03-26 23:20:09.295 +01:00 [INF] -------------------- 
+ AWS: GeneratePresignedUrl: 
+ ObjectKey: ed7eb0a7-4f6d-4a9a-85ed-c1d3cff34376.jpeg:
+2025-03-26 23:20:09.296 +01:00 [INF] Generated pre-signed URL: https://joart-s3-images.s3.eu-north-1.amazonaws.com/ed7eb0a7-4f6d-4a9a-85ed-c1d3cff34376.jpeg?X-Amz-Expires=600&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIA6ELKN637X2CQRIH2%2F20250326%2Feu-north-1%2Fs3%2Faws4_request&X-Amz-Date=20250326T222009Z&X-Amz-SignedHeaders=host&X-Amz-Signature=4f97e5f7ec642726776754cd06a58f47ea81d36e1a2867243af3c8f5b3dc386f
+2025-03-26 23:20:09.297 +01:00 [INF] Found 2 images for artwork 'Sunset Beach'
