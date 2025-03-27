@@ -30,7 +30,7 @@ builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredServ
 // TEMPORARY FIX TO PROBLEM I DO NOT KNOW HOW TO FIX YET
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:8080")
+    BaseAddress = new Uri("http://localhost:8080")
 });
 
 var app = builder.Build();
