@@ -1,0 +1,61 @@
+2025-03-16 01:56:36.883 +01:00 [WRN] Failed to determine the https port for redirect.
+2025-03-16 01:58:18.774 +01:00 [INF] Found credentials using the AWS SDK's default credential search
+2025-03-16 01:58:19.822 +01:00 [ERR] An unhandled exception has occurred while executing the request.
+System.NullReferenceException: Object reference not set to an instance of an object.
+   at JohnsenArtAPI.Services.AdminGalleryService.UploadArtworkAsync(IFormFile imageFile, String bucketName) in C:\Users\S-Ved\OneDrive\GA\Emne9\JohnsenArt\JoArtAPI\Features\Services\AdminGalleryService.cs:line 41
+   at JohnsenArtAPI.Controllers.AdminGalleryController.UploadArtwork(IFormFile imageFile, String bucketName) in C:\Users\S-Ved\OneDrive\GA\Emne9\JohnsenArt\JoArtAPI\Features\Controllers\AdminGalleryController.cs:line 28
+   at lambda_method5(Closure, Object)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(ActionContext actionContext, IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Logged|12_1(ControllerActionInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeInnerFilterAsync>g__Awaited|13_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|20_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Logged|17_1(ResourceInvoker invoker)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-03-16 02:11:20.322 +01:00 [WRN] Failed to determine the https port for redirect.
+2025-03-16 02:16:00.238 +01:00 [INF] Found credentials using the AWS SDK's default credential search
+2025-03-16 02:16:00.549 +01:00 [ERR] UploadArtwork: Error uploading 20102022_123547.jpg
+System.ArgumentException: BucketName is a required property and must be set before making this call. (Parameter 'GetACLRequest.BucketName')
+   at Amazon.S3.Model.Internal.MarshallTransformations.GetACLRequestMarshaller.Marshall(GetACLRequest getObjectAclRequest)
+   at Amazon.S3.Model.Internal.MarshallTransformations.GetACLRequestMarshaller.Marshall(AmazonWebServiceRequest input)
+   at Amazon.Runtime.Internal.Marshaller.PreInvoke(IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.Marshaller.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.PipelineHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.S3.Internal.AmazonS3PreMarshallHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.PipelineHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.CallbackHandler.<>n__0[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.CallbackHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.S3.Internal.AmazonS3ExceptionHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.ErrorCallbackHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.MetricsHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(IAmazonS3 s3Client, String bucketName)
+   at JohnsenArtAPI.Services.AdminGalleryService.UploadArtworkAsync(IFormFile imageFile) in C:\Users\S-Ved\OneDrive\GA\Emne9\JohnsenArt\JoArtAPI\Features\Services\AdminGalleryService.cs:line 30
+   at JohnsenArtAPI.Controllers.AdminGalleryController.UploadArtwork(IFormFile imageFile) in C:\Users\S-Ved\OneDrive\GA\Emne9\JohnsenArt\JoArtAPI\Features\Controllers\AdminGalleryController.cs:line 37
+2025-03-16 02:21:31.146 +01:00 [WRN] Failed to determine the https port for redirect.
+2025-03-16 02:23:03.595 +01:00 [INF] Found credentials using the AWS SDK's default credential search
+2025-03-16 02:23:04.035 +01:00 [ERR] UploadArtwork: Error uploading 20102022_123547.jpg
+System.ArgumentException: BucketName is a required property and must be set before making this call. (Parameter 'GetACLRequest.BucketName')
+   at Amazon.S3.Model.Internal.MarshallTransformations.GetACLRequestMarshaller.Marshall(GetACLRequest getObjectAclRequest)
+   at Amazon.S3.Model.Internal.MarshallTransformations.GetACLRequestMarshaller.Marshall(AmazonWebServiceRequest input)
+   at Amazon.Runtime.Internal.Marshaller.PreInvoke(IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.Marshaller.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.PipelineHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.S3.Internal.AmazonS3PreMarshallHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.PipelineHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.CallbackHandler.<>n__0[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.CallbackHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.S3.Internal.AmazonS3ExceptionHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.ErrorCallbackHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.Runtime.Internal.MetricsHandler.InvokeAsync[T](IExecutionContext executionContext)
+   at Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(IAmazonS3 s3Client, String bucketName)
+   at JohnsenArtAPI.Services.AdminGalleryService.UploadArtworkAsync(IFormFile imageFile) in C:\Users\S-Ved\OneDrive\GA\Emne9\JohnsenArt\JoArtAPI\Features\Services\AdminGalleryService.cs:line 30
+   at JohnsenArtAPI.Controllers.AdminGalleryController.UploadArtwork(IFormFile imageFile) in C:\Users\S-Ved\OneDrive\GA\Emne9\JohnsenArt\JoArtAPI\Features\Controllers\AdminGalleryController.cs:line 37
+2025-03-16 02:26:40.518 +01:00 [WRN] Failed to determine the https port for redirect.
+2025-03-16 02:27:06.748 +01:00 [INF] Found credentials using the AWS SDK's default credential search
+2025-03-16 02:27:08.117 +01:00 [INF] UploadArtwork: File 20102022_123547.jpg uploaded successfully.

@@ -1,6 +1,38 @@
+# Build results
 bin/
 obj/
+*.exe
+*.dll
+*.app
+*.log
+
+# Rider project files
+.idea/
+*.iml
+.idea_modules/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider cache
+_ReSharper*/
+*.DotSettings.user
+
+# NuGet
 /packages/
-riderModule.iml
-/_ReSharper.Caches/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# dotenv files
 .env
+
+.vscode/
+
+
+.DS_Store
+Thumbs.db

@@ -1,22 +1,37 @@
 using JohnsenArtGUI.Components;
 using Blazored.LocalStorage;
+using JohnsenArtGUI.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+
 // temporary logging increase
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 
 // Dependency Injections
+builder.Services.AddHttpClient();
+builder.Services.AddSyncfusionBlazor();
+
+
+// Authentication and Authorization
+builder.Services.AddAuthorizationCore();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddScoped<CustomAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<CustomAuthStateProvider>());
+
+
 // TEMPORARY FIX TO PROBLEM I DO NOT KNOW HOW TO FIX YET
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri("http://localhost:8080")
 });
-
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
 
 var app = builder.Build();
 
@@ -40,8 +55,10 @@ app.UseExceptionHandler(errorApp =>
 
 app.UseHttpsRedirection();
 
+
 app.UseStaticFiles();
 app.UseAntiforgery();
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
