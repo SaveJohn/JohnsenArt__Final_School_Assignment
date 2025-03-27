@@ -21,10 +21,12 @@ else
                             var img = artwork.Images.FirstOrDefault();
                             if (!string.IsNullOrEmpty(img?.ImageUrl))
                             {
-                                <img src="@img.ImageUrl"
-                                     class="card-img-top"
-                                     style="height: 250px; object-fit: cover;"
-                                     alt="Kunstverk"/>
+                                <a href="/GalleryDetail/@artwork.Id">
+                                    <img src="@img.ImageUrl"
+                                         class="card-img-top"
+                                         style="height: 250px; object-fit: cover;"
+                                         alt="Kunstverk"/>
+                                </a>
                             }
                             else
                             {
@@ -50,7 +52,7 @@ else
                         @if (artwork.ForSale)
                         {
                             <div class="card-footer text-center fw-bold">
-                                <p> Til salgs: @artwork.Price ,-kr</p>
+                                <p><strong>Price:</strong> @(artwork.Price?.ToString("F2") ?? "0.00")-,</p>
                             </div>
                         }
                     </div>
