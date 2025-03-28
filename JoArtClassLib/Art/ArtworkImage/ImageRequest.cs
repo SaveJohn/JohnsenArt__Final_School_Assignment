@@ -5,6 +5,6 @@ namespace JoArtClassLib.Art;
 public class ImageRequest
 {
     public int? Id { get; set; }
-    public required IFormFile ImageFile { get; set; }
+    public IFormFile? ImageFile { get; set; }
     public bool IsWallPreview { get; set; }
 }

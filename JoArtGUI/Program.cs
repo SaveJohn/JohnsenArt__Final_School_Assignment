@@ -4,6 +4,8 @@ using JohnsenArtGUI.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Syncfusion.Blazor;
 
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1WmFZfVtgcl9DYFZTQmYuP1ZhSXxWdkZhXn9YdXRXQGdcWEV9XUs=");
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

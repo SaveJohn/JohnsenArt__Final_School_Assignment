@@ -1,9 +1,193 @@
 ﻿@page "/admin/upload-artwork"
 @attribute [Authorize]
 @using JoArtClassLib.Art
+@using JoArtClassLib.Error
+@inject HttpClient Http
 @using Microsoft.AspNetCore.Authorization
-<h3>Lastopp nytt kunstverk</h3>
+<PageTitle>Lastopp nytt kunstverk</PageTitle>
 
+
+<div class="upload-artwork-container text-bg-light">
+    <div class="upload-card">
+        <h4 class="text-center">Last Opp Kunstverk</h4>
+        <EditForm Model="_artworkRequest" OnValidSubmit="SubmitArtworkAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            
+            <div class="mb-3">
+                <label for="title">Tittel:</label><br/>
+                <InputText class="form-control" @bind-Value="_artworkRequest.Title" placeholder="Tittel"/>
+            </div>
+            <div class="mb-3">
+                <label for="artwork-image" class="form-lable">Last opp kunstverk bilde-fil:</label>
+                <InputFile class="form-control" OnChange="@LoadArtworkImage" multiple/>
+            </div>
+            @if (_previewImages.Count > 0)
+            {
+                <div class="d-flex flex-wrap gap-3">
+                    
+                    @for (int i = 0; i < _previewImages.Count; i++)
+                    {
+                        var localIndex = i;
+                        <div class="position-relative shadow-sm border rounded"  style="width: 100px; height: 100px;">
+                            <img src="@_previewImages[i]" class="img-thumbnail w-100 h-100" style="object-fit: cover;"/>
+                            <button type="button"
+                                    class="btn-close position-absolute top-0 end-0"
+                                    @onclick="@(() => RemoveImage(localIndex))"
+                                    title="Fjern bilde">
+
+                            </button>
+                        </div>
+                    }
+                </div>
+                
+            }
+
+            <div @onclick="@(() => Console.WriteLine("Klikket!"))"
+                 style="width: 100px; height: 100px; background-color: red;">
+            </div>
+            
+            <div class="mb-3">
+                <label for="wallpreview-image" class="form-lable">Last opp visning av kunstverk på vegg:</label>
+                <InputFile class="form-control" OnChange="@LoadArtworkWallpreview" multiple/>
+            </div>
+            
+            
+            <div class="mb-3">
+                <label for="description">Tekst beskrivelse til kunstverk:</label>
+                <InputText class="form-control" @bind-Value="_artworkRequest.Description" placeholder="Bilde tekst"/>
+            </div>
+
+            <div class="mb-3">
+                <label for="width">Bredde (cm):</label>
+                <InputNumber class="form-control" @bind-Value="_artworkRequest.WidthDimension"/>
+            </div>
+
+            <div class="mb-3">
+                <label for="height">Høyde (cm):</label>
+                <InputNumber class="form-control" @bind-Value="_artworkRequest.HeightDimension"/>
+            </div>
+            
+            <button class="btn btn-primary w-100" type="submit">Last Opp</button>
+            
+        </EditForm>
+    </div>
+</div>
+
+
+
+@if (errors.Count > 0)
+{
+    <h2>Feilmeldinger</h2>
+    <ul class="text-danger">
+        @foreach (var error in errors)
+        {
+            <li>@error</li>
+        }
+    </ul>
+}
 @code {
-    private ArtworkRequest _artworkRequest;
+    private ArtworkRequest _artworkRequest = new();
+    private ImageRequest? _imageRequest;
+    private List<string> _previewImages = new();
+    private List<(IBrowserFile file, bool isWallPreview)> _selectedImages = new();
+
+    private long maxFileSize = 1024 * 1024 * 10; // Max 10MB
+    private List<ErrorResponse> errors = new();
+    
+    
+    // Upload artwork-image: 
+    private async Task LoadArtworkImage(InputFileChangeEventArgs e)
+    {
+        errors.Clear();
+        foreach (IBrowserFile  file in e.GetMultipleFiles())
+        {
+            _selectedImages.Add((file, false));
+            
+            // Create base64-url for preview
+            using var stream = file.OpenReadStream(maxFileSize);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            var base64 = Convert.ToBase64String(bytes);
+            var imageDataUrl = $"data:{file.ContentType};base64,{base64}";
+            _previewImages.Add(imageDataUrl);
+            
+            Console.WriteLine(imageDataUrl.Substring(0, 50));
+            
+            if (string.IsNullOrWhiteSpace(imageDataUrl))
+            {
+                errors.Add(new ErrorResponse { ErrorMessage = $"Kunne ikke laste bilde: {file.Name}" });
+            }
+        }
+        
+    }
+    
+    // Upload artwork-wall-preview:
+    private async Task LoadArtworkWallpreview(InputFileChangeEventArgs e)
+    {
+        errors.Clear();
+        foreach (IFormFile file in e.GetMultipleFiles(e.FileCount))
+        {
+            _imageRequest.ImageFile = file;
+            _imageRequest.IsWallPreview = true;
+            Console.WriteLine("Fjernet bilde");
+        }
+        
+    }
+
+    private void RemoveImage(int index)
+    {
+        if (_selectedImages.Count > index && _previewImages.Count > index)
+        {
+            _previewImages.RemoveAt(index);
+            _selectedImages.RemoveAt(index);
+            StateHasChanged();
+            Console.WriteLine("Fjernet bilde");
+        }
+    }
+    
+    // Submit
+    private async Task SubmitArtworkAsync()
+    {
+        var content = new MultipartFormDataContent();
+        
+        // Adding data for ArtworkRequest
+        content.Add(new StringContent(_artworkRequest.Title), "Title");
+        content.Add(new StringContent(_artworkRequest.Description ?? ""), "Description");
+        content.Add(new StringContent(_artworkRequest.Artist), "Artist");
+        content.Add(new StringContent(_artworkRequest.ForSale.ToString()), "ForSale");
+        
+        if(_artworkRequest.Price.HasValue)
+            content.Add(new StringContent(_artworkRequest.Price.Value.ToString()), "Price");
+        
+        if(_artworkRequest.WidthDimension.HasValue)
+            content.Add(new StringContent(_artworkRequest.WidthDimension.Value.ToString()), "Width");
+        
+        if(_artworkRequest.HeightDimension.HasValue)
+            content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "Height");
+
+        int index = 0;
+        foreach (var (file, isWallPreview) in _selectedImages)
+        {
+            var streamContent = new StreamContent(file.OpenReadStream(maxFileSize));
+            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+            
+            content.Add(streamContent, $"Images[{index}].ImageFile", file.Name);
+            content.Add(new StringContent(isWallPreview.ToString()), $"Images[{index}].IsWallPreview");
+            index++;
+        }
+        
+        
+        var response = await Http.PostAsJsonAsync("admin/api/Gallery/upload-artwork", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            
+        }
+        else
+        {
+            
+        }
+    }
 }

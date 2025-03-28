@@ -24,7 +24,7 @@ public class AdminGalleryController : ControllerBase
     
     
     // UPLOAD artwork
-    [HttpPost("uploadArtwork")]
+    [HttpPost("upload-artwork")]
     public async Task<IActionResult> UploadArtwork([FromForm] ArtworkRequest request)
     {
         _logger.LogInformation("Endpoint : UploadArtwork called");
