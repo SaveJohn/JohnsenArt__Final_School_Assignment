@@ -1,0 +1,82 @@
+﻿@page "/GalleryDetail/{artworkId:int}"
+@using JoArtClassLib.Art
+@inject HttpClient Http
+
+<h3 class="text-center my-4">@artwork?.Title</h3>
+
+@if (artwork == null)
+{
+<p class="text-center">Kunstverk laster ..</p>
+}
+else
+{
+<div class="container">
+    <div class="row justify-content-center">
+        
+        <div class="col-md-8 d-flex">
+           
+            <div id="artworkCarousel" class="carousel slide"  style="width: 70%; flex-shrink: 0;">
+                <div class="carousel-inner">
+                    @foreach (var img in artwork.Images)
+                    {
+                    <div class="carousel-item @((artwork.Images.IndexOf(img) == 0) ? "active" : "")">
+                        <img src="@img.ImageUrl"
+                             class="d-block w-100"
+                             style="max-height: 500px; object-fit: contain;"
+                             alt="@artwork.Title"/>
+                    </div>
+                    }
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next" >
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+            
+            <div class="artwork-description mt-4" style="width: 30%; padding-left: 20px;">
+                <p>
+                    <strong>Artist:</strong> @artwork.Artist
+                </p>
+                <p>
+                    <strong>Description:</strong> @artwork.Description
+                </p>
+                <p><strong>Dimensions:</strong> @artwork.WidthDimension x @artwork.HeightDimension cm</p>
+                <p><strong>Price:</strong> @(artwork.Price?.ToString("F2") ?? "0.00") ,-</p>
+
+                @if (artwork.ForSale)
+                {
+                <p><strong>Status:</strong> Til salgs</p>
+                }
+                else
+                {
+                <p><strong>Status:</strong> Ikke til salgs</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+[Parameter] public int artworkId { get; set; }
+
+private ArtworkResponse? artwork;
+
+protected override async Task OnInitializedAsync()
+{
+try
+{
+artwork = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}");
+}
+catch (Exception e)
+{
+Console.WriteLine("Error fetching artwork data: " + e.Message);
+throw;
+}
+}
+}
