@@ -5,7 +5,7 @@ namespace JohnsenArtAPI.Extensions;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddJtwAuthentication(
+    public static IServiceCollection AddJwtAuthentication(
         this IServiceCollection services,
         IConfiguration configuration)
     {

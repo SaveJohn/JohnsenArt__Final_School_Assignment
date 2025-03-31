@@ -209,16 +209,17 @@
     private async Task SubmitArtworkAsync()
     {
         Console.WriteLine("Submit Artwork hit.");
+        
+        var token = await JS.InvokeAsync<string>("localStorage.getItem", "jwt");
 
-    var token = await JS.InvokeAsync<string>("localStorage.getItem", "token");
     if (string.IsNullOrWhiteSpace(token))
     {
-    ErrorMessage = "Bruker er ikke logget inn.";
-    StateHasChanged(); // Sørg for at feilmeldingen vises
-    return;
-    }
-    Http.DefaultRequestHeaders.Authorization =
-    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        ErrorMessage = "Bruker er ikke logget inn.";
+        StateHasChanged(); // Sørg for at feilmeldingen vises
+        return;
+        }
+        Http.DefaultRequestHeaders.Authorization =
+        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         try
         {
             if (!_artworkFiles.Any() || _artworkFiles.Count == 0)
@@ -287,6 +288,6 @@
             Console.WriteLine("⛔ Exception: " + ex.Message);
             StateHasChanged();
         }
-        
+            
     }
 }

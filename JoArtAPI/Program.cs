@@ -60,7 +60,7 @@ builder.Services.AddDbContext<JoArtDbContext>(options =>
 
 
 //JWT Set up
-builder.Services.AddJtwAuthentication(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 
 // Logging
