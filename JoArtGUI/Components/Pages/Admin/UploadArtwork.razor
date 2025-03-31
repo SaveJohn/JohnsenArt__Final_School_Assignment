@@ -208,59 +208,85 @@
 
     private async Task SubmitArtworkAsync()
     {
-        if (!_artworkFiles.Any() || _artworkFiles.Count == 0)
+        Console.WriteLine("Submit Artwork hit.");
+
+    var token = await JS.InvokeAsync<string>("localStorage.getItem", "token");
+    if (string.IsNullOrWhiteSpace(token))
+    {
+    ErrorMessage = "Bruker er ikke logget inn.";
+    StateHasChanged(); // Sørg for at feilmeldingen vises
+    return;
+    }
+    Http.DefaultRequestHeaders.Authorization =
+    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        try
         {
-            ErrorMessage = "Minst ett bilde må lastes opp.";
-            StateHasChanged(); 
-            return;
+            if (!_artworkFiles.Any() || _artworkFiles.Count == 0)
+            {
+                ErrorMessage = "Minst ett bilde må lastes opp.";
+                Console.WriteLine("⛔ Mangler bilder.");
+                StateHasChanged();
+                return;
+            }
+
+            var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(_artworkRequest.Title), "Title");
+            content.Add(new StringContent(_artworkRequest.Description ?? ""), "Description");
+            content.Add(new StringContent(_artworkRequest.Artist), "Artist");
+            content.Add(new StringContent(_artworkRequest.ForSale.ToString()), "ForSale");
+
+            if (_artworkRequest.Price.HasValue)
+                content.Add(new StringContent(_artworkRequest.Price.Value.ToString()), "Price");
+
+            if (_artworkRequest.WidthDimension.HasValue)
+                content.Add(new StringContent(_artworkRequest.WidthDimension.Value.ToString()), "Width");
+
+            if (_artworkRequest.HeightDimension.HasValue)
+                content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "Height");
+
+            int index = 0;
+            foreach (var (data, contentType, fileName) in _artworkFiles)
+            {
+                var streamContent = new StreamContent(new MemoryStream(data));
+                streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
+                content.Add(new StringContent("False"), $"Images[{index}].IsWallPreview");
+                index++;
+            }
+
+            foreach (var (data, contentType, fileName) in _wallPreviewFiles)
+            {
+                var streamContent = new StreamContent(new MemoryStream(data));
+                streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
+                content.Add(new StringContent("True"), $"Images[{index}].IsWallPreview");
+                index++;
+            }
+
+
+
+            var response = await Http.PostAsync("admin/api/Gallery/upload-artwork", content);
+            Console.WriteLine("📡 Statuskode: " + response.StatusCode);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("✅ Opplasting fullført.");
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                ErrorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("⛔ Server-feil: " + ErrorMessage);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "En feil oppsto under opplasting.";
+            Console.WriteLine("⛔ Exception: " + ex.Message);
+            StateHasChanged();
         }
         
-        var content = new MultipartFormDataContent();
-
-        content.Add(new StringContent(_artworkRequest.Title), "Title");
-        content.Add(new StringContent(_artworkRequest.Description ?? ""), "Description");
-        content.Add(new StringContent(_artworkRequest.Artist), "Artist");
-        content.Add(new StringContent(_artworkRequest.ForSale.ToString()), "ForSale");
-
-        if (_artworkRequest.Price.HasValue)
-            content.Add(new StringContent(_artworkRequest.Price.Value.ToString()), "Price");
-
-        if (_artworkRequest.WidthDimension.HasValue)
-            content.Add(new StringContent(_artworkRequest.WidthDimension.Value.ToString()), "Width");
-
-        if (_artworkRequest.HeightDimension.HasValue)
-            content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "Height");
-
-        int index = 0;
-        foreach (var (data, contentType, fileName) in _artworkFiles)
-        {
-            var streamContent = new StreamContent(new MemoryStream(data));
-            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-            content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
-            content.Add(new StringContent("False"), $"Images[{index}].IsWallPreview");
-            index++;
-        }
-
-        foreach (var (data, contentType, fileName) in _wallPreviewFiles)
-        {
-            var streamContent = new StreamContent(new MemoryStream(data));
-            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-            content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
-            content.Add(new StringContent("True"), $"Images[{index}].IsWallPreview");
-            index++;
-        }
-        
-
-
-        var response = await Http.PostAsync("admin/api/Gallery/upload-artwork", content);
-
-        if (response.IsSuccessStatusCode)
-        {
-            Navigation.NavigateTo("/");
-        }
-        else
-        {
-            ErrorMessage = await response.Content.ReadAsStringAsync();
-        }
     }
 }
