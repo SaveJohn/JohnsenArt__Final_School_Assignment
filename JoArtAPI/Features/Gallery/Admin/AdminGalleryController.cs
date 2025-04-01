@@ -52,7 +52,7 @@ public class AdminGalleryController : ControllerBase
 
     
     // UPDATE artwork 
-    [HttpPut("EditArtwork/{id}")]
+    [HttpPut("update-artwork/{id}")]
     public async Task<IActionResult> UpdateArtwork(int id, [FromForm] UpdateArtworkRequest request)
     {
         _logger.LogInformation("Endpoint : EditArtwork called");

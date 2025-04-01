@@ -61,7 +61,7 @@ else
                                 <div class="mb-3">
                                     <label for="height">Høyde (cm):</label>
                                     <InputNumber class="form-control"
-                                                 @bind-Value="_artworkRequest.HeightDimension "
+                                                 @bind-Value="_artworkRequest.HeightDimension"
                                                  placeholder="Høyde"/>
                                 </div>
                                 <!-- Price -->
@@ -313,10 +313,10 @@ else
                 content.Add(new StringContent(_artworkRequest.Price.Value.ToString()), "Price");
 
             if (_artworkRequest.WidthDimension.HasValue)
-                content.Add(new StringContent(_artworkRequest.WidthDimension.Value.ToString()), "Width");
+                content.Add(new StringContent(_artworkRequest.WidthDimension.Value.ToString()), "WidthDimension");
 
             if (_artworkRequest.HeightDimension.HasValue)
-                content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "Height");
+                content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "HeightDimension");
             
             // Adding virtual properties to request model (Images)
             int index = 0;

@@ -49,7 +49,7 @@
                             <div class="mb-3">
                                 <label for="height">Høyde (cm):</label>
                                 <InputNumber class="form-control"
-                                             @bind-Value="_artworkRequest.HeightDimension "
+                                             @bind-Value="_artworkRequest.HeightDimension"
                                              placeholder="Høyde"/>
                             </div>
                             <!-- Price -->
@@ -212,6 +212,30 @@
                 WidthDimension = _artworkResponse.WidthDimension,
                 HeightDimension = _artworkResponse.HeightDimension
             };
+            foreach (ImageResponse image in _artworkResponse.Images)
+            {
+                try
+                {
+                    var imageBytes = await Http.GetByteArrayAsync(image.ImageUrl); // or image.ObjectKey if mapped to S3 URL
+                    var base64 = Convert.ToBase64String(imageBytes);
+                    var imageDataUrl = $"data:\"image/jpeg\";base64,{base64}";
+
+                    if (image.IsWallPreview)
+                    {
+                        _wallPreviewImages.Add(imageDataUrl);
+                        _wallPreviewFiles.Add((imageBytes, "image/jpeg", image.ObjectKey));
+                    }
+                    else
+                    {
+                        _artworkImages.Add(imageDataUrl);
+                        _artworkFiles.Add((imageBytes, "image/jpeg", image.ObjectKey));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to load image: {image.ObjectKey}, {ex.Message}");
+                }
+            }
         }
         catch (Exception e)
         {
@@ -326,10 +350,10 @@
                 content.Add(new StringContent(_artworkRequest.Price.Value.ToString()), "Price");
 
             if (_artworkRequest.WidthDimension.HasValue)
-                content.Add(new StringContent(_artworkRequest.WidthDimension.Value.ToString()), "Width");
+                content.Add(new StringContent(_artworkRequest.WidthDimension.Value.ToString()), "WidthDimension");
 
             if (_artworkRequest.HeightDimension.HasValue)
-                content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "Height");
+                content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "HeightDimension");
 
             // Adding virtual properties to request model (Images)
             int index = 0;
@@ -354,7 +378,7 @@
 
 
             // Sending the request to API upload artwork endpoint
-            var response = await Http.PostAsync("admin/api/Gallery/update-artwork", content);
+            var response = await Http.PutAsync($"admin/api/Gallery/update-artwork/{artworkId}", content);
             Console.WriteLine("📡 Statuskode: " + response.StatusCode);
 
             // Result
