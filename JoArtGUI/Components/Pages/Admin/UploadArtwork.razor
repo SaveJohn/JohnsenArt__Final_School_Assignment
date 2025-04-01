@@ -6,128 +6,168 @@
 @using Microsoft.AspNetCore.Authorization
 @inject IJSRuntime JS
 @inject NavigationManager Navigation
+<PageTitle>Lastopp nytt kunstverk</PageTitle>
 
 @if (_uploadSuccess)
 {
     <div class="alert alert-success text-center">
         <h4>✅ Kunstverket ble lastet opp!</h4>
         <p>Hva ønsker du å gjøre videre?</p>
-        <button class="btn btn-outline-primary me-2" @onclick="ViewArtwork">Se kunstverket</button>
-        <button class="btn btn-outline-secondary" @onclick="UploadAnother">Last opp et nytt</button>
+        <button class="btn btn-outline-primary me-2" 
+                @onclick="ViewArtwork">Se kunstverket</button>
+        <button class="btn btn-outline-secondary" 
+                @onclick="UploadAnother">Last opp et nytt</button>
     </div>
 }
 else
 {
-    <PageTitle>Lastopp nytt kunstverk</PageTitle>
-
-
-    <div class="upload-artwork-container text-bg-light">
+    
+    <div class="upload-artwork-container text-bg-light mt-4">
         <div class="upload-card">
-            <h4 class="text-center">Last Opp Kunstverk</h4>
             <EditForm Model="_artworkRequest" OnValidSubmit="SubmitArtworkAsync">
-
-
                 <DataAnnotationsValidator/>
                 <ValidationSummary/>
-
-                <div class="mb-3">
-                    <label for="title">Tittel:</label><br/>
-                    <InputText class="form-control" @bind-Value="_artworkRequest.Title" placeholder="Tittel"/>
-                </div>
-                <!-- Add Artwork Image -->
-                <div class="mb-3">
-                    <label for="artwork-image" class="form-lable">Last opp kunstverk bilde-fil:</label>
-                    <InputFile id="artworkFileInput" @ref="_artworkInputRef" OnChange="LoadArtworkImage" class="d-none"/>
-                </div>
-                <div class="d-flex flex-wrap gap-3">
-                    <!-- Thumbnail preview of added image(s) -->
-                    @for (int i = 0; i < _artworkImages.Count; i++)
-                    {
-                        var localIndex = i;
-                        <div class="position-relative shadow-sm border rounded" style="width: 100px; height: 100px; ">
-                            <img src="@_artworkImages[localIndex]" class="img-thumbnail w-100 h-100" style="object-fit: cover;"/>
-                            <button type="button"
-                                    class="btn-close position-absolute top-0 end-0"
-                                    @onclick="@(() => RemoveArtworkImage(localIndex))"
-                                    title="Fjern bilde">
-                            </button>
-                        </div>
-                    }
-                    <!-- Add Image Button -->
-                    <div class="image-upload-slot" @onclick="TriggerArtworkFileDialog">
-                        <span class="plus-icon">+</span>
+                <div class="row ">
+                    <div class="mb-4">
+                        <h4 class="text-center pb-3">Last Opp Kunstverk</h4>
                     </div>
-
-                </div>
-
-                <!-- Add Wall preview -->
-                <div class="mb-3">
-                    <label for="artwork-image" class="form-lable">Last opp visning av kunstverk på vegg:</label>
-                    <InputFile id="wallFileInput" @ref="_wallInputRef" OnChange="LoadArtworkWallpreview" class="d-none"/>
-                </div>
-                <div class="d-flex flex-wrap gap-3">
-                    <!-- Thumbnail preview of added image(s) -->
-                    @for (int i = 0; i < _wallPreviewImages.Count; i++)
-                    {
-                        var localIndex = i;
-                        <div class="position-relative shadow-sm border rounded" style="width: 100px; height: 100px; ">
-                            <img src="@_wallPreviewImages[localIndex]" class="img-thumbnail w-100 h-100" style="object-fit: cover;"/>
-                            <button type="button"
-                                    class="btn-close position-absolute top-0 end-0"
-                                    @onclick="@(() => RemoveWallPreviewImage(localIndex))"
-                                    title="Fjern bilde">
-                            </button>
+                    <!-- Left side -->
+                    <div class="col-md-6 pe-4">
+                        <!-- Title. -->
+                        <div class="mb-3">
+                            <label for="title">Tittel:</label><br/>
+                            <InputText class="form-control"
+                                       @bind-Value="_artworkRequest.Title"
+                                       placeholder="Tittel"/>
                         </div>
-                    }
-                    <!-- Add Image Button -->
-                    <div class="image-upload-slot" @onclick="TriggerWallFileDialog">
-                        <span class="plus-icon">+</span>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <!-- Width -->
+                                <div class="mb-3">
+                                    <label for="width">Bredde (cm):</label>
+                                    <InputNumber class="form-control"
+                                                 @bind-Value="_artworkRequest.WidthDimension"
+                                                 placeholder="Bredde"/>
+                                </div>
+                                <!-- For sale? -->
+                                <div class="mb-3 form-check">
+                                    <InputCheckbox @bind-Value="_artworkRequest.ForSale" class="form-check-input" id="forSaleCheckbox"/>
+                                    <label class="form-check-label"
+                                           for="forSaleCheckbox">Til salgs</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <!-- Height -->
+                                <div class="mb-3">
+                                    <label for="height">Høyde (cm):</label>
+                                    <InputNumber class="form-control"
+                                                 @bind-Value="_artworkRequest.HeightDimension "
+                                                 placeholder="Høyde"/>
+                                </div>
+                                <!-- Price -->
+                                <div class="mb-3">
+                                    <label for="price">Pris (kr):</label>
+                                    <InputNumber class="form-control"
+                                                 @bind-Value="_artworkRequest.Price"
+                                                 disabled="@(!_artworkRequest.ForSale)"
+                                                 id="price"
+                                                 placeholder="Pris"/>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                                {
+                                    <div class="alert alert-danger mt-3">@ErrorMessage</div>
+                                }
+
+                            </div>
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label for="description">Tekst beskrivelse til kunstverk:</label>
+                                <InputTextArea
+                                    class="form-control"
+                                    style="height: 150px;
+                                    resize: vertical;"
+                                    @bind-Value="_artworkRequest.Description"
+                                    placeholder="Bildetekst"/>
+                            </div>
+                        </div>
                     </div>
+                    <!-- Right side -->
+                    <div class="col-md-6 border-start ps-4">
+                        <!-- Add Artwork Image -->
+                        <div class="mb-3">
+                            <label for="artwork-image"
+                                   class="form-lable">Last opp kunstverk bilde-fil:</label>
+                            <InputFile id="artworkFileInput"
+                                       @ref="_artworkInputRef"
+                                       OnChange="LoadArtworkImage"
+                                       class="d-none"/>
+                        </div>
+                        <div class="d-flex flex-wrap gap-3">
+                            <!-- Thumbnail preview of added image(s) -->
+                            @for (int i = 0; i < _artworkImages.Count; i++)
+                            {
+                                var localIndex = i;
+                                <div class="position-relative shadow-sm border rounded" style="width: 100px; height: 100px; ">
+                                    <img src="@_artworkImages[localIndex]"
+                                         class="img-thumbnail w-100 h-100"
+                                         style="object-fit: cover;"/>
+                                    <button type="button"
+                                            class="btn-close position-absolute top-0 end-0"
+                                            @onclick="@(() => RemoveArtworkImage(localIndex))"
+                                            title="Fjern bilde">
+                                    </button>
+                                </div>
+                            }
+                            <!-- Add Image Button -->
+                            <div class="image-upload-slot"
+                                 @onclick="TriggerArtworkFileDialog">
+                                <span class="plus-icon">+</span>
+                            </div>
 
+                        </div>
+
+                        <!-- Add Wall preview -->
+                        <div class="mb-3">
+                            <label for="artwork-image"
+                                   class="form-lable pt-3">Last opp visning av kunstverk på vegg:</label>
+                            <InputFile id="wallFileInput"
+                                       @ref="_wallInputRef"
+                                       OnChange="LoadArtworkWallpreview"
+                                       class="d-none"/>
+                        </div>
+                        <div class="d-flex flex-wrap gap-3">
+                            <!-- Thumbnail preview of added image(s) -->
+                            @for (int i = 0; i < _wallPreviewImages.Count; i++)
+                            {
+                                var localIndex = i;
+                                <div class="position-relative shadow-sm border rounded"
+                                     style="width: 100px; height: 100px; ">
+                                    <img src="@_wallPreviewImages[localIndex]"
+                                         class="img-thumbnail w-100 h-100"
+                                         style="object-fit: cover;"/>
+                                    <button type="button"
+                                            class="btn-close position-absolute top-0 end-0"
+                                            @onclick="@(() => RemoveWallPreviewImage(localIndex))"
+                                            title="Fjern bilde">
+                                    </button>
+                                </div>
+                            }
+                            <!-- Add Image Button -->
+                            <div class="image-upload-slot"
+                                 @onclick="TriggerWallFileDialog">
+                                <span class="plus-icon">+</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button class="btn btn-primary w-100" type="submit">Last Opp</button>
+                    </div>
                 </div>
-
-                <!-- Description -->
-                <div class="mb-3">
-                    <label for="description">Tekst beskrivelse til kunstverk:</label>
-                    <InputText class="form-control" @bind-Value="_artworkRequest.Description" placeholder="Bilde tekst"/>
-                </div>
-
-                <!-- Width and height -->
-                <div class="mb-3">
-                    <label for="width">Bredde (cm):</label>
-                    <InputNumber class="form-control" @bind-Value="_artworkRequest.WidthDimension"/>
-                </div>
-
-                <div class="mb-3">
-                    <label for="height">Høyde (cm):</label>
-                    <InputNumber class="form-control" @bind-Value="_artworkRequest.HeightDimension"/>
-                </div>
-
-                <!-- For sale? -->
-                <div class="mb-3 form-check">
-                    <InputCheckbox @bind-Value="_artworkRequest.ForSale" class="form-check-input" id="forSaleCheckbox"/>
-                    <label class="form-check-label" for="forSaleCheckbox">Til salgs</label>
-                </div>
-
-                <div class="mb-3">
-                    <label for="price">Pris (kr):</label>
-                    <InputNumber class="form-control"
-                                 @bind-Value="_artworkRequest.Price"
-                                 disabled="@(!_artworkRequest.ForSale)"
-                                 id="price"
-                                 placeholder="Oppgi pris"/>
-                </div>
-                @if (!string.IsNullOrWhiteSpace(ErrorMessage))
-                {
-                    <div class="alert alert-danger mt-3">@ErrorMessage</div>
-                }
-
-
-                <button class="btn btn-primary w-100" type="submit">Last Opp</button>
-
             </EditForm>
         </div>
     </div>
+    
 }
 
 
@@ -142,24 +182,32 @@ else
     </ul>
 }
 @code {
+    // Request DTO's
     private ArtworkRequest _artworkRequest = new();
     private ImageRequest? _imageRequest;
     
+    // Base64 strings for preview-thumbnail images
     private List<string> _artworkImages = new();
     private List<string> _wallPreviewImages = new();
+    
+    // Blazor InputFile references 
     private InputFile? _artworkInputRef;
     private InputFile? _wallInputRef;
-
+    
+    //Data collection for images: binary data along with MIME type and original filename.
     private List<(byte[] data, string contentType, string fileName)> _artworkFiles = new();
     private List<(byte[] data, string contentType, string fileName)> _wallPreviewFiles = new();
-
+    
+    // Conditional variables
     private long maxFileSize = 1024 * 1024 * 10; // Max 10MB
+    private bool _uploadSuccess = false;
+    private int? _newArtworkId = null;
+    
+    // Error collections
     private List<ErrorResponse> errors = new();
     private string? ErrorMessage;
     
-    private bool _uploadSuccess = false;
-    private int? _newArtworkId = null;
-
+    // Load Artwork Image 
     private async Task LoadArtworkImage(InputFileChangeEventArgs e)
     {
         errors.Clear();
@@ -175,7 +223,8 @@ else
             _artworkFiles.Add((bytes, file.ContentType, file.Name));
         }
     }
-
+    
+    // Load WallPreview Image 
     private async Task LoadArtworkWallpreview(InputFileChangeEventArgs e)
     {
         errors.Clear();
@@ -191,17 +240,18 @@ else
             _wallPreviewFiles.Add((bytes, file.ContentType, file.Name));
         }
     }
-
-    private async Task TriggerArtworkFileDialog()
+    
+    // Trigger file dialog programmatically via JS using Blazor InputFile referenses
+    private async Task TriggerArtworkFileDialog() // Artwork
     {
         await JS.InvokeVoidAsync("triggerClick", "artworkFileInput");
     }
-
-    private async Task TriggerWallFileDialog()
+    private async Task TriggerWallFileDialog() // WallPreview
     {
         await JS.InvokeVoidAsync("triggerClick", "wallFileInput");
     }
-
+    
+    // Remove Artwork from input
     private void RemoveArtworkImage(int index)
     {
         if (_artworkFiles.Count > index && _artworkImages.Count > index)
@@ -210,7 +260,8 @@ else
             _artworkFiles.RemoveAt(index);
         }
     }
-
+    
+    // Remove WallPreview from input
     private void RemoveWallPreviewImage(int index)
     {
         if (_wallPreviewFiles.Count > index && _wallPreviewImages.Count > index)
@@ -219,23 +270,29 @@ else
             _wallPreviewFiles.RemoveAt(index);
         }
     }
-
+    
+    // Submit Complete Artwork
     private async Task SubmitArtworkAsync()
     {
         Console.WriteLine("Submit Artwork hit.");
         
+        // Making sure we are logged in
         var token = await JS.InvokeAsync<string>("localStorage.getItem", "jwt");
-
-    if (string.IsNullOrWhiteSpace(token))
-    {
-        ErrorMessage = "Bruker er ikke logget inn.";
-        StateHasChanged(); // Sørg for at feilmeldingen vises
-        return;
+        
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            ErrorMessage = "Bruker er ikke logget inn.";
+            StateHasChanged(); // Sørg for at feilmeldingen vises
+            return;
         }
+        
         Http.DefaultRequestHeaders.Authorization =
         new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        
+        // Trying to upload artwork to database and imnages to s3 via API
         try
         {
+            // Making sure that artwork image is added
             if (!_artworkFiles.Any() || _artworkFiles.Count == 0)
             {
                 ErrorMessage = "Minst ett bilde må lastes opp.";
@@ -243,7 +300,8 @@ else
                 StateHasChanged();
                 return;
             }
-
+            
+            // Creating our Request model to send to API endpoint
             var content = new MultipartFormDataContent();
 
             content.Add(new StringContent(_artworkRequest.Title), "Title");
@@ -259,8 +317,10 @@ else
 
             if (_artworkRequest.HeightDimension.HasValue)
                 content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "Height");
-
+            
+            // Adding virtual properties to request model (Images)
             int index = 0;
+            // Artwork images
             foreach (var (data, contentType, fileName) in _artworkFiles)
             {
                 var streamContent = new StreamContent(new MemoryStream(data));
@@ -269,7 +329,7 @@ else
                 content.Add(new StringContent("False"), $"Images[{index}].IsWallPreview");
                 index++;
             }
-
+            //Wallpreview images
             foreach (var (data, contentType, fileName) in _wallPreviewFiles)
             {
                 var streamContent = new StreamContent(new MemoryStream(data));
@@ -280,10 +340,11 @@ else
             }
 
 
-
+            // Sending the request to API upload artwork endpoint
             var response = await Http.PostAsync("admin/api/Gallery/upload-artwork", content);
             Console.WriteLine("📡 Statuskode: " + response.StatusCode);
-
+            
+            // Result
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Opplasting fullført.");
@@ -306,12 +367,16 @@ else
         }
             
     }
-
+    
+    // When artwork is uploaded ------
+    
+    // View uploaded artwork
     private void ViewArtwork()
     {
         Navigation.NavigateTo($"/GalleryDetail/{_newArtworkId}");
     }
-
+    
+    // Upload another artwork
     private void UploadAnother()
     {
         _uploadSuccess = false;
