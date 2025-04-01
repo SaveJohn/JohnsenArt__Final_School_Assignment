@@ -18,16 +18,16 @@
           IsPrimary="true"
           IconCss="e-icons e-pluss-icon"
           Content="Endre Kunstverk"
-          @onclick="NavigateToEditGallery">
+          @onclick="NavigateToUpdateArtwork">
 </SfButton>
 
 @code {
     private void NavigateToUploadArtwork()
     {
-        Navigation.NavigateTo("/admin/upload-artwork");
+        Navigation.NavigateTo("/upload-artwork");
     }
-    private void NavigateToEditGallery()
+    private void NavigateToUpdateArtwork()
     {
-        Navigation.NavigateTo("/admin/edit-gallery");
+        Navigation.NavigateTo("/update-artwork/1");
     }
 }

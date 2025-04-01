@@ -1,0 +1,385 @@
+﻿@page "/update-artwork/{artworkId:int}"
+@attribute [Authorize]
+@using JoArtClassLib.Art
+@using JoArtClassLib.Art.Artwork
+@using JoArtClassLib.Error
+@inject HttpClient Http
+@using Microsoft.AspNetCore.Authorization
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+<PageTitle>Oppdater kunstverk</PageTitle>
+
+
+<div class="upload-artwork-container text-bg-light mt-4">
+    <div class="upload-card">
+        <EditForm Model="_artworkRequest" OnValidSubmit="SubmitArtworkAsync">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <div class="row ">
+                <div class="mb-4">
+                    <h4 class="text-center pb-3">Oppdater Kunstverk</h4>
+                </div>
+                <!-- Left side -->
+                <div class="col-md-6 pe-4">
+                    <!-- Title. -->
+                    <div class="mb-3">
+                        <label for="title">Tittel:</label><br/>
+                        <InputText class="form-control"
+                                   @bind-Value="_artworkRequest.Title"
+                                   placeholder="Tittel"/>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <!-- Width -->
+                            <div class="mb-3">
+                                <label for="width">Bredde (cm):</label>
+                                <InputNumber class="form-control"
+                                             @bind-Value="_artworkRequest.WidthDimension"
+                                             placeholder="Bredde"/>
+                            </div>
+                            <!-- For sale? -->
+                            <div class="mb-3 form-check">
+                                <InputCheckbox @bind-Value="_artworkRequest.ForSale" class="form-check-input" id="forSaleCheckbox"/>
+                                <label class="form-check-label"
+                                       for="forSaleCheckbox">Til salgs</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <!-- Height -->
+                            <div class="mb-3">
+                                <label for="height">Høyde (cm):</label>
+                                <InputNumber class="form-control"
+                                             @bind-Value="_artworkRequest.HeightDimension "
+                                             placeholder="Høyde"/>
+                            </div>
+                            <!-- Price -->
+                            <div class="mb-3">
+                                <label for="price">Pris (kr):</label>
+                                <InputNumber class="form-control"
+                                             @bind-Value="_artworkRequest.Price"
+                                             disabled="@(!_artworkRequest.ForSale)"
+                                             id="price"
+                                             placeholder="Pris"/>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                            {
+                                <div class="alert alert-danger mt-3">@ErrorMessage</div>
+                            }
+
+                        </div>
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="description">Tekst beskrivelse til kunstverk:</label>
+                            <InputTextArea
+                                class="form-control"
+                                style="height: 150px;
+                                resize: vertical;"
+                                @bind-Value="_artworkRequest.Description"
+                                placeholder="Bildetekst"/>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right side -->
+                <div class="col-md-6 border-start ps-4">
+                    <!-- Add Artwork Image -->
+                    <div class="mb-3">
+                        <label for="artwork-image"
+                               class="form-lable">Last opp kunstverk bilde-fil:</label>
+                        <InputFile id="artworkFileInput"
+                                   @ref="_artworkInputRef"
+                                   OnChange="LoadArtworkImage"
+                                   class="d-none"/>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3">
+                        <!-- Thumbnail preview of added image(s) -->
+                        @for (int i = 0; i < _artworkImages.Count; i++)
+                        {
+                            var localIndex = i;
+                            <div class="position-relative shadow-sm border rounded" style="width: 100px; height: 100px; ">
+                                <img src="@_artworkImages[localIndex]"
+                                     class="img-thumbnail w-100 h-100"
+                                     style="object-fit: cover;"/>
+                                <button type="button"
+                                        class="btn-close position-absolute top-0 end-0"
+                                        @onclick="@(() => RemoveArtworkImage(localIndex))"
+                                        title="Fjern bilde">
+                                </button>
+                            </div>
+                        }
+                        <!-- Add Image Button -->
+                        <div class="image-upload-slot"
+                             @onclick="TriggerArtworkFileDialog">
+                            <span class="plus-icon">+</span>
+                        </div>
+
+                    </div>
+
+                    <!-- Add Wall preview -->
+                    <div class="mb-3">
+                        <label for="artwork-image"
+                               class="form-lable pt-3">Last opp visning av kunstverk på vegg:</label>
+                        <InputFile id="wallFileInput"
+                                   @ref="_wallInputRef"
+                                   OnChange="LoadArtworkWallpreview"
+                                   class="d-none"/>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3">
+                        <!-- Thumbnail preview of added image(s) -->
+                        @for (int i = 0; i < _wallPreviewImages.Count; i++)
+                        {
+                            var localIndex = i;
+                            <div class="position-relative shadow-sm border rounded"
+                                 style="width: 100px; height: 100px; ">
+                                <img src="@_wallPreviewImages[localIndex]"
+                                     class="img-thumbnail w-100 h-100"
+                                     style="object-fit: cover;"/>
+                                <button type="button"
+                                        class="btn-close position-absolute top-0 end-0"
+                                        @onclick="@(() => RemoveWallPreviewImage(localIndex))"
+                                        title="Fjern bilde">
+                                </button>
+                            </div>
+                        }
+                        <!-- Add Image Button -->
+                        <div class="image-upload-slot"
+                             @onclick="TriggerWallFileDialog">
+                            <span class="plus-icon">+</span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button class="btn btn-primary w-100" type="submit">Oppdater</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@if (errors.Count > 0)
+{
+    <h2>Feilmeldinger</h2>
+    <ul class="text-danger">
+        @foreach (var error in errors)
+        {
+            <li>@error</li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter] public int artworkId { get; set; }
+    
+    // Request DTO's
+    private UpdateArtworkRequest _artworkRequest = new();
+    private ImageRequest? _imageRequest;
+
+    private ArtworkResponse _artworkResponse = new();
+
+    // Base64 strings for preview-thumbnail images
+    private List<string> _artworkImages = new();
+    private List<string> _wallPreviewImages = new();
+
+    // Blazor InputFile references 
+    private InputFile? _artworkInputRef;
+    private InputFile? _wallInputRef;
+
+    //Data collection for images: binary data along with MIME type and original filename.
+    private List<(byte[] data, string contentType, string fileName)> _artworkFiles = new();
+    private List<(byte[] data, string contentType, string fileName)> _wallPreviewFiles = new();
+
+    // Conditional variables
+    private long maxFileSize = 1024 * 1024 * 10; // Max 10MB
+    private bool _uploadSuccess = false;
+
+    // Error collections
+    private List<ErrorResponse> errors = new();
+    private string? ErrorMessage;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _artworkResponse = (await Http.GetFromJsonAsync<ArtworkResponse>
+                ($"api/PublicGallery/artworks/{artworkId}"))!;
+            
+            _artworkRequest = new UpdateArtworkRequest
+            {
+                Title = _artworkResponse.Title,
+                Description = _artworkResponse.Description,
+                ForSale = _artworkResponse.ForSale,
+                Price = _artworkResponse.Price,
+                WidthDimension = _artworkResponse.WidthDimension,
+                HeightDimension = _artworkResponse.HeightDimension
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error fetching artwork data: " + e.Message);
+            throw;
+        }
+    }
+
+    // Load Artwork Image 
+    private async Task LoadArtworkImage(InputFileChangeEventArgs e)
+    {
+        errors.Clear();
+        foreach (IBrowserFile file in e.GetMultipleFiles())
+        {
+            using var stream = file.OpenReadStream(maxFileSize);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            var base64 = Convert.ToBase64String(bytes);
+            var imageDataUrl = $"data:{file.ContentType};base64,{base64}";
+            _artworkImages.Add(imageDataUrl);
+            _artworkFiles.Add((bytes, file.ContentType, file.Name));
+        }
+    }
+
+    // Load WallPreview Image 
+    private async Task LoadArtworkWallpreview(InputFileChangeEventArgs e)
+    {
+        errors.Clear();
+        foreach (IBrowserFile file in e.GetMultipleFiles())
+        {
+            using var stream = file.OpenReadStream(maxFileSize);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            var base64 = Convert.ToBase64String(bytes);
+            var imageDataUrl = $"data:{file.ContentType};base64,{base64}";
+            _wallPreviewImages.Add(imageDataUrl);
+            _wallPreviewFiles.Add((bytes, file.ContentType, file.Name));
+        }
+    }
+
+    // Trigger file dialog programmatically via JS using Blazor InputFile referenses
+    private async Task TriggerArtworkFileDialog() // Artwork
+    {
+        await JS.InvokeVoidAsync("triggerClick", "artworkFileInput");
+    }
+    private async Task TriggerWallFileDialog() // WallPreview
+    {
+        await JS.InvokeVoidAsync("triggerClick", "wallFileInput");
+    }
+
+    // Remove Artwork from input
+    private void RemoveArtworkImage(int index)
+    {
+        if (_artworkFiles.Count > index && _artworkImages.Count > index)
+        {
+            _artworkImages.RemoveAt(index);
+            _artworkFiles.RemoveAt(index);
+        }
+    }
+
+    // Remove WallPreview from input
+    private void RemoveWallPreviewImage(int index)
+    {
+        if (_wallPreviewFiles.Count > index && _wallPreviewImages.Count > index)
+        {
+            _wallPreviewImages.RemoveAt(index);
+            _wallPreviewFiles.RemoveAt(index);
+        }
+    }
+
+    // Submit Complete Artwork
+    private async Task SubmitArtworkAsync()
+    {
+        Console.WriteLine("Submit Artwork hit.");
+
+        // Making sure we are logged in
+        var token = await JS.InvokeAsync<string>("localStorage.getItem", "jwt");
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            ErrorMessage = "Bruker er ikke logget inn.";
+            StateHasChanged(); // Sørg for at feilmeldingen vises
+            return;
+        }
+
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        // Trying to upload artwork to database and imnages to s3 via API
+        try
+        {
+            // Making sure that artwork image is added
+            if (!_artworkFiles.Any() || _artworkFiles.Count == 0)
+            {
+                ErrorMessage = "Minst ett bilde må lastes opp.";
+                Console.WriteLine("Mangler bilder.");
+                StateHasChanged();
+                return;
+            }
+
+            // Creating our Request model to send to API endpoint
+            var content = new MultipartFormDataContent();
+
+            content.Add(new StringContent(_artworkRequest.Title), "Title");
+            content.Add(new StringContent(_artworkRequest.Description ?? ""), "Description");
+            content.Add(new StringContent(_artworkRequest.Artist), "Artist");
+            content.Add(new StringContent(_artworkRequest.ForSale.ToString()), "ForSale");
+
+            if (_artworkRequest.Price.HasValue)
+                content.Add(new StringContent(_artworkRequest.Price.Value.ToString()), "Price");
+
+            if (_artworkRequest.WidthDimension.HasValue)
+                content.Add(new StringContent(_artworkRequest.WidthDimension.Value.ToString()), "Width");
+
+            if (_artworkRequest.HeightDimension.HasValue)
+                content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "Height");
+
+            // Adding virtual properties to request model (Images)
+            int index = 0;
+            // Artwork images
+            foreach (var (data, contentType, fileName) in _artworkFiles)
+            {
+                var streamContent = new StreamContent(new MemoryStream(data));
+                streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
+                content.Add(new StringContent("False"), $"Images[{index}].IsWallPreview");
+                index++;
+            }
+            //Wallpreview images
+            foreach (var (data, contentType, fileName) in _wallPreviewFiles)
+            {
+                var streamContent = new StreamContent(new MemoryStream(data));
+                streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
+                content.Add(new StringContent("True"), $"Images[{index}].IsWallPreview");
+                index++;
+            }
+
+
+            // Sending the request to API upload artwork endpoint
+            var response = await Http.PostAsync("admin/api/Gallery/update-artwork", content);
+            Console.WriteLine("📡 Statuskode: " + response.StatusCode);
+
+            // Result
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Opplasting fullført.");
+                Navigation.NavigateTo($"/GalleryDetail/{artworkId}");
+                _uploadSuccess = true;
+            }
+            else
+            {
+                ErrorMessage = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Server-feil: " + ErrorMessage);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "En feil oppsto under opplasting.";
+            Console.WriteLine("Exception: " + ex.Message);
+            StateHasChanged();
+        }
+
+    }
+
+   
+
+}
