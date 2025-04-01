@@ -195,14 +195,21 @@
     // Error collections
     private List<ErrorResponse> errors = new();
     private string? ErrorMessage;
-    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadCurrentArtworkDataAsync();
+    }
     protected override async Task OnInitializedAsync()
+    {
+        await LoadCurrentArtworkDataAsync();
+    }
+    
+    private async Task LoadCurrentArtworkDataAsync()
     {
         try
         {
-            _artworkResponse = (await Http.GetFromJsonAsync<ArtworkResponse>
-                ($"api/PublicGallery/artworks/{artworkId}"))!;
-            
+            _artworkResponse = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}?nocache={{DateTime.Now.Ticks}}");
             _artworkRequest = new UpdateArtworkRequest
             {
                 Title = _artworkResponse.Title,
@@ -212,13 +219,20 @@
                 WidthDimension = _artworkResponse.WidthDimension,
                 HeightDimension = _artworkResponse.HeightDimension
             };
-            foreach (ImageResponse image in _artworkResponse.Images)
+
+            // Load images
+            _artworkImages.Clear();
+            _wallPreviewImages.Clear();
+            _artworkFiles.Clear();
+            _wallPreviewFiles.Clear();
+
+            foreach (var image in _artworkResponse.Images)
             {
                 try
                 {
-                    var imageBytes = await Http.GetByteArrayAsync(image.ImageUrl); // or image.ObjectKey if mapped to S3 URL
+                    var imageBytes = await Http.GetByteArrayAsync(image.ImageUrl);
                     var base64 = Convert.ToBase64String(imageBytes);
-                    var imageDataUrl = $"data:\"image/jpeg\";base64,{base64}";
+                    var imageDataUrl = $"data:image/jpeg;base64,{base64}";
 
                     if (image.IsWallPreview)
                     {
@@ -237,10 +251,9 @@
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Console.WriteLine("Error fetching artwork data: " + e.Message);
-            throw;
+            Console.WriteLine("Error fetching artwork data: " + ex.Message);
         }
     }
 
@@ -385,7 +398,7 @@
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Opplasting fullført.");
-                Navigation.NavigateTo($"/GalleryDetail/{artworkId}");
+                Navigation.NavigateTo($"/GalleryDetail/{artworkId}", forceLoad: true);
                 _uploadSuccess = true;
             }
             else
