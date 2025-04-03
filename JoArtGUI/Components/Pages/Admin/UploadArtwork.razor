@@ -5,7 +5,9 @@
 @inject HttpClient Http
 @using Microsoft.AspNetCore.Authorization
 @inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+
 <PageTitle>Lastopp nytt kunstverk</PageTitle>
 
 @if (_uploadSuccess)
@@ -276,18 +278,19 @@ else
     {
         Console.WriteLine("Submit Artwork hit.");
         
-        // Making sure we are logged in
-        var token = await JS.InvokeAsync<string>("localStorage.getItem", "jwt");
-        
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var token = authState.User.FindFirst("JWT")?.Value;
+
         if (string.IsNullOrWhiteSpace(token))
         {
             ErrorMessage = "Bruker er ikke logget inn.";
-            StateHasChanged(); // Sørg for at feilmeldingen vises
+            StateHasChanged();
             return;
         }
-        
+
+        // Attach the token as a Bearer header for API calls.
         Http.DefaultRequestHeaders.Authorization =
-        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         
         // Trying to upload artwork to database and imnages to s3 via API
         try
