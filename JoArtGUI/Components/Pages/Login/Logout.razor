@@ -1,12 +1,10 @@
 ﻿@page "/logout"
-@using JohnsenArtGUI.Authentication
-@inject CustomAuthStateProvider AuthProvider
 @inject NavigationManager Navigation
 
 @code {
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await AuthProvider.MarkUserAsLoggedOutAsync();
-        Navigation.NavigateTo("/", forceLoad: true); // reloads the whole app without token
+        // Force a full reload by navigating to the dedicated logout endpoint
+        Navigation.NavigateTo("/api/logout", forceLoad: true);
     }
 }

@@ -1,85 +1,67 @@
 ﻿@page "/login"
-@using JoArtClassLib
-@using JohnsenArtGUI.Authentication
+@using System.Net.Http.Json
 @inject HttpClient Http
 @inject NavigationManager Navigation
-@inject CustomAuthStateProvider AuthProvider
 
-<div class="login-container text-bg-light">
-    <div class="login-card">
-        <div class="login-avatar">
-            <i class="fas fa-user-circle fa-4x"></i>
-        </div>
-        <h4 class="text-center">Login</h4>
+<h3>Login</h3>
 
-        @if (!string.IsNullOrEmpty(ErrorMessage))
-        {
-            <div class="text-danger text-center">@ErrorMessage</div>
-        }
-
-        <EditForm Model="_request" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <InputText class="form-control" @bind-Value="_request.Email" placeholder="Username" />
-            </div>
-
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <InputText type="@(_showPassword ? "text" : "password")" class="form-control" @bind-Value="_request.Password" placeholder="Password" />
-                <span class="input-group-text password-toggle" @onclick="TogglePassword">
-                    <i class="fas @( _showPassword ? "fa-eye-slash" : "fa-eye")"></i>
-                </span>
-            </div>
-
-            <button class="btn btn-primary w-100" type="submit">Logg in</button>
-        </EditForm>
+<EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label>Email:</label>
+        <InputText @bind-Value="loginModel.Email" class="form-control" />
     </div>
-</div>
+    <div class="mb-3">
+        <label>Password:</label>
+        <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
 
 @code {
-    private LoginRequest _request = new();
-    private string? ErrorMessage;
-    private bool _showPassword = false;
-
-    private void TogglePassword()
-    {
-        _showPassword = !_showPassword;
-    }
+    private LoginModel loginModel = new();
+    private string errorMessage = "";
 
     private async Task HandleLogin()
     {
-        ErrorMessage = null;
+        errorMessage = "";
 
-        try
+        // Call the API on port 8080 to get the JWT.
+        // Note: Use the full URL since your API is on a different port.
+        var apiResponse = await Http.PostAsJsonAsync("http://localhost:8080/admin/auth/login", loginModel);
+        if (!apiResponse.IsSuccessStatusCode)
         {
-            var response = await Http.PostAsJsonAsync("admin/auth/login", _request);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadFromJsonAsync<LoginToken>();
-
-                if (result?.Token is not null)
-                {
-                    await AuthProvider.MarkUserAsLoggedInAsync(result.Token);
-                    Navigation.NavigateTo("/");
-                }
-                else
-                {
-                    ErrorMessage = "Invalid login response.";
-                }
-            }
-            else
-            {
-                var error = await response.Content.ReadFromJsonAsync<LoginErrorResponse>();
-                ErrorMessage = error?.ErrorMessage ?? "Login failed.";
-            }
+            errorMessage = "Login failed at API.";
+            return;
         }
-        catch (Exception ex)
+
+        // Deserialize the response to extract the token.
+        var result = await apiResponse.Content.ReadFromJsonAsync<LoginResult>();
+        if (result == null || string.IsNullOrEmpty(result.Token))
         {
-            ErrorMessage = $"An error occurred: {ex.Message}";
+            errorMessage = "Invalid token received.";
+            return;
         }
+
+        // Redirect to your local endpoint to complete the sign-in.
+        // forceLoad: true forces a full page load so that headers can be modified.
+        Navigation.NavigateTo($"/api/complete-signin?token={Uri.EscapeDataString(result.Token)}", forceLoad: true);
+    }
+
+    public class LoginModel
+    {
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+
+    public class LoginResult
+    {
+        public string Token { get; set; } = "";
     }
 }
