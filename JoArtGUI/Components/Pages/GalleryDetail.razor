@@ -1,82 +1,116 @@
 ﻿@page "/GalleryDetail/{artworkId:int}"
 @using JoArtClassLib.Art
 @inject HttpClient Http
+@inject IJSRuntime JS
 
 <h3 class="text-center my-4">@artwork?.Title</h3>
 
 @if (artwork == null)
 {
-<p class="text-center">Kunstverk laster ..</p>
+    <p class="text-center">Kunstverk laster ..</p>
 }
 else
 {
-<div class="container">
-    <div class="row justify-content-center">
-        
-        <div class="col-md-8 d-flex">
-           
-            <div id="artworkCarousel" class="carousel slide"  style="width: 70%; flex-shrink: 0;">
-                <div class="carousel-inner">
-                    @foreach (var img in artwork.Images)
-                    {
-                    <div class="carousel-item @((artwork.Images.IndexOf(img) == 0) ? "active" : "")">
-                        <img src="@img.ImageUrl"
-                             class="d-block w-100"
-                             style="max-height: 500px; object-fit: contain;"
-                             alt="@artwork.Title"/>
+    <div class="container-fluid px-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 d-flex flex-row flex-wrap gap-5">
+
+                
+                <div id="artworkCarousel" class="carousel slide flex-grow-1" style="min-width: 60%;">
+                    <div class="carousel-inner">
+                        @foreach (var img in artwork.Images)
+                        {
+                            <div class="carousel-item @((artwork.Images.IndexOf(img) == 0) ? "active" : "")">
+                                <img src="@img.ImageUrl"
+                                     class="d-block w-100"
+                                     style="max-height: 90vh; object-fit: contain; border-radius: 12px; cursor: zoom-in;"
+                                     alt="@artwork.Title"
+                                     @onclick="() => ShowDetailedImage(img.ImageUrl)"/>
+                            </div>
+                        }
                     </div>
-                    }
+                    <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next" >
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+
+
+                <div class="d-flex flex-column justify-content-start" style="min-width: 30%; font-size: 1.1rem;">
+                    <p class="mb-4">
+                        <strong>Artist:</strong> @artwork.Artist
+                    </p>
+                    <p class="mb-4">
+                        <strong>Description:</strong> @artwork.Description
+                    </p>
+                    <p class="mb-4"><strong>Dimensions:</strong> @artwork.WidthDimension x @artwork.HeightDimension cm</p>
+                    @if (artwork.ForSale)
+                    {
+                        <p class="mb-4"><strong>Price:</strong> @(artwork.Price?.ToString("F2") ?? "0.00") ,-</p>
+                        <p class="mb-4"><strong>Status:</strong> Til salgs</p>
+                    }
+                    else
+                    {
+                        <p class="mb-4"><strong>Status:</strong> Ikke til salgs</p>
+                    }
+
+                </div>
+
             </div>
+        </div>
+    </div>
+}
+
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bg-dark bg-opacity-75 border-0 position-relative overflow-hidden">
 
             
-            <div class="artwork-description mt-4" style="width: 30%; padding-left: 20px;">
-                <p>
-                    <strong>Artist:</strong> @artwork.Artist
-                </p>
-                <p>
-                    <strong>Description:</strong> @artwork.Description
-                </p>
-                <p><strong>Dimensions:</strong> @artwork.WidthDimension x @artwork.HeightDimension cm</p>
-                <p><strong>Price:</strong> @(artwork.Price?.ToString("F2") ?? "0.00") ,-</p>
+            <button type="button"
+                    class="btn-close position-absolute top-0 end-0 m-3 z-3"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                    style="filter: invert(1); opacity: 0.85;">
+            </button>
 
-                @if (artwork.ForSale)
-                {
-                <p><strong>Status:</strong> Til salgs</p>
-                }
-                else
-                {
-                <p><strong>Status:</strong> Ikke til salgs</p>
-                }
+            
+            <div class="modal-body d-flex justify-content-center align-items-center p-0 z-1">
+                <img id="modalImage"
+                     src=""
+                     class="img-fluid rounded shadow"
+                     style="max-height: 95vh; pointer-events: none;"/>
             </div>
         </div>
     </div>
 </div>
-}
+
 
 @code {
-[Parameter] public int artworkId { get; set; }
+    [Parameter] public int artworkId { get; set; }
 
-private ArtworkResponse? artwork;
+    private ArtworkResponse? artwork;
 
-protected override async Task OnInitializedAsync()
-{
-try
-{
-artwork = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}");
-}
-catch (Exception e)
-{
-Console.WriteLine("Error fetching artwork data: " + e.Message);
-throw;
-}
-}
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            artwork = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error fetching artwork data: " + e.Message);
+            throw;
+        }
+    }
+
+    private async Task ShowDetailedImage(string imageUrl)
+    {
+        await JS.InvokeVoidAsync("showImageModal", imageUrl);
+    }
+
 }
