@@ -28,13 +28,13 @@ public class GalleryService : IGalleryService
 
     // Get all artworks
     public async Task<IEnumerable<ArtworkResponse?>> GetArtworksAsync(
-        int page, int perPage, GallerySort sort, bool? forSale)
+        int page, int perPage, GallerySort sort, GalleryFilter filter)
     {
         _logger.LogInformation($"-------------------- \n Service: GetArtworks:");
 
         // Get artworks from repository and map to response DTO
         var responses = _mapper.Map<List<ArtworkResponse?>>(
-            await _repository.GetArtworksAsync(page, perPage, sort, forSale));
+            await _repository.GetArtworksAsync(page, perPage, sort, filter));
 
         // No artworks found
         if (responses.Count == 0)

@@ -20,7 +20,7 @@ public class GalleryRepository : IGalleryRepository
     }
     
     // GET Artworks
-    public async Task<IEnumerable<Artwork>> GetArtworksAsync(int page, int perPage, GallerySort sort, bool? forSale)
+    public async Task<IEnumerable<Artwork>> GetArtworksAsync(int page, int perPage, GallerySort sort, GalleryFilter filter)
     {
         _logger.LogInformation($"-------------------- \n Repository : GetArtworks:");
         
@@ -34,9 +34,14 @@ public class GalleryRepository : IGalleryRepository
                 .AsQueryable();
 
             // Filter
-            if (forSale.HasValue)
+            switch (filter)
             {
-                query = query.Where(a => a.ForSale == forSale.Value);
+                case GalleryFilter.ForSale :
+                    query = query.Where(a => a.ForSale == true);
+                    break;
+                case GalleryFilter.NotForSale :
+                    query = query.Where(a => a.ForSale == false);
+                    break;
             }
 
             // Apply sorting
@@ -49,10 +54,10 @@ public class GalleryRepository : IGalleryRepository
                     query = query.OrderBy(a => a.Id);
                     break;
                 case GallerySort.HighPrice :
-                    query = query.OrderBy(a => a.Price);
+                    query = query.OrderByDescending(a => a.Price);
                     break;
                 case GallerySort.LowPrice :
-                    query = query.OrderByDescending(a => a.Price);
+                    query = query.OrderBy(a => a.Price);
                     break;
                     
             }

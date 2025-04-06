@@ -12,20 +12,19 @@
                     <select id="sortOption" @bind="SortOption">
                         <option value=@GallerySort.Newest>Nyeste</option>
                         <option value="@GallerySort.Oldest">Eldste</option>
-                        @if (_filter is true)
+                        @if (_filterOption == GalleryFilter.ForSale)
                         {
                             <option value="@GallerySort.LowPrice">Lavest pris</option>
                             <option value="@GallerySort.HighPrice">Høyest pris</option>
                         }
-                        
                     </select>
                 </li>
                 <li class="nav-item px-2">
                     <label for="filterOption">Filtrer etter:</label>
                     <select id="filterOption" @bind="FilterOption">
-                        <option value="all">Alle</option>
-                        <option value="forSale">Til Salgs</option>
-                        <option value="notForSale">Ikke til Salgs</option>
+                        <option value=@GalleryFilter.All>Alle</option>
+                        <option value=@GalleryFilter.ForSale>Til Salgs</option>
+                        <option value=@GalleryFilter.NotForSale>Ikke til Salgs</option>
                     </select>
                 </li>
                 <AuthorizeView>
@@ -86,7 +85,7 @@ else
                                 @artwork.Description
                             </p>
                         </div>
-                        @if (artwork.ForSale)
+                        @if (artwork.ForSale == true)
                         {
                             <div class="card-footer text-center fw-bold">
                                 <p><strong>Price:</strong> @(artwork.Price?.ToString("F2") ?? "0.00")-,</p>
@@ -120,13 +119,10 @@ else
     }
     // Filter ---
     // Bound value
-    private string _filterOption = "all";
-    
-    // Param value for endpoint url
-    private bool? _filter;
+    private GalleryFilter _filterOption = GalleryFilter.All;
     
     // Property with action if value changed
-    private string FilterOption
+    private GalleryFilter FilterOption
     {
         get => _filterOption;
         set
@@ -149,21 +145,16 @@ else
     {
         // Defining paging parameters (Should be handled more dynamically later)
         int page = 1;
-        int perPage = 10;
+        int perPage = 35;
         
         // Building query string parameters
         var queryParams = new List<string>
         {
             $"page={page}",
             $"perPage={perPage}",
-            $"sort={_sortOption}"
+            $"sort={_sortOption}",
+            $"filter={_filterOption}"
         };
-        
-        // If _filter has value, ad _filter param
-        if (_filter.HasValue)
-        {
-            queryParams.Add($"forSale={_filter.Value.ToString().ToLower()}");
-        }
         
         // Creating endpoint URL with the query string
         var url = $"api/PublicGallery/artworks?{string.Join("&", queryParams)}";
@@ -183,23 +174,13 @@ else
     private async Task SortOptionChanged()
     {
         await LoadArtworksAsync();
+        StateHasChanged();
     }
 
     private async Task FilterOptionChanged()
     {
-        switch (_filterOption)
-        {
-            case "all" :
-                _filter = null;
-                break;
-            case "forSale" :
-                _filter = true;
-                break;
-            case "notForSale" :
-                _filter = false;
-                break;
-        }
         await LoadArtworksAsync();
+        StateHasChanged();
     }
     
     

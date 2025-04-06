@@ -28,12 +28,12 @@ public class PublicGalleryController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int perPage = 30,
         [FromQuery] GallerySort sort = GallerySort.Newest,
-        [FromQuery] bool? forSale = null)
+        [FromQuery] GalleryFilter filter = GalleryFilter.All)
     {
         _logger.LogInformation("Endpoint : GetGalleryArtworks called");
         try
         {
-            var response = await _galleryService.GetArtworksAsync(page, perPage, sort, forSale);
+            var response = await _galleryService.GetArtworksAsync(page, perPage, sort, filter);
 
             Response.Headers["Cache-Control"] = "public, max-age=31536000, immutable";
             Response.Headers["Content-Type"] = "application/json";
