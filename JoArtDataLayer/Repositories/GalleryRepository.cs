@@ -1,4 +1,5 @@
 ﻿using JoArtClassLib;
+using JoArtClassLib.Enums;
 using JoArtDataLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,7 @@ public class GalleryRepository : IGalleryRepository
     }
     
     // GET Artworks
-    public async Task<IEnumerable<Artwork>> GetArtworksAsync(int page, int perPage, bool? newest, bool? forSale)
+    public async Task<IEnumerable<Artwork>> GetArtworksAsync(int page, int perPage, GallerySort sort, bool? forSale)
     {
         _logger.LogInformation($"-------------------- \n Repository : GetArtworks:");
         
@@ -35,14 +36,27 @@ public class GalleryRepository : IGalleryRepository
             // Filter
             if (forSale.HasValue)
             {
-                query = query.Where(a => a.ForSale == forSale);
+                query = query.Where(a => a.ForSale == forSale.Value);
             }
 
             // Apply sorting
-            query = newest == true
-                ? query.OrderByDescending(a => a.Id) // Newest first
-                : query.OrderBy(a => a.Id); // Oldest first
-
+            switch (sort)
+            {
+                case GallerySort.Newest :
+                    query = query.OrderByDescending(a => a.Id);
+                    break;
+                case GallerySort.Oldest :
+                    query = query.OrderBy(a => a.Id);
+                    break;
+                case GallerySort.HighPrice :
+                    query = query.OrderBy(a => a.Price);
+                    break;
+                case GallerySort.LowPrice :
+                    query = query.OrderByDescending(a => a.Price);
+                    break;
+                    
+            }
+            
             _logger.LogInformation("Successfully retrieved Artworks from the database.");
 
             return await query.Skip(skip).Take(perPage).ToListAsync();

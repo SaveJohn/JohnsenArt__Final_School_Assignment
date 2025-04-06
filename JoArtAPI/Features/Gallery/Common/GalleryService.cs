@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using JoArtClassLib.Art;
+using JoArtClassLib.Enums;
 using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
@@ -27,13 +28,13 @@ public class GalleryService : IGalleryService
 
     // Get all artworks
     public async Task<IEnumerable<ArtworkResponse?>> GetArtworksAsync(
-        int page, int perPage, bool? newest, bool? forSale)
+        int page, int perPage, GallerySort sort, bool? forSale)
     {
         _logger.LogInformation($"-------------------- \n Service: GetArtworks:");
 
         // Get artworks from repository and map to response DTO
         var responses = _mapper.Map<List<ArtworkResponse?>>(
-            await _repository.GetArtworksAsync(page, perPage, newest, forSale));
+            await _repository.GetArtworksAsync(page, perPage, sort, forSale));
 
         // No artworks found
         if (responses.Count == 0)

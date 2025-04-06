@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
+using JoArtClassLib.Enums;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -26,13 +27,13 @@ public class PublicGalleryController : ControllerBase
     public async Task<IActionResult> GetGalleryArtworks(
         [FromQuery] int page = 1,
         [FromQuery] int perPage = 30,
-        [FromQuery] bool? newest = true,
+        [FromQuery] GallerySort sort = GallerySort.Newest,
         [FromQuery] bool? forSale = null)
     {
         _logger.LogInformation("Endpoint : GetGalleryArtworks called");
         try
         {
-            var response = await _galleryService.GetArtworksAsync(page, perPage, newest, forSale);
+            var response = await _galleryService.GetArtworksAsync(page, perPage, sort, forSale);
 
             Response.Headers["Cache-Control"] = "public, max-age=31536000, immutable";
             Response.Headers["Content-Type"] = "application/json";
