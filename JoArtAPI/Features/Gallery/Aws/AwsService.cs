@@ -7,6 +7,8 @@ using JohnsenArtAPI.Features.Gallery.Admin;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
 using JohnsenArtAPI.Services;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace JohnsenArtAPI.Features.Gallery.Aws;
 
@@ -19,8 +21,8 @@ public class AwsService : IAwsService
     private readonly string _bucketName;
 
     public AwsService(
-        IAmazonS3 s3Client, 
-        IOptions<AwsS3Settings> config, 
+        IAmazonS3 s3Client,
+        IOptions<AwsS3Settings> config,
         ILogger<AdminGalleryService> logger)
     {
         _s3Client = s3Client;
@@ -28,12 +30,12 @@ public class AwsService : IAwsService
         _expirationInSeconds = config.Value.FileExpireInSeconds;
         _bucketName = config.Value.BucketName;
     }
-    
+
     // CHECK If S3 Bucket Exists
     public async Task<bool> CheckIfS3BucketExists()
     {
         _logger.LogInformation($"-------------------- \n AWS: CheckIfS3BucketExists: {_bucketName}");
-        
+
         var bucketExist = await AmazonS3Util.DoesS3BucketExistV2Async(_s3Client, _bucketName);
         if (!bucketExist)
         {
@@ -45,18 +47,19 @@ public class AwsService : IAwsService
             };
             await _s3Client.PutBucketAsync(createBucketRequest);
         }
+
         return bucketExist;
     }
-    
+
     // UPLOAD Image to S3 Bucket
     public async Task<string> UploadImageToS3(IFormFile imageFile)
     {
         _logger.LogInformation($"-------------------- \n AWS: UploadImageToS3: \n File: {imageFile.FileName}:");
-        
+
         // Creating Object Key
         var objectKey = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
         _logger.LogInformation($"Generated object key: {objectKey}");
-        
+
         // Creating S3 ObjectRequest
         var objectRequest = new PutObjectRequest
         {
@@ -76,6 +79,7 @@ public class AwsService : IAwsService
             _logger.LogError($"Uploading image {objectKey} to {_bucketName} failed: {ex.Message}");
             throw;
         }
+
         return objectKey;
     }
 
@@ -93,7 +97,7 @@ public class AwsService : IAwsService
             };
             var deleteObjectResponse = await _s3Client.DeleteObjectAsync(deleteObjectRequest);
             _logger.LogInformation($"Deleted object key: {objectKey}");
-            
+
             return deleteObjectResponse.HttpStatusCode == HttpStatusCode.OK;
         }
         catch (AmazonS3Exception ex)
@@ -106,7 +110,30 @@ public class AwsService : IAwsService
             _logger.LogError($"Error encountered on server. Message:{ex.Message}");
             throw;
         }
-        
+    }
+
+    // CREATE thumbnail of uploaded image
+    public async Task<string> UploadThumbnailToS3(IFormFile imageFile)
+    {
+        using var image = await Image.LoadAsync(imageFile.OpenReadStream());
+        image.Mutate(x => x.Resize(400, 0)); // width 400px, preserve aspect ratio
+
+        using var ms = new MemoryStream();
+        await image.SaveAsJpegAsync(ms);
+        ms.Position = 0;
+
+        var key = $"thumbs/{Guid.NewGuid()}.jpg";
+
+        var putRequest = new PutObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = key,
+            InputStream = ms,
+            ContentType = "image/jpeg"
+        };
+
+        await _s3Client.PutObjectAsync(putRequest);
+        return key;
     }
 
 

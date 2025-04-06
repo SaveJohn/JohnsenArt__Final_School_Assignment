@@ -54,10 +54,15 @@ public class AdminGalleryService : IAdminGalleryService
 
             if (image.ImageFile != null)
             {
-                var objectKey = await _aws.UploadImageToS3(image.ImageFile);
+                var fullKey = await _aws.UploadImageToS3(image.ImageFile);
+                var thumbKey = await _aws.UploadThumbnailToS3(image.ImageFile);
 
-                // Adding ObjectKey property value to Artwork entity
-                artwork.Images.Add(new ArtworkImage { ObjectKey = objectKey, IsWallPreview = image.IsWallPreview });
+                artwork.Images.Add(new ArtworkImage
+                {
+                    ObjectKey = fullKey,
+                    ThumbnailKey = thumbKey,
+                    IsWallPreview = image.IsWallPreview
+                });
             }
             else
             {
@@ -65,6 +70,7 @@ public class AdminGalleryService : IAdminGalleryService
                 throw new Exception("No image found in image upload loop.");
             }
         }
+
         
         // Saving to database through repository
         var savedArtwork = await _repository.AddArtworkAsync(artwork);
