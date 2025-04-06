@@ -8,20 +8,7 @@
 </div>
 
 <!-- Top row login/logout -->
-<div class="top-row px-4 text-end">
-    <AuthorizeView>
-        <NotAuthorized>
-            <span class="nav-item">
-                <a class="nav-link" href="/login">Login</a>
-            </span>
-        </NotAuthorized>
-        <Authorized>
-            <span class="nav-item">
-                <a class="nav-link" href="/logout">Logout</a>
-            </span>
-        </Authorized>
-    </AuthorizeView>
-</div>
+
 
 <!-- Navigation bar -->
 <div class="navbarFont">
@@ -48,6 +35,20 @@
                     </AuthorizeView>
                 </li>
             </ul>
+        </div>
+        <div class="top-row px-4 text-end">
+            <AuthorizeView>
+                <NotAuthorized>
+                    <span class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </span>
+                </NotAuthorized>
+                <Authorized>
+                    <span class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </span>
+                </Authorized>
+            </AuthorizeView>
         </div>
     </nav>
 </div>
