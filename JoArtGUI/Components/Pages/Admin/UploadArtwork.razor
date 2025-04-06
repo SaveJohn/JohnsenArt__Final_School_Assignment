@@ -357,10 +357,18 @@ else
             }
             else
             {
-                ErrorMessage = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Server-feil: " + ErrorMessage);
-                StateHasChanged();
+                if (!response.IsSuccessStatusCode)
+                {
+                    var rawError = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine(" error uploading:");
+                    Console.WriteLine($"Status: {response.StatusCode}");
+                    Console.WriteLine($"Content: {rawError}");
+                    ErrorMessage = $"Server returned: {(int)response.StatusCode} - {response.ReasonPhrase}";
+                }
+
+                StateHasChanged(); 
             }
+
         }
         catch (Exception ex)
         {

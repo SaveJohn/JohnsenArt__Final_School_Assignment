@@ -140,12 +140,19 @@ public class AwsService : IAwsService
     // GENERATE Image Pre-signed URL
     public string GeneratePresignedUrl(string objectKey)
     {
+        if (string.IsNullOrWhiteSpace(objectKey))
+        {
+            _logger.LogWarning("GeneratePresignedUrl was called with a null or empty objectKey.");
+            return null!;
+        }
+
         _logger.LogInformation($"-------------------- \n AWS: GeneratePresignedUrl: \n ObjectKey: {objectKey}:");
+
         try
         {
             var request = new GetPreSignedUrlRequest
             {
-                BucketName = _bucketName, // Use the configured bucket name
+                BucketName = _bucketName,
                 Key = objectKey,
                 Expires = DateTime.UtcNow.AddSeconds(_expirationInSeconds)
             };
@@ -158,7 +165,8 @@ public class AwsService : IAwsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating presigned URL for {ObjectKey}", objectKey);
-            return null;
+            return null!;
         }
     }
+
 }
