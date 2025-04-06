@@ -1,5 +1,6 @@
 ﻿@page "/login"
 @using System.Net.Http.Json
+@using Microsoft.AspNetCore.WebUtilities
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
@@ -41,6 +42,18 @@
     private LoginModel loginModel = new();
     private string errorMessage = "";
     private bool _showPassword = false;
+    private string returnUrl = "/";
+    
+    // Sets redirect URL to previous page url
+    protected override void OnInitialized()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+        if (queryParams.TryGetValue("returnUrl", out var url))
+        {
+            returnUrl = url.First();
+        }
+    }
 
     private void TogglePassword()
     {
@@ -71,7 +84,8 @@
             }
             
             // Redirect to local endpoint
-            Navigation.NavigateTo($"/api/complete-signin?token={Uri.EscapeDataString(result.Token)}", forceLoad: true);
+            Navigation.NavigateTo($"/api/complete-signin?token={Uri.EscapeDataString(result.Token)}&urlRedirct={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
+
         }
         catch (Exception ex)
         {

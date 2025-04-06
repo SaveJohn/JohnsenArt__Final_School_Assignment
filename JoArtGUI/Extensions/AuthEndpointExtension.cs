@@ -9,7 +9,7 @@ public static class AuthEndpointExtension
 {
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/api/complete-signin", async (string token, HttpContext context) =>
+        endpoints.MapGet("/api/complete-signin", async (string urlRedirct, string token, HttpContext context) =>
         {
             try
             {
@@ -29,7 +29,7 @@ public static class AuthEndpointExtension
                 await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
                 // Redirect to the home page.
-                return Results.Redirect("/");
+                return Results.Redirect(urlRedirct);
             }
             catch (Exception ex)
             {
