@@ -32,7 +32,7 @@ public class GalleryService : IGalleryService
         _logger.LogInformation($"-------------------- \n Service: GetArtworks:");
 
         // Get artworks from repository and map to response DTO
-        var responses = _mapper.Map<List<ArtworkResponse>>(
+        var responses = _mapper.Map<List<ArtworkResponse?>>(
             await _repository.GetArtworksAsync(page, perPage, newest, forSale));
 
         // No artworks found
@@ -45,14 +45,18 @@ public class GalleryService : IGalleryService
         // Set pre siged ImageUrl for each image (clearer, avoids nested lambdas)
         foreach (var response in responses)
         {
-            foreach (var image in response.Images)
+            if (response != null)
             {
-                image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+                foreach (var image in response.Images)
+                {
+                    image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+                }
+                _logger.LogInformation($"Found {response.Images.Count} images for artwork '{response.Title}'");
             }
-            _logger.LogInformation($"Found {response.Images.Count} images for artwork '{response.Title}'");
+            
         }
 
-        return responses;
+        return responses.AsEnumerable();
     }
 
     
