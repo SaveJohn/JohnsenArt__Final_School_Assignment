@@ -50,16 +50,17 @@ public class GalleryService : IGalleryService
                 foreach (var image in response.Images)
                 {
                     image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+                    image.ThumbnailUrl = _aws.GeneratePresignedUrl(image.ThumbnailKey);
                 }
+
                 _logger.LogInformation($"Found {response.Images.Count} images for artwork '{response.Title}'");
             }
-            
         }
 
         return responses.AsEnumerable();
     }
 
-    
+
     // Get Artwork By ID
     public async Task<ArtworkResponse?> GetArtworkByIdAsync(int artId)
     {
@@ -70,14 +71,14 @@ public class GalleryService : IGalleryService
         var response = _mapper.Map<ArtworkResponse>(
             await _repository.GetArtworkByIdAsync(artId)
         );
-        
+
         // No artwork found
         if (response == null)
         {
             _logger.LogWarning($"Art {artId} not found");
             return response;
         }
-        
+
         // Setting Pre-Singed Url for each image
         foreach (var image in response.Images)
         {
@@ -85,7 +86,7 @@ public class GalleryService : IGalleryService
             _logger.LogInformation($"Generated url {imageUrl}");
             image.ImageUrl = imageUrl;
         }
-        
+
         return response;
     }
 }
