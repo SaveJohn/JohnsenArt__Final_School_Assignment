@@ -36,6 +36,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.None; // OBS Switch to always in production
         options.ExpireTimeSpan = TimeSpan.FromHours(2);
         options.SlidingExpiration = true;
+        
+        // On redirect to login - return to said url after successful login
+        options.Events = new CookieAuthenticationEvents()
+        {
+            OnRedirectToLogin = context =>
+            {
+                var returnUrl = context.Request.Path + context.Request.QueryString;
+                context.Response.Redirect($"/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
+                return Task.CompletedTask;
+            }
+        };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ExternalApiService>();
