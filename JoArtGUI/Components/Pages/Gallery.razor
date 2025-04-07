@@ -4,37 +4,44 @@
 @inject HttpClient Http
 <!-- Extra option bar for gallery -->
 <div class="navbarFont">
-    <nav class="navbar navbar-expand border-bottom py-2">
-        <div class="container justify-content-center">
-            <ul class="navbar-nav">
-                <li class="nav-item px-2">
-                    <label for="sortOption">Sorter etter:</label>
-                    <select id="sortOption" @bind="SortOption">
-                        <option value=@GallerySort.Newest>Nyeste</option>
-                        <option value="@GallerySort.Oldest">Eldste</option>
-                        @if (_filterOption == GalleryFilter.ForSale)
-                        {
-                            <option value="@GallerySort.LowPrice">Lavest pris</option>
-                            <option value="@GallerySort.HighPrice">Høyest pris</option>
-                        }
-                    </select>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom py-2">
+        <div class="container">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item d-flex align-items-center me-3">
+                    <div class="d-flex flex-column">
+                        <label class="mb-1" for="sortOption">Sorter etter:</label>
+                        <select id="sortOption" class="form-select form-select-sm" @bind="SortOption">
+                            <option value=@GallerySort.Newest>Nyeste</option>
+                            <option value="@GallerySort.Oldest">Eldste</option>
+                            @if (_filterOption == GalleryFilter.ForSale)
+                            {
+                                <option value="@GallerySort.LowPrice">Lavest pris</option>
+                                <option value="@GallerySort.HighPrice">Høyest pris</option>
+                            }
+                        </select>
+                    </div>
                 </li>
-                <li class="nav-item px-2">
-                    <label for="filterOption">Filtrer etter:</label>
-                    <select id="filterOption" @bind="FilterOption">
-                        <option value=@GalleryFilter.All>Alle</option>
-                        <option value=@GalleryFilter.ForSale>Til Salgs</option>
-                        <option value=@GalleryFilter.NotForSale>Ikke til Salgs</option>
-                    </select>
+                <li class="nav-item d-flex align-items-center">
+                    <div class="d-flex flex-column">
+                        <label class="mb-1" for="filterOption">Filtrer etter:</label>
+                        <select id="filterOption" class="form-select form-select-sm" @bind="FilterOption">
+                            <option value=@GalleryFilter.All>Alle</option>
+                            <option value=@GalleryFilter.ForSale>Til Salgs</option>
+                            <option value=@GalleryFilter.NotForSale>Ikke til Salgs</option>
+                        </select>
+                    </div>
                 </li>
                 <AuthorizeView>
-                    <li class="nav-item px-2">
-                        <NavLink class="nav-link" href="/upload-artwork">Legg til kunstverk</NavLink>
+                    <li class="nav-item px-3 mt-2">
+                        <NavLink class="btn btn-outline-success fw-bold rounded px-3 py-2" href="/upload-artwork">
+                            + Legg til kunstverk
+                        </NavLink>
                     </li>
                 </AuthorizeView>
             </ul>
         </div>
     </nav>
+    
 </div>
 
 <h3 class="text-center my-4">Kunstverk</h3>
