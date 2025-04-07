@@ -49,20 +49,19 @@
     protected override async Task OnInitializedAsync()
     {
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        
         var queryParams = QueryHelpers.ParseQuery(uri.Query);
+        
         if (queryParams.TryGetValue("returnUrl", out var url))
         {
             returnUrl = url.First()!;
-            Console.WriteLine("if");
-            Console.WriteLine(returnUrl);
+            Console.WriteLine($"if was hit : uri first = {url.First()}");
+            
         }
         else
         {
-            // If no returnUrl-parameter -> get url from document.referrer (JS in app.razor)
-            var referrer = await JSRuntime.InvokeAsync<string>("getDocumentReferrer");
-            returnUrl = !string.IsNullOrWhiteSpace(referrer) ? referrer : "/";
-            Console.WriteLine("else");
-            Console.WriteLine(returnUrl);
+            returnUrl = "/";
+            Console.WriteLine("Else was hit : sad face :<");
         }
     }
 

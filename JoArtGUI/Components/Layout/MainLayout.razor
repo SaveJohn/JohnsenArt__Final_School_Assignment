@@ -1,7 +1,22 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager navigationManager
+<!-- Row for login/logout on top right -->
+<div class="row">
+    <div class="col text-end py-2 px-4">
+        <AuthorizeView>
+            <NotAuthorized>
+                <a class="nav-link d-inline" 
+                   href=@($"/login?returnUrl={Uri.EscapeDataString(navigationManager.Uri)}")>Login</a>
+            </NotAuthorized>
+            <Authorized>
+                <a class="nav-link d-inline" href="/logout">Logout</a>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+</div>
 
 <!-- Centered logo -->
-<div class="text-center py-4">
+<div class="text-center py-3">
     <img src="Images/JohnsenArt-removebg-preview.png"
          alt="Johnsen Art logo"
          style="height: 120px;" />
@@ -12,7 +27,7 @@
 
 <!-- Navigation bar -->
 <div class="navbarFont">
-    <nav class="navbar navbar-expand border-top border-bottom py-2">
+    <nav class="navbar navbar-expand-sm border-top border-bottom py-2">
         
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item px-3">
@@ -29,20 +44,6 @@
                 </li>
             </ul>
         
-        <ul class="navbar-nav">
-            <AuthorizeView>
-                <NotAuthorized>
-                    <span class="nav-item">
-                        <a class="nav-link" href="/login">Login</a>
-                    </span>
-                </NotAuthorized>
-                <Authorized>
-                    <span class="nav-item">
-                        <a class="nav-link" href="/logout">Logout</a>
-                    </span>
-                </Authorized>
-            </AuthorizeView>
-        </ul>
     </nav>
 </div>
 

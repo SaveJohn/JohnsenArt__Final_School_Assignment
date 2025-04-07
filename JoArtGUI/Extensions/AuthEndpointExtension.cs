@@ -2,11 +2,13 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 
 namespace JohnsenArtGUI.Extensions;
 
 public static class AuthEndpointExtension
 {
+    
     public static IEndpointRouteBuilder MapAuthEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("/api/complete-signin", async (string urlRedirct, string token, HttpContext context) =>
@@ -19,12 +21,10 @@ public static class AuthEndpointExtension
 
                 // Create a ClaimsIdentity using the token's claims.
                 var identity = new ClaimsIdentity(jwtToken.Claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                
-                // Store the token as a claim.
                 identity.AddClaim(new Claim("JWT", token));
 
                 var principal = new ClaimsPrincipal(identity);
-
+                
                 // Setting the cookie - signing in the user
                 await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
