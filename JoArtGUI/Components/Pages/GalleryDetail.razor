@@ -1,5 +1,9 @@
 ﻿@page "/GalleryDetail/{artworkId:int}"
+@using System.Text.Json
 @using JoArtClassLib.Art
+@using JoArtClassLib.Error
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthStateProvider
 @inject HttpClient Http
 
 <h3 class="text-center my-4">@artwork?.Title</h3>
@@ -10,73 +14,246 @@
 }
 else
 {
-<div class="container">
-    <div class="row justify-content-center">
+    <div class="container ">
+        <div class="row justify-content-center ">
         
-        <div class="col-md-8 d-flex">
+            <div class="col-md-8 d-flex ">
            
-            <div id="artworkCarousel" class="carousel slide"  style="width: 70%; flex-shrink: 0;">
-                <div class="carousel-inner">
-                    @foreach (var img in artwork.Images)
-                    {
-                    <div class="carousel-item @((artwork.Images.IndexOf(img) == 0) ? "active" : "")">
-                        <img src="@img.ImageUrl"
-                             class="d-block w-100"
-                             style="max-height: 500px; object-fit: contain;"
-                             alt="@artwork.Title"/>
+                <div id="artworkCarousel" class="carousel slide "  style="width: 70%; flex-shrink: 0;">
+                    <div class="carousel-inner">
+                        @foreach (var img in artwork.Images)
+                        {
+                            <div class="carousel-item @((artwork.Images.IndexOf(img) == 0) ? "active" : "")">
+                                <img src="@img.ImageUrl"
+                                     class="d-block w-100 mt-3"
+                                     style="max-height: 500px; object-fit: contain;"
+                                     alt="@artwork.Title"/>
+                            </div>
+                        }
                     </div>
-                    }
+                    <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next" >
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next" >
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
 
             
-            <div class="artwork-description mt-4" style="width: 30%; padding-left: 20px;">
-                <p>
-                    <strong>Artist:</strong> @artwork.Artist
-                </p>
-                <p>
-                    <strong>Description:</strong> @artwork.Description
-                </p>
-                <p><strong>Dimensions:</strong> @artwork.WidthDimension x @artwork.HeightDimension cm</p>
-                <p><strong>Price:</strong> @(artwork.Price?.ToString("F2") ?? "0.00") ,-</p>
+                <div class="artwork-description mt-4" style="width: 30%; padding-left: 20px;">
+                    <p>
+                        <strong>Artist:</strong> @artwork.Artist
+                    </p>
+                    <p>
+                        <strong>Description:</strong> @artwork.Description
+                    </p>
+                    <p><strong>Dimensions:</strong> @artwork.WidthDimension x @artwork.HeightDimension cm</p>
+                    <p><strong>Price:</strong> @(artwork.Price?.ToString("F2") ?? "0.00") ,-</p>
 
-                @if (artwork.ForSale)
-                {
-                <p><strong>Status:</strong> Til salgs</p>
-                }
-                else
-                {
-                <p><strong>Status:</strong> Ikke til salgs</p>
-                }
+                    @if (artwork.ForSale)
+                    {
+                        <p><strong>Status:</strong> Til salgs</p>
+                    }
+                    else
+                    {
+                        <p><strong>Status:</strong> Ikke til salgs</p>
+                    }
+                </div>
             </div>
         </div>
     </div>
-</div>
+    @if (errors.Count > 0)
+    {
+        <h2>Feilmeldinger</h2>
+        <ul class="text-danger">
+            @foreach (var error in errors)
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    }
+    <!-- Extra ADMIN option bar for artwork -->
+<AuthorizeView>
+    <div class="navbarFont">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom py-4">
+            <div class="container">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item d-flex align-items-center me-3">
+                        <div class="d-flex flex-column">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#deleteWarningModal"
+                                    class="btn btn-sm btn-outline-danger">
+                                Slett Kunstverk
+                            </button>
+                        </div>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <NavLink class="btn btn-sm btn-outline-warning fw-bold rounded px-2 py-1" 
+                                 href=@($"/update-artwork/{artworkId}")>
+                            Endre Kunstverk
+                        </NavLink>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="deleteWarningModal" tabindex="-1"
+         aria-labelledby="modalDeleteWarning" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDeleteWarning">Bekreft sletting av kunstverk</h5>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body">
+                    Er du sikker på at du ønsker å slette kunstverket?
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                            @onclick="CloseConfirmation">Avbryt</button>
+                    <button class="btn btn-danger"
+                            data-bs-dismiss="modal"
+                            @onclick="ConfirmDelete">Slett Kunstverk</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</AuthorizeView>
 }
 
 @code {
-[Parameter] public int artworkId { get; set; }
+    [Parameter] public int artworkId { get; set; }
 
-private ArtworkResponse? artwork;
+    private ArtworkResponse? artwork;
 
-protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            artwork = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error fetching artwork data: " + e.Message);
+            throw;
+        }
+    }
+    
+    // Delete button trigger scenario
+    private bool ShowConfirmation = false;
+    // Error collections
+    private List<ErrorResponse> errors = new();
+    private string? ErrorMessage;
+    
+    // Delete warning 
+    private void OpenConfirmation()
+    {
+        ShowConfirmation = true;
+    }
+    
+    // Delete canceled -> abort deletion
+    private void CloseConfirmation()
+    {
+        ShowConfirmation = false;
+    }
+    
+    // Delete confirmed -> deleting artwork
+    private async Task ConfirmDelete()
 {
-try
-{
-artwork = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}");
+    errors.Clear();  // Clear old errors before this attempt
+
+    try
+    {
+        // 1) Retrieve JWT from AuthStateProvider
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var token = authState.User.FindFirst("JWT")?.Value;
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            ErrorMessage = "Bruker er ikke logget inn.";
+            StateHasChanged();
+            return;
+        }
+
+        // 2) Attach the token as a Bearer header
+        Http.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+        // 3) Call the DELETE endpoint
+        var response = await Http.DeleteAsync($"http://localhost:8080/admin/api/Gallery/delete-artwork/{artworkId}");
+
+        Console.WriteLine($"Response status code: {response.StatusCode}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            // 4a) On success, parse JSON into ArtworkResponse
+            var deletedArtwork = await response.Content.ReadFromJsonAsync<ArtworkResponse>();
+            var artworkTitle = deletedArtwork?.Title;
+
+            // Navigate back to gallery with a query param indicating which item was deleted
+            navigationManager.NavigateTo($"/gallery?deleted={artworkTitle}");
+        }
+        else
+        {
+            // 4b) On failure, check if the response is JSON
+            var contentType = response.Content.Headers.ContentType?.MediaType;
+            var contentString = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Response body on failure: {contentString}");
+
+            if (!string.IsNullOrWhiteSpace(contentString) &&
+                contentType == "application/json")
+            {
+                // Attempt to parse as our ErrorResponse
+                var errorObj = JsonSerializer.Deserialize<ErrorResponse>(contentString);
+                if (!string.IsNullOrWhiteSpace(errorObj?.ErrorMessage))
+                {
+                    errors.Add(errorObj);
+                }
+                else
+                {
+                    errors.Add(new ErrorResponse
+                    {
+                        ErrorMessage = $"Kunne ikke slette kunstverk (HTTP {(int)response.StatusCode})."
+                    });
+                }
+            }
+            else
+            {
+                // The server didn't return JSON, fallback to a generic error
+                errors.Add(new ErrorResponse
+                {
+                    ErrorMessage = $"Kunne ikke slette kunstverk (HTTP {(int)response.StatusCode})."
+                });
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        // 5) Log and show unexpected error
+        errors.Add(new ErrorResponse
+        {
+            ErrorMessage = "En uventet feil oppstod, og kunstverket ble ikke slettet."
+        });
+
+        Console.WriteLine($"\"En uventet feil oppstod: {ex}"); 
+    }
+    finally
+    {
+        // Hide any local "ShowConfirmation" modal
+        ShowConfirmation = false;
+    }
 }
-catch (Exception e)
-{
-Console.WriteLine("Error fetching artwork data: " + e.Message);
-throw;
 }
-}
-}
+
+

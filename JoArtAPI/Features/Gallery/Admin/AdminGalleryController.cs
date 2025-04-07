@@ -72,7 +72,7 @@ public class AdminGalleryController : ControllerBase
     }
     
     // DELETE artwork
-    [HttpDelete("EditArtwork/{id}")]
+    [HttpDelete("delete-artwork/{id}")]
     public async Task<IActionResult> DeleteArtwork(int id)
     {
         _logger.LogInformation("Endpoint : DeleteArtwork called");
