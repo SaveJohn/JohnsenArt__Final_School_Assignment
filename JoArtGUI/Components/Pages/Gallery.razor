@@ -16,7 +16,7 @@
                             @onclick="CloseToast" />
                 </div>
                 <div class="toast-body">
-                    "@DeletedTitle" er slettet"
+                    "@DeletedTitle" er slettet
                 </div>
             </div>
         </div>
@@ -29,43 +29,34 @@
     
     <nav class="navbar navbar-expand-lg border-dark-bottom py-2" style="background-color: lightgray;">
         <div class="container">
-
-
-            <div class="d-flex">
-
-
-                <label class="mb-1" for="sortOption">Sorter:</label>
-                <select id="sortOption" class="form-select form-select-sm" @bind="SortOption">
-                    <option value=@GallerySort.Newest>Nyeste</option>
-                    <option value="@GallerySort.Oldest">Eldste</option>
-                    @if (_filterOption == GalleryFilter.ForSale)
-                    {
-                        <option value="@GallerySort.LowPrice">Lavest pris</option>
-                        <option value="@GallerySort.HighPrice">Høyest pris</option>
-                    }
-                </select>
-
-
-
-
-                <label class="mb-0" for="filterOption">Filtrer:</label>
-                <select id="filterOption" class="form-select form-select-sm" @bind="FilterOption">
-                    <option value=@GalleryFilter.All>Alle</option>
-                    <option value=@GalleryFilter.ForSale>Til Salgs</option>
-                    <option value=@GalleryFilter.NotForSale>Ikke til Salgs</option>
-                </select>
-
+            <div class="d-flex px-2">
+                <div class="d-flex px-2">
+                    <label class="fw-bolder px-2" for="sortOption">Sorter:</label>
+                    <select id="sortOption" class="form-select form-select-sm" style="background-color: lightgray" @bind="SortOption">
+                        <option value=@GallerySort.Newest>Nyeste</option>
+                        <option value="@GallerySort.Oldest">Eldste</option>
+                        @if (_filterOption == GalleryFilter.ForSale)
+                        {
+                            <option value="@GallerySort.LowPrice">Lavest pris</option>
+                            <option value="@GallerySort.HighPrice">Høyest pris</option>
+                        }
+                    </select>
+                </div>
+                <div class="d-flex px-2">
+                    <label class="fw-bolder px-2" for="filterOption">Filtrer:</label>
+                    <select id="filterOption" class="form-select form-select-sm" style="background-color: lightgrey" @bind="FilterOption">
+                        <option value=@GalleryFilter.All>Alle</option>
+                        <option value=@GalleryFilter.ForSale>Til Salgs</option>
+                        <option value=@GalleryFilter.NotForSale>Ikke til Salgs</option>
+                    </select>
+                </div>
             </div>
-
-
 
             <div class="d-flex justify-content-end">
                 <AuthorizeView>
-
                     <NavLink class="btn btn-sm btn-outline-success fw-bold rounded px-2 py-1" href="/upload-artwork">
                         + Legg til Kunstverk
                     </NavLink>
-
                 </AuthorizeView>
             </div>
         </div>
