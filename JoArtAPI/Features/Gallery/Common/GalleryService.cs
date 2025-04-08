@@ -82,9 +82,8 @@ public class GalleryService : IGalleryService
         // Setting Pre-Singed Url for each image
         foreach (var image in response.Images)
         {
-            var imageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
-            _logger.LogInformation($"Generated url {imageUrl}");
-            image.ImageUrl = imageUrl;
+            image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+            image.ThumbnailUrl = _aws.GeneratePresignedUrl(image.ThumbnailKey);
         }
 
         return response;

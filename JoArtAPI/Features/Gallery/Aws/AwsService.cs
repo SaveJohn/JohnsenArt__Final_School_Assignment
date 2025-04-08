@@ -116,7 +116,7 @@ public class AwsService : IAwsService
     public async Task<string> UploadThumbnailToS3(IFormFile imageFile)
     {
         using var image = await Image.LoadAsync(imageFile.OpenReadStream());
-        image.Mutate(x => x.Resize(400, 0)); // width 400px, preserve aspect ratio
+        image.Mutate(x => x.Resize(400, 0)); 
 
         using var ms = new MemoryStream();
         await image.SaveAsJpegAsync(ms);
