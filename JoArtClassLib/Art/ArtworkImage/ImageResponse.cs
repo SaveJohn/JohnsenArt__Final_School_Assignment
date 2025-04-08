@@ -5,6 +5,9 @@ public class ImageResponse
     public required int Id { get; set; }
     public required string ObjectKey { get; set; }
     public required string ImageUrl { get; set; } // Pre signed URL
+    public string ThumbnailKey { get; set; } = string.Empty;
+    public string ThumbnailUrl { get; set; } = string.Empty;
+
     
     public bool IsWallPreview { get; set; }
     
