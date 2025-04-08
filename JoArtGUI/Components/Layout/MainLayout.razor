@@ -4,10 +4,10 @@
 <div class="text-center py-4">
     <img src="Images/JohnsenArt-removebg-preview.png"
          alt="Johnsen Art logo"
-         style="height: 120px;" />
+         style="height: 120px;"/>
 </div>
 
-<!-- Top row login/logout -->
+
 
 
 <!-- Navigation bar -->
@@ -53,19 +53,28 @@
     </nav>
 </div>
 
-<!-- Main content with light grey background -->
 <div style="background-color: lightgrey">
     @Body
 </div>
 
-<!-- Error UI -->
+
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
 
-<!-- Footer -->
+<script>
+    function showImageModal(url) {
+        const img = document.getElementById('modalImage');
+        img.src = url;
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        modal.show();
+    }
+</script>
+
+
+
 <footer class="text-center py-3">
     <small>&copy; 2025 Bjarne Johnsen</small>
 </footer>

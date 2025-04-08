@@ -19,10 +19,13 @@ else
                         @if (artwork.Images?.Any() == true)
                         {
                             var img = artwork.Images.FirstOrDefault();
-                            if (!string.IsNullOrEmpty(img?.ImageUrl))
+                            var imageSrc = string.IsNullOrWhiteSpace(img?.ThumbnailUrl) ? img?.ImageUrl : img?.ThumbnailUrl;
+                            <p style="font-size: 10px;">@imageSrc</p>
+
+                            if (!string.IsNullOrWhiteSpace(imageSrc))
                             {
                                 <a href="/GalleryDetail/@artwork.Id">
-                                    <img src="@img.ImageUrl"
+                                    <img src="@imageSrc"
                                          class="card-img-top"
                                          style="height: 250px; object-fit: cover;"
                                          alt="Kunstverk"/>
@@ -41,6 +44,7 @@ else
                                 <p>Ingen bilde funnet</p>
                             </div>
                         }
+
 
 
                         <div class="card-body">
