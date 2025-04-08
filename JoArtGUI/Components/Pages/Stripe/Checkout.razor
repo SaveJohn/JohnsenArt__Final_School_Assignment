@@ -1,0 +1,83 @@
+﻿@page "/checkout"
+@using JoArtClassLib.Art
+@using JoArtClassLib.Error
+@inject HttpClient Http
+
+
+
+@if (product is null)
+{
+    <p>Laster produkt ...</p>
+}
+else
+{
+    <br/><br/>
+    <div class="checkout-container text-bg-light mt-4">
+        <div class="checkout-card">
+            <h3 class="text-center">Betaling</h3>
+            <div class="product border-bottom">
+                <div class="row ">
+                    <h5>Produkt:</h5>
+                    
+                    <div class="col-md-6 pe-4">
+                        <div class="mb-3">
+                            <p>@product.Title</p>
+                            <img src="@image?.ThumbnailUrl"
+                                 alt="@product.Title"
+                                 class="img-fluid rounded shadow"
+                                 style="height: 250px; object-fit: cover;">
+                        </div>
+                    </div>
+                    <div class="col-md-6 ps-4">
+                        <p class="text-align-left">NOK @(product.Price?.ToString("F2") ?? "0.00")</p>
+                    </div>
+                </div>
+
+
+            </div>
+            
+            
+            
+        </div>
+    </div>
+    
+}
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p class="text-danger fw-bold">@ErrorMessage</p>
+}
+
+@code {
+    
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int productId { get; set; }
+    private ArtworkResponse? product;
+    protected ImageResponse? image;
+    
+    private List<ErrorResponse> errors = new();
+    private string? ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            product = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{productId}");
+            if (product is null)
+            {
+                ErrorMessage = "Obs! Produktet eksisterer ikke lenger.";
+                return;
+            }
+            image = product?.Images.FirstOrDefault();
+            
+        }
+        catch (Exception e)
+        {
+            ErrorMessage = "Noe gikk galt ved henting av produktet.";
+            Console.WriteLine("Error fetching artwork data: " + e.Message);
+            
+        }
+    }
+
+}
