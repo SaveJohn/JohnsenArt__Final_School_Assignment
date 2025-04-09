@@ -14,29 +14,33 @@ else
     <br/><br/>
     <div class="checkout-container text-bg-light mt-4">
         <div class="checkout-card">
-            <h3 class="text-center">Betaling</h3>
-            <div class="product border-bottom">
-                <div class="row ">
-                    <h5>Produkt:</h5>
+            <h3 class="text-center border-bottom mb-4">Betaling</h3>
+            
+            <div class="row d-flex align-items-start justify-content-center gap-4 px-4">
+                <div class="col-md-auto">
                     
-                    <div class="col-md-6 pe-4">
-                        <div class="mb-3">
-                            <p>@product.Title</p>
-                            <img src="@image?.ThumbnailUrl"
-                                 alt="@product.Title"
-                                 class="img-fluid rounded shadow"
-                                 style="height: 250px; object-fit: cover;">
-                        </div>
-                    </div>
-                    <div class="col-md-6 ps-4">
-                        <p class="text-align-left">NOK @(product.Price?.ToString("F2") ?? "0.00")</p>
-                    </div>
+                    <img src="@image?.ThumbnailUrl"
+                         class="img-fluid rounded shadow-sm"
+                         style="max-width: 300px;" />
                 </div>
 
-
+                <div class="col-md pt-2">
+                    <p class="fw-bold">Produkt:</p>
+                    <div class="mb-3">
+                        <p class="mb-1 text-muted">Tittel:</p>
+                        <p class="fw-semibold">@product.Title</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="mb-1 text-muted">Dimensjoner:</p>
+                        <p class="fw-semibold">@product.WidthDimension x @product.HeightDimension cm</p>
+                    </div>
+                    <div class="mb-3">
+                        <p class="mb-1 text-muted">Pris:</p>
+                        <p class="fw-bold fs-5 text-success">NOK @(product.Price?.ToString("F2") ?? "0.00")</p>
+                    </div>
+                </div>
             </div>
-            
-            
+            <hr class="my-4" />
             
         </div>
     </div>
