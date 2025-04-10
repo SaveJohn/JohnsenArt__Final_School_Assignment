@@ -86,3 +86,10 @@ h1:focus {
     right: 0.75rem;
     top: 0.5rem;
 }
+.modal-backdrop {
+    z-index: 1040 !important; /* put the backdrop behind */
+}
+
+.modal {
+    z-index: 1050 !important; /* put the modal above the backdrop */
+}

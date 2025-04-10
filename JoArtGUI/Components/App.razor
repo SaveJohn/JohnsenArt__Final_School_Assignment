@@ -19,12 +19,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-    <link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" />
+    
     
 
     @*Bootstrap*@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-
+    
 
     <!-- <link rel="stylesheet" href="JohnsenArtGUI.styles.css"/> -->
     <HeadOutlet/>
@@ -45,25 +45,33 @@
 
 @*Bootstrap*@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
-
 <script src="_framework/blazor.web.js"></script>
-<script src="_content/Bootstrap/bootstrap.bundle.min.js"></script>
 
 <!-- CSS Animation libary -->
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
 <script>
+    
     AOS.init();
-</script>
-<script>
+
     // Open filesystem to select a file
     window.triggerClick = (id) => {
         document.getElementById(id)?.click();
     };
+
+    // For ImageDetail Modal
+    function showImageModal(url) {
+        const img = document.getElementById('modalImage');
+        img.src = url;
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        modal.show();
+    }
+
+
 </script>
+
 </body>
 
 </html>
