@@ -78,6 +78,7 @@ h1:focus {
     position: fixed;
     width: 100%;
     z-index: 1000;
+    
 }
 
 #blazor-error-ui .dismiss {
