@@ -13,6 +13,8 @@ using JohnsenArtAPI.Features.Gallery.Aws;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
+using JohnsenArtAPI.Features.Payments.Interfaces;
+using JohnsenArtAPI.Features.Payments.Services;
 using JohnsenArtAPI.Health;
 using JohnsenArtAPI.Middleware;
 using JohnsenArtAPI.Services.Interfaces;
@@ -20,6 +22,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,11 +32,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Stripe configuration
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
 // Service injections
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminGalleryService, AdminGalleryService>();
 builder.Services.AddScoped<IGalleryService, GalleryService>();
 builder.Services.AddScoped<IAwsService, AwsService>();
+builder.Services.AddScoped<IStripeService, StripeService>();
+
 
 // Mapper injections
 builder.Services.AddAutoMapper(typeof(Program));
@@ -64,7 +72,7 @@ builder.Services.AddJwtAuthentication(builder.Configuration);
 
 
 // Logging
-builder.Host.UseSerilog((context, services, configuration) => 
+builder.Host.UseSerilog((context, services, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
 );
 
@@ -96,15 +104,12 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger(options =>    {
-        options.RouteTemplate = "/openapi/{documentName}.json";
-    });
+    app.UseSwagger(options => { options.RouteTemplate = "/openapi/{documentName}.json"; });
     app.MapScalarApiReference();
     /*
      * app.UseSwagger();
      * app.UseSwaggerUI();
      */
-    
 }
 
 app.UseMiddleware<GlobalExceptionHandling>()
