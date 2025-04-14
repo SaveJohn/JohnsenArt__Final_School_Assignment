@@ -1,6 +1,8 @@
 ﻿@page "/checkout"
 @using JoArtClassLib.Art
+@using JoArtClassLib.AwsSecrets
 @using JoArtClassLib.Error
+@using JoArtClassLib.Payment
 @inject IJSRuntime JS
 @inject HttpClient Http
 
@@ -42,7 +44,37 @@ else
                 </div>
             </div>
             <hr class="my-4" />
-
+            <h5 class="mb-4">Kunde informasjon</h5>
+            <div class="form-group mb-3">
+                <label>Fullt navn</label>
+                <input class="form-control" @bind="buyer.FullName" required />
+            </div>
+            <div class="form-group mb-3">
+                <label>Adresse</label>
+                <input class="form-control" @bind="buyer.AddressLine" required />
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <label>By</label>
+                    <input class="form-control" @bind="buyer.City" required />
+                </div>
+                <div class="col-md-4">
+                    <label>Postnummer</label>
+                    <input class="form-control" maxlength="4" @bind="buyer.PostalCode" required />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <label>Epost</label>
+                    <input type="email" class="form-control" @bind="buyer.Email" required />
+                </div>
+                <div class="col-md-4">
+                    <label>Telefon</label>
+                    <input class="form-control" maxlength="12" placeholder="+47..." @bind="buyer.PhoneNumber" required />
+                </div>
+            </div>
+            
+            <hr class="my-4" />
             <div class="px-4 pb-4">
                 <h5 class="mb-3">Betal med kort</h5>
                 <div id="card-element" class="form-control p-3 shadow-sm rounded" style="max-width: 400px;"></div>
@@ -91,6 +123,8 @@ else
             
         }
     }
+    // BuyerInfo
+    private BuyerInfo buyer = new();
     
     // Stripe element
     private string statusMessage = "";
@@ -100,9 +134,27 @@ else
         if (firstRender && product != null)
         {
             // Get clientSecret from API
-            var response = await Http.PostAsync($"api/stripe/create-intent/{productId}, null");
+            var response = await Http.PostAsync($"http://localhost:8080/api/stripe/create-intent/{productId}", null);
             var json = await response.Content.ReadFromJsonAsync<PaymentIntentResponse>();
+            string clientSecret = json?.ClientSecret ?? "";
+            string publishableKey = "pk_test_...";
+
+            await JS.InvokeVoidAsync("initializeStripe", publishableKey, clientSecret);
         }
     }
 
+    private async Task HandlePayment()
+    {
+        statusMessage = "Behandler betaling ...";
+        var result = await JS.InvokeAsync<StripeResult>("confirmCardPayment");
+
+        if (result.error != null)
+        {
+            statusMessage = $"Feil: {result.error.message}";
+        }
+        else
+        {
+            statusMessage = "Betaling er fullført!";
+        }
+    }
 }
