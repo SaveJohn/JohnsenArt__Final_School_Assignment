@@ -1,5 +1,6 @@
 ﻿using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Features.Payments.Interfaces;
+using JohnsenArtAPI.Features.Payments.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JohnsenArtAPI.Features.Payments.Controllers;
@@ -35,5 +36,12 @@ public class StripeController : ControllerBase
 
         var intent = await _stripeService.CreatePaymentIntentAsync(artwork);
         return Ok(new { clientSecret = intent.ClientSecret });
+    }
+
+    [HttpGet("publishable-key")]
+    public async Task<IActionResult> GetPublishableKey([FromServices] StripeConfigProvider stripeProvider)
+    {
+        var config = await stripeProvider.GetStripeConfigAsync();
+        return Ok(new { publishableKey = config.PublishableKey });
     }
 }
