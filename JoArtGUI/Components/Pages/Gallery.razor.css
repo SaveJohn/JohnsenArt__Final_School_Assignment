@@ -1,0 +1,38 @@
+.artwork-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 340px; 
+    padding: 0.15rem;
+}
+.artwork-entry img {
+    max-height: 260px;
+    object-fit: contain;
+}
+.artwork-entry p.fst-italic {
+    font-size: 0.9rem;
+}
+.artwork-grid {
+    max-width: 1600px;
+    margin: auto;
+}
+.artwork-meta {
+    line-height: 1;
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+}
+
+.artwork-meta p {
+    margin: 0.2rem 0;
+}
+
+.art-title {
+    font-style: italic;
+    font-size: 0.8rem;
+}
+
+.art-price {
+    font-weight: 500;
+}
+

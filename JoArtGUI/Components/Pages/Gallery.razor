@@ -31,7 +31,7 @@
             <div class="d-flex px-2">
                 <div class="d-flex px-2">
                     <label class="fw-bolder px-2" for="sortOption">Sorter:</label>
-                    <select id="sortOption" class="form-select form-select-sm" style="background-color: lightgray" @bind="SortOption">
+                    <select id="sortOption" class="form-select form-select-sm" style="background: rgb(234, 234, 234)" @bind="SortOption">
                         <option value=@GallerySort.Newest>Nyeste</option>
                         <option value="@GallerySort.Oldest">Eldste</option>
                         @if (_filterOption == GalleryFilter.ForSale)
@@ -43,7 +43,7 @@
                 </div>
                 <div class="d-flex px-2">
                     <label class="fw-bolder px-2" for="filterOption">Filtrer:</label>
-                    <select id="filterOption" class="form-select form-select-sm" style="background-color: lightgrey" @bind="FilterOption">
+                    <select id="filterOption" class="form-select form-select-sm" style="background: rgb(234, 234, 234)" @bind="FilterOption">
                         <option value=@GalleryFilter.All>Alle</option>
                         <option value=@GalleryFilter.ForSale>Til Salgs</option>
                         <option value=@GalleryFilter.NotForSale>Ikke til Salgs</option>
@@ -63,9 +63,10 @@
 
 </div>
 
-
+<!--
 <p class="text-center text-muted">@artworks?.Count</p>
-
+-->
+<br />
 @if (artworks.Count < 1)
 {
     <p class="text-center">Kunstverk laster ...</p>
@@ -77,52 +78,27 @@ else
             @foreach (var artwork in artworks)
             {
                 <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        @if (artwork.Images?.Any() == true)
-                        {
-                            var img = artwork.Images.FirstOrDefault();
-                            var imageSrc = string.IsNullOrWhiteSpace(img?.ThumbnailUrl) ? img?.ImageUrl : img?.ThumbnailUrl;
-                            <p style="font-size: 10px;">@imageSrc</p>
-
-                            if (!string.IsNullOrWhiteSpace(imageSrc))
-                            {
-                                <a href="/GalleryDetail/@artwork.Id">
-                                    <img src="@imageSrc"
-                                         class="card-img-top"
-                                         style="height: 250px; object-fit: cover;"
-                                         alt="Kunstverk"/>
-                                </a>
-                            }
-                            else
-                            {
-                                <div class="card-img-top bg-secondary text-white text-center p-5">
-                                    <p>Ingen bilde funnet</p>
-                                </div>
-                            }
-                        }
-                        else
-                        {
-                            <div class="card-img-top bg-secondary text-white text-center p-5">
-                                <p>Ingen bilde funnet</p>
+                    @if (artwork.Images?.Any() == true)
+                    {
+                        var img = artwork.Images.FirstOrDefault();
+                        var imageSrc = string.IsNullOrWhiteSpace(img?.ThumbnailUrl) ? img?.ImageUrl : img?.ThumbnailUrl;
+                        <div class="artwork-entry text-center">
+                            <a href="/GalleryDetail/@artwork.Id">
+                                <img src="@imageSrc" class="img-fluid rounded"/>
+                            </a>
+                            <div class="artwork-meta">
+                                <p class="art-title">@artwork.Title</p>
+                                <p class="art-size">@artwork.WidthDimension x @artwork.HeightDimension cm</p>
+                                @if (artwork.ForSale)
+                                {
+                                    <p class="art-price">Kan kjøpes:    @artwork.Price?.ToString("F2"),-</p>
+                                }
                             </div>
-                        }
-
-
-
-                        <div class="card-body">
-                            <h5 class="card-title">@artwork.Title</h5>
-                            <p class="card-text" style="font-size: 0.9rem; max-height: 80px; overflow: hidden; text-overflow: ellipsis;">
-                                @artwork.Description
-                            </p>
                         </div>
-                        @if (artwork.ForSale == true)
-                        {
-                            <div class="card-footer text-center fw-bold">
-                                <p><strong>Price:</strong> @(artwork.Price?.ToString("F2") ?? "0.00")-,</p>
-                            </div>
-                        }
-                    </div>
+                    }
                 </div>
+
+
             }
         </div>
     </div>

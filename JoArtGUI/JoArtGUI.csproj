@@ -41,4 +41,71 @@
       <AdditionalFiles Include="Components\Pages\Login\Login.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\Docker-Compose\TestRazorComponents\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\Docker-Compose\TestRazorComponents\appsettings.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\Docker-Compose\TestRazorComponents\Properties\launchSettings.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\appsettings.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\bin\Debug\net8.0\appsettings.DesignTime.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\bin\Debug\net8.0\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\bin\Debug\net8.0\appsettings.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\bin\Debug\net8.0\JoArtAPI.deps.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\bin\Debug\net8.0\JoArtAPI.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\bin\Debug\net8.0\JoArtAPI.staticwebassets.endpoints.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\obj\Debug\net8.0\JoArtAPI.sourcelink.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\obj\Debug\net8.0\staticwebassets.build.endpoints.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\obj\Debug\net8.0\staticwebassets.build.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\obj\JoArtAPI.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtAPI\Properties\launchSettings.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtClassLib\bin\Debug\net8.0\JoArtClassLib.deps.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtClassLib\obj\Debug\net8.0\JoArtClassLib.sourcelink.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtClassLib\obj\JoArtClassLib.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtClassLib\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtClassLib\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtDataLayer\appsettings.DesignTime.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtDataLayer\bin\Debug\net8.0\appsettings.DesignTime.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtDataLayer\bin\Debug\net8.0\JoArtDataLayer.deps.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtDataLayer\bin\Debug\net8.0\JoArtDataLayer.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtDataLayer\obj\Debug\net8.0\JoArtDataLayer.sourcelink.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtDataLayer\obj\JoArtDataLayer.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtDataLayer\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtDataLayer\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\appsettings.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\bin\Debug\net8.0\appsettings.Development.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\bin\Debug\net8.0\appsettings.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\bin\Debug\net8.0\JoArtGUI.deps.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\bin\Debug\net8.0\JoArtGUI.runtimeconfig.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\bin\Debug\net8.0\JoArtGUI.staticwebassets.endpoints.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\bin\Debug\net8.0\JoArtGUI.staticwebassets.runtime.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\obj\Debug\net8.0\JoArtGUI.sourcelink.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\obj\Debug\net8.0\staticwebassets.build.endpoints.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\obj\Debug\net8.0\staticwebassets.build.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\obj\Debug\net8.0\staticwebassets.development.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\obj\Debug\net8.0\staticwebassets.pack.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\obj\JoArtGUI.csproj.nuget.dgspec.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Properties\launchSettings.json" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\App.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Layout\MainLayout.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Admin\UpdateArtwork.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Admin\UploadArtwork.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Biography.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Contact.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Error.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Gallery.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\GalleryDetail.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Home.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Login\Login.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Login\Logout.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Stripe\Checkout.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Stripe\PurchaseSuccess.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Routes.razor" />
+      <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\_Imports.razor" />
+    </ItemGroup>
+
 </Project>
