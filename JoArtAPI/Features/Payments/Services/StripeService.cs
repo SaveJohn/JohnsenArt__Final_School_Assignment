@@ -6,10 +6,10 @@ namespace JohnsenArtAPI.Features.Payments.Services;
 
 public class StripeService : IStripeService
 {
-    private readonly IConfiguration _config;
+    private readonly StripeConfigProvider _config;
     private readonly ILogger<StripeService> _logger;
 
-    public StripeService(IConfiguration config, ILogger<StripeService> logger)
+    public StripeService(StripeConfigProvider config, ILogger<StripeService> logger)
     {
         _config = config;
         _logger = logger;
@@ -17,10 +17,15 @@ public class StripeService : IStripeService
 
     public async Task<PaymentIntent> CreatePaymentIntentAsync(ArtworkResponse artwork)
     {
+
+        var config = await _config.GetStripeConfigAsync();
+        StripeConfiguration.ApiKey = config.SecretKey;
+        
         var options = new PaymentIntentCreateOptions
         {
             Amount = (long)((artwork.Price ?? 0) * 100),
             Currency = "nok",
+            AutomaticPaymentMethods = new() {Enabled = true},
             Metadata = new Dictionary<string, string>
             {
                 { "artworkId", artwork.Id.ToString() },

@@ -1,5 +1,8 @@
 using System.Text.Json;
 using Amazon.S3;
+using Amazon.SecretsManager;
+using Amazon.SecretsManager.Model;
+using JoArtClassLib.AwsSecrets;
 using JoArtDataLayer;
 using JoArtDataLayer.Health;
 using JoArtDataLayer.Repositories;
@@ -32,8 +35,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Stripe configuration
-StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 // Service injections
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -52,6 +53,7 @@ builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 
 // AWS
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
+builder.Services.AddAWSService<IAmazonSecretsManager>();
 builder.Services.AddAWSService<IAmazonS3>();
 builder.Services.Configure<AwsS3Settings>(builder.Configuration.GetSection("AwsS3Settings"));
 
@@ -68,8 +70,27 @@ builder.Services.AddDbContext<JoArtDbContext>(options =>
 
 
 //JWT Set up
-builder.Services.AddJwtAuthentication(builder.Configuration);
+// Load Jwt Secrets
+var secretClient = new AmazonSecretsManagerClient();
+var response = await secretClient.GetSecretValueAsync(new GetSecretValueRequest
+{
+    SecretId = "JwtSecrets"
+});
 
+var jwtSecrets = JsonSerializer.Deserialize<JwtSecretConfig>(response.SecretString);
+
+if (jwtSecrets is null)
+{
+    throw new Exception("JWT Secrets not found");
+}
+// Jwt config object as a singleton
+builder.Services.AddSingleton(jwtSecrets);
+// Jwt setup with config 
+builder.Services.AddJwtAuthentication(jwtSecrets);
+
+// Config Providers
+builder.Services.AddSingleton<JwtConfigProvider>();
+builder.Services.AddSingleton<StripeConfigProvider>();
 
 // Logging
 builder.Host.UseSerilog((context, services, configuration) =>

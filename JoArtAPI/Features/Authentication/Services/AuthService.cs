@@ -4,6 +4,7 @@ using BCrypt.Net;
 using JoArtDataLayer;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using JoArtClassLib.AwsSecrets;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -13,15 +14,15 @@ namespace JohnsenArtAPI.Features.Authentication.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IConfiguration _configuration;
+    private readonly JwtSecretConfig _jwtConfig;
     private readonly JoArtDbContext _dbContext;
     private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IConfiguration configuration, JoArtDbContext dbContext, ILogger<AuthService> logger)
+    public AuthService(JwtSecretConfig jwtConfig, JoArtDbContext dbContext, ILogger<AuthService> logger)
     {
         _dbContext = dbContext;
         _logger = logger;
-        _configuration = configuration;
+        _jwtConfig = jwtConfig;
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest loginRequest)
@@ -63,7 +64,7 @@ public class AuthService : IAuthService
 
     public string GenerateJwtToken(UserDTO user)
     {
-        var keyBytes = Convert.FromBase64String(_configuration["JWT:Key"]!);
+        var keyBytes = Convert.FromBase64String(_jwtConfig.Key);
         var key = new SymmetricSecurityKey(keyBytes);
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -74,8 +75,8 @@ public class AuthService : IAuthService
         };
 
         var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
+            issuer: _jwtConfig.Issuer,
+            audience: _jwtConfig.Audience,
             claims: claims,
             expires: DateTime.UtcNow.AddHours(1),
             signingCredentials: creds

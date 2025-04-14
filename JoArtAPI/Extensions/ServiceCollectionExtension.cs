@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using JoArtClassLib.AwsSecrets;
+using JohnsenArtAPI.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JohnsenArtAPI.Extensions;
@@ -7,16 +9,11 @@ public static class ServiceCollectionExtension
 {
     public static IServiceCollection AddJwtAuthentication(
         this IServiceCollection services,
-        IConfiguration configuration)
+        JwtSecretConfig jwtConfig)
     {
-        // Retrieving and checking whether jwt key is present
-        var jwtKey64 = configuration["Jwt:Key"];
-        if (string.IsNullOrEmpty(jwtKey64))
-        {
-            throw new InvalidOperationException("The JWT key is missing, check user secrets/appsettings.json.");
-        }
         
-        var key = new SymmetricSecurityKey(Convert.FromBase64String(configuration["Jwt:Key"]!));
+        // var key = new SymmetricSecurityKey(Convert.FromBase64String(configuration["Jwt:Key"]!));
+        var key = new SymmetricSecurityKey(Convert.FromBase64String(jwtConfig.Key));
         
         //JWT Set up
         services.AddAuthentication(options =>
@@ -31,8 +28,8 @@ public static class ServiceCollectionExtension
                 IssuerSigningKey = key,
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidIssuer = configuration["Jwt:Issuer"],
-                ValidAudience = configuration["Jwt:Audience"],
+                ValidIssuer = jwtConfig.Issuer,
+                ValidAudience = jwtConfig.Audience,
                 ValidateLifetime = true
             };
         });
