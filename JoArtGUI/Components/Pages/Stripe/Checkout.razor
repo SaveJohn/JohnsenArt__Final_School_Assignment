@@ -1,6 +1,7 @@
 ﻿@page "/checkout"
 @using JoArtClassLib.Art
 @using JoArtClassLib.Error
+@inject IJSRuntime JS
 @inject HttpClient Http
 
 
@@ -41,6 +42,13 @@ else
                 </div>
             </div>
             <hr class="my-4" />
+
+            <div class="px-4 pb-4">
+                <h5 class="mb-3">Betal med kort</h5>
+                <div id="card-element" class="form-control p-3 shadow-sm rounded" style="max-width: 400px;"></div>
+                <button class="btn btn-success mt-4" @onclick="HandlePayment">Betal nå</button>
+                <p class="text-danger mt-2">@statusMessage</p>
+            </div>
             
         </div>
     </div>
@@ -53,7 +61,7 @@ else
 }
 
 @code {
-    
+    // Produkt
     [Parameter]
     [SupplyParameterFromQuery]
     public int productId { get; set; }
@@ -81,6 +89,19 @@ else
             ErrorMessage = "Noe gikk galt ved henting av produktet.";
             Console.WriteLine("Error fetching artwork data: " + e.Message);
             
+        }
+    }
+    
+    // Stripe element
+    private string statusMessage = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && product != null)
+        {
+            // Get clientSecret from API
+            var response = await Http.PostAsync($"api/stripe/create-intent/{productId}, null");
+            var json = await response.Content.ReadFromJsonAsync<PaymentIntentResponse>();
         }
     }
 
