@@ -111,9 +111,11 @@ public class AdminGalleryService : IAdminGalleryService
         
         // Storing old Object Keys to delete from S3 if update in database is successful 
         var oldObjectKeys = new List<string>();
+        var oldThumbnailKeys = new List<string>();
         foreach (var image in existingArtwork.Images)
         {
             oldObjectKeys.Add(image.ObjectKey);
+            oldThumbnailKeys.Add(image.ThumbnailKey);
         }
 
         try
@@ -145,6 +147,11 @@ public class AdminGalleryService : IAdminGalleryService
         
         // Deleting old images from S3
         foreach (var objectKey in oldObjectKeys)
+        {
+            await _aws.DeleteImageFromS3(objectKey);
+        }
+        // Deleting old thumbnails from S3
+        foreach (var objectKey in oldThumbnailKeys)
         {
             await _aws.DeleteImageFromS3(objectKey);
         }
