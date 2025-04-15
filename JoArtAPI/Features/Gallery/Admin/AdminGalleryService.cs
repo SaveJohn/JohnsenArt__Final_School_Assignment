@@ -128,6 +128,7 @@ public class AdminGalleryService : IAdminGalleryService
                     Id = image.Id,
                     ArtworkId = existingArtwork.Id,
                     ObjectKey = _aws.UploadImageToS3(image.ImageFile).Result, // Upload image
+                    ThumbnailKey = await _aws.UploadThumbnailToS3(image.ImageFile), //Upload thumbnail
                     IsWallPreview = image.IsWallPreview
                 };
 
