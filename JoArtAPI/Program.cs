@@ -8,6 +8,8 @@ using JohnsenArtAPI.Configuration;
 using JohnsenArtAPI.Extensions;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Services;
+using JohnsenArtAPI.Features.Contact.Interfaces;
+using JohnsenArtAPI.Features.Contact.Services;
 using JohnsenArtAPI.Features.Gallery.Admin;
 using JohnsenArtAPI.Features.Gallery.Aws;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
@@ -41,6 +43,7 @@ builder.Services.AddScoped<IAdminGalleryService, AdminGalleryService>();
 builder.Services.AddScoped<IGalleryService, GalleryService>();
 builder.Services.AddScoped<IAwsService, AwsService>();
 builder.Services.AddScoped<IStripeService, StripeService>();
+builder.Services.AddScoped<IEmailService, MailKitEmailService>();
 
 
 // Mapper injections
