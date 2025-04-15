@@ -52,7 +52,9 @@ public class AdminGalleryRepository : IAdminGalleryRepository
     {
         _logger.LogInformation("-------------------- \n Repository : UpdateArtwork:");
         // Checking if Artwork exists in database
-        var existingArtwork = await _context.Artworks.FindAsync(artwork.Id);
+        var existingArtwork = await _context.Artworks
+            .Include(a => a.Images) 
+            .FirstOrDefaultAsync(a => a.Id == artwork.Id);
         if (existingArtwork == null)
         {
             _logger.LogWarning("Attempted to update non-existing artwork with ID {artworkId}", artwork.Id);
@@ -63,10 +65,12 @@ public class AdminGalleryRepository : IAdminGalleryRepository
         try
         {
             _context.Entry(existingArtwork).CurrentValues.SetValues(artwork);
+            _context.Entry(existingArtwork).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Successfully updated artwork {artworkId}", artwork.Id);
-            return artwork;
+            return existingArtwork;
+
         }
         catch (DbUpdateException ex)
         {

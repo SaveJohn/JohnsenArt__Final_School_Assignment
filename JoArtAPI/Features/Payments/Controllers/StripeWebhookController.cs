@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using JohnsenArtAPI.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Stripe;
 
 namespace JohnsenArtAPI.Features.Payments.Controllers;
@@ -9,11 +10,14 @@ public class StripeWebhookController : ControllerBase
 {
     private readonly ILogger<StripeWebhookController> _logger;
     private readonly IConfiguration _config;
+    private readonly IAdminGalleryService _adminGalleryService;
 
-    public StripeWebhookController(ILogger<StripeWebhookController> logger, IConfiguration config)
+    public StripeWebhookController(ILogger<StripeWebhookController> logger, IConfiguration config,
+        IAdminGalleryService adminGalleryService)
     {
         _logger = logger;
         _config = config;
+        _adminGalleryService = adminGalleryService;
     }
 
     [HttpPost]
@@ -39,14 +43,24 @@ public class StripeWebhookController : ControllerBase
             {
                 case "payment_intent.succeeded":
                     var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-                    var artworkId = paymentIntent?.Metadata?.GetValueOrDefault("artworkId");
+                    var artworkIdRaw = paymentIntent?.Metadata?.GetValueOrDefault("artworkId");
 
-                    _logger.LogInformation(" payment successfull for artworkId: {artworkId}", artworkId);
-                    break;
+                    if (int.TryParse(artworkIdRaw, out var artworkId))
+                    {
+                        _logger.LogInformation("Successful payment for artworkId: {artworkId}", artworkId);
 
+                        var updated = await _adminGalleryService.MarkAsSoldAsync(artworkId);
+                        if (updated)
+                            _logger.LogInformation("Artwork {artworkId} marked as sold.", artworkId);
+                        else
+                            _logger.LogWarning("Artwork {artworkId} could not be updatedor was already sold.",
+                                artworkId);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Invalid artworkId metadata: {artworkIdRaw}", artworkIdRaw);
+                    }
 
-                default:
-                    _logger.LogInformation("Unhandled event type: {EventType}", stripeEvent.Type);
                     break;
             }
 
