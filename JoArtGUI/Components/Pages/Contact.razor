@@ -1,6 +1,73 @@
-﻿@page "/Contact"
-<h3>Contact</h3>
+﻿@page "/contact"
+@inject HttpClient Http
+@using System.ComponentModel.DataAnnotations
+
+<h3 class="text-center mb-4" style="color: #6f4e37;">Kontakt skjema</h3>
+
+<div class="d-flex justify-content-center" style="background-color: #d3d3d3; padding-bottom: 6rem;">
+    <div class="container mt-4" style="max-width: 600px; background-color: #f7f3ef; padding: 2rem; border-radius: 12px;">
+        <EditForm Model="@emailRequest" OnValidSubmit="@SendEmail">
+            <DataAnnotationsValidator/>
+
+
+            <div class="mb-3">
+                <label for="name" class="form-label" style="color: #6f4e37;">Navn</label>
+                <InputText id="name" class="form-control shadow-sm" @bind-Value="emailRequest.Name"/>
+                <ValidationMessage For="@(() => emailRequest.Name)"/>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label" style="color: #6f4e37;">Din e-post</label>
+                <InputText id="email" class="form-control shadow-sm" @bind-Value="emailRequest.FromEmail"/>
+                <ValidationMessage For="@(() => emailRequest.FromEmail)"/>
+            </div>
+
+            <div class="mb-3">
+                <label for="message" class="form-label" style="color: #6f4e37;">Melding</label>
+                <InputTextArea id="message" class="form-control shadow-sm" rows="6" @bind-Value="emailRequest.Message"/>
+                <ValidationMessage For="@(() => emailRequest.Message)"/>
+            </div>
+
+            <button type="submit" class="btn w-100" style="background-color: #9c6f56; color: white;">Send</button>
+
+            @if (!string.IsNullOrWhiteSpace(responseMessage))
+            {
+                <div class="alert alert-success mt-4">@responseMessage</div>
+            }
+        </EditForm>
+
+    </div>
+</div>
 
 @code {
-    
+    private EmailRequest emailRequest = new();
+    private string? responseMessage;
+
+    private async Task SendEmail()
+    {
+        var response = await Http.PostAsJsonAsync("api/email/send", emailRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            responseMessage = "E-post sendt.";
+            emailRequest = new();
+        }
+        else
+        {
+            responseMessage = "Noe gikk galt, vennligst prøv igjen senere.";
+        }
+    }
+
+    public class EmailRequest
+    {
+        [Required(ErrorMessage = "Navn er påkrevd.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "E-post er påkrevd.")]
+        [EmailAddress(ErrorMessage = "Ugyldig e-postadresse.")]
+        public string FromEmail { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Melding er påkrevd.")]
+        public string Message { get; set; } = string.Empty;
+    }
+
 }
