@@ -25,7 +25,7 @@ public class StripeService : IStripeService
         {
             Amount = (long)((artwork.Price ?? 0) * 100),
             Currency = "nok",
-            AutomaticPaymentMethods = new() {Enabled = true},
+            PaymentMethodTypes = new List<string> { "card", "klarna" },
             Metadata = new Dictionary<string, string>
             {
                 { "artworkId", artwork.Id.ToString() },

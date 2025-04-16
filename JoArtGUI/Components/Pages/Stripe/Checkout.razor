@@ -1,6 +1,5 @@
 ﻿@page "/checkout"
 @using JoArtClassLib.Art
-@using JoArtClassLib.AwsSecrets
 @using JoArtClassLib.Error
 @using JoArtClassLib.Payment
 @inject IJSRuntime JS
@@ -14,7 +13,6 @@
 }
 else
 {
-    <br/><br/>
     <div class="checkout-container mt-4">
         <div class="checkout-card">
             <h3 class="text-center mb-4">Betaling</h3>
@@ -39,9 +37,10 @@ else
                     </div>
                     <div class="mb-3">
                         <p class="mb-1 text-muted">Pris:</p>
-                        <p class="fw-bold fs-5 text-success">@(product.Price?.ToString("F2") ?? "0.00"),-</p>
+                        <p class="fw-semibold">@($"{product.Price:0.00}"),-</p>
                     </div>
                 </div>
+                
             </div>
             <hr class="my-4" />
             <h5 class="mb-4">Kunde informasjon</h5>
@@ -63,7 +62,7 @@ else
             <div class="form-check mb-2">
                 <input class="form-check-input" name="delivery" type="radio" id="pickup" value="Hentepunkt" 
                        @onchange="SetDeliveryMethod" checked="@("Hentepunkt" == buyer.DeliveryMethod)"/>
-                <label class="form-check-label" for="pickup">Hentepunk: Sandefjord, Breidablikk (kr 0)</label>
+                <label class="form-check-label" for="pickup">Hentepunk: Sandefjord, Breidablikk (kr @ShippingCosts.Hente)</label>
             </div>
             <div class="form-check mb-2">
                 <input class="form-check-input" name="delivery" type="radio" id="post" value="Post"
@@ -87,6 +86,29 @@ else
                     </div>
                 </div>
             }
+            
+            <hr class="my-4" />
+            
+            <h5 class="mb-4">Pris oppsummering</h5>
+            <div class="mt-2 px-4 pt-3">
+                <div class="d-flex justify-content-between">
+                    <p class="mb-1 text-muted">Kunstverk:</p>
+                    <p class="mb-1">@($"{product.Price:0.00}"),-</p>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(buyer.DeliveryMethod))
+                {
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-1 text-muted">Frakt:</p>
+                        <p class="mb-1">@($"{shippingCost:0.00}"),-</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <p class="fw-bold fs-5 mb-0">Total å betale:</p>
+                        <p class="fw-bold fs-5 mb-0">
+                            @(((decimal)(shippingCost + product.Price!)).ToString("F2")),-
+                        </p>
+                    </div>
+                }
+            </div>
             
             <hr class="my-4" />
             <div class="px-4 pb-4">
@@ -113,7 +135,7 @@ else
     public int productId { get; set; }
     private ArtworkResponse? product;
     private ImageResponse? image;
-    
+
     private decimal shippingCost;
     
     private List<ErrorResponse> errors = new();
@@ -145,21 +167,7 @@ else
     }
 
     
-    // Calculating shipping costs - estimate only; need a registered business to use Posten (Bring) API
-    public decimal CalculateShippingCosts()
-    {
-        var areal = product!.HeightDimension * product.WidthDimension;
-        decimal costs;
-
-        if (areal <= 2500) costs = ShippingCosts.Small;
-        
-        else if (areal <= 8100) costs = ShippingCosts.Medium;
-        
-        else costs = ShippingCosts.Large;
-
-        return costs;
-
-    }
+    
     
     // BuyerInfo
     private BuyerInfo buyer = new();
@@ -167,6 +175,9 @@ else
     private void SetDeliveryMethod(ChangeEventArgs e)
     {
         buyer.DeliveryMethod = e.Value?.ToString() ?? "";
+        shippingCost = CalculateShippingCosts();
+        
+        StateHasChanged(); 
     }
 
     private bool ValidateBuyerInfo()
@@ -210,6 +221,30 @@ else
         }
 
         return true;
+    }
+    
+    // Calculating shipping costs - estimate only; need a registered business to use Posten (Bring) API
+    public decimal CalculateShippingCosts()
+    {
+        
+        
+        if (buyer.DeliveryMethod == "Hentepunkt")
+        {
+            return shippingCost = ShippingCosts.Hente;
+        }
+        
+        var areal = product!.HeightDimension * product.WidthDimension;
+        decimal costs;
+
+        if (areal <= 2500) costs = ShippingCosts.Small;
+    
+        else if (areal <= 8100) costs = ShippingCosts.Medium;
+    
+        else costs = ShippingCosts.Large;
+        
+        
+        return costs;
+
     }
     
     // Stripe element
