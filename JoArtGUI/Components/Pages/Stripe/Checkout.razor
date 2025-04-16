@@ -46,20 +46,20 @@ else
             <hr class="my-4" />
             <h5 class="mb-4">Kunde informasjon</h5>
             <div class="form-group mb-3">
-                <label>Fullt navn</label>
+                <label>Fullt navn <span class="text-danger">*</span></label>
                 <input class="form-control" @bind="buyer.FullName" required />
             </div>
             <div class="row mb-3">
                 <div class="col-md-8">
-                    <label>Epost</label>
+                    <label>Epost <span class="text-danger">*</span></label>
                     <input type="email" class="form-control" @bind="buyer.Email" required />
                 </div>
                 <div class="col-md-4">
-                    <label>Telefon</label>
-                    <input class="form-control" maxlength="12" placeholder="+47..." @bind="buyer.PhoneNumber" required />
+                    <label>Telefon <small class="text-muted">Valgfritt </small></label> 
+                    <input class="form-control" maxlength="12" placeholder="+47..." @bind="buyer.PhoneNumber" />
                 </div>
             </div>
-            <label class="fw-medium">Hvordan vil du motta kunstverket?</label>
+            <label class="fw-medium">Hvordan vil du motta kunstverket? <span class="text-danger">*</span></label>
             <div class="form-check mb-2">
                 <input class="form-check-input" name="delivery" type="radio" id="pickup" value="Hentepunkt" 
                        @onchange="SetDeliveryMethod" checked="@("Hentepunkt" == buyer.DeliveryMethod)"/>
@@ -73,16 +73,16 @@ else
             @if (buyer.DeliveryMethod == "Post")
             {
                 <div class="form-group mb-3">
-                    <label>Adresse</label>
+                    <label>Adresse <span class="text-danger">*</span></label>
                     <input class="form-control" @bind="buyer.AddressLine" required />
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-8">
-                        <label>By</label>
+                        <label>By <span class="text-danger">*</span></label>
                         <input class="form-control" @bind="buyer.City" required />
                     </div>
                     <div class="col-md-4">
-                        <label>Postnummer</label>
+                        <label>Postnummer <span class="text-danger">*</span></label>
                         <input class="form-control" maxlength="4" @bind="buyer.PostalCode" required />
                     </div>
                 </div>
@@ -91,7 +91,7 @@ else
             <hr class="my-4" />
             <div class="px-4 pb-4">
                 <h5 class="mb-3">Betal med kort</h5>
-                <div id="card-element" class="form-control p-3 shadow-sm rounded" style="max-width: 400px;"></div>
+                <div id="card-element" class="stripe-card-wrapper" style="max-width: 400px;"></div>
                 <button class="btn btn-success mt-4" @onclick="HandlePayment">Betal nå</button>
                 <p class="text-danger mt-2">@statusMessage</p>
             </div>
@@ -133,6 +133,8 @@ else
             if (product is not null && product.WidthDimension is not null && product.HeightDimension is not null)
             shippingCost = CalculateShippingCosts();
 
+            await SetupStripeAsync();
+
         }
         catch (Exception e)
         {
@@ -166,36 +168,131 @@ else
     {
         buyer.DeliveryMethod = e.Value?.ToString() ?? "";
     }
+
+    private bool ValidateBuyerInfo()
+    {
+        // Fullname and Email required
+        if (string.IsNullOrWhiteSpace(buyer.FullName) || string.IsNullOrWhiteSpace(buyer.Email))
+        {
+            statusMessage = "Vennligst sørg for at både navn og epost er fylt ut.";
+            return false;
+        }
+        
+        // Valid Email check
+        if (!System.Text.RegularExpressions.Regex.IsMatch(buyer.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        {
+            statusMessage = "Ugyldig e-postadresse.";
+            return false;
+        }
+        
+        // Valid Phone check
+        if (!System.Text.RegularExpressions.Regex.IsMatch(buyer.PhoneNumber, @"^\+?\d{8,15}$"))
+        {
+            statusMessage = "Ugyldig telefonnummer.";
+            return false;
+        }
+        
+        // Delivery Method required
+        if (string.IsNullOrWhiteSpace(buyer.DeliveryMethod))
+        {
+            statusMessage = "Vennligst velg en leveringsmetode";
+            return false;
+        }
+        
+        // If Post method, then Address Line, City and Postalcode required
+        if (buyer.DeliveryMethod == "Post" &&
+            (string.IsNullOrWhiteSpace(buyer.AddressLine) ||
+             string.IsNullOrWhiteSpace(buyer.City) ||
+             string.IsNullOrWhiteSpace(buyer.PostalCode)))
+        {
+            statusMessage = "Vennligst fyll ut adresse, by og postnummer for postlevering.";
+            return false;
+        }
+
+        return true;
+    }
     
     // Stripe element
+    private IJSObjectReference? stripeModule;
     private string statusMessage = "";
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task SetupStripeAsync()
     {
-        if (firstRender && product != null)
+        try
         {
-            // Get clientSecret from API
+            // Get payment intent (client secret)
             var response = await Http.PostAsync($"http://localhost:8080/api/stripe/create-intent/{productId}", null);
-            var json = await response.Content.ReadFromJsonAsync<PaymentIntentResponse>();
-            string clientSecret = json?.ClientSecret ?? "";
-            string publishableKey = "pk_test_...";
+            var intent = await response.Content.ReadFromJsonAsync<PaymentIntentResponse>();
+            var clientSecret = intent?.ClientSecret ?? "";
+            Console.WriteLine($"ClientSecret: {clientSecret}");
+            
+            // Get publishable key
+            var keyResponse = await Http.GetFromJsonAsync<PublishableKeyResponse>("http://localhost:8080/api/stripe/publishable-key");
+            var publishableKey = keyResponse?.PublishableKey;
+            Console.WriteLine($"PublishableKey: {publishableKey}");
+            
+            // Calling js method 
+            if (!string.IsNullOrWhiteSpace(clientSecret) && !string.IsNullOrWhiteSpace(publishableKey))
+            {
+                // Ensure DOM is fully updated
+                await InvokeAsync(StateHasChanged);
+                
+                Console.WriteLine("Loading Stripe module...");
+                stripeModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/stripeInterop.js");
+                Console.WriteLine("Stripe module loaded.");
 
-            await JS.InvokeVoidAsync("initializeStripe", publishableKey, clientSecret);
+                await stripeModule.InvokeVoidAsync("initializeStripe", publishableKey, clientSecret);
+                Console.WriteLine("initializeStripe js function called.");
+            }
+            else
+            {
+                statusMessage = "Klarte ikke hente Stripe-nøkler";
+                Console.WriteLine($"Klarte ikke hente stripe nøkler - client secret: {clientSecret} publishable key: {publishableKey}");
+            }
+
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Stripe error: {ex.Message}");
+            statusMessage = "Noe gikk galt ved oppsett av Stripe.";
+        }
+        
     }
+        
+    
 
     private async Task HandlePayment()
     {
-        statusMessage = "Behandler betaling ...";
-        var result = await JS.InvokeAsync<StripeResult>("confirmCardPayment");
-
-        if (result.error != null)
+        if (!ValidateBuyerInfo())
         {
-            statusMessage = $"Feil: {result.error.message}";
+            return;
         }
-        else
+        if (stripeModule is null)
         {
-            statusMessage = "Betaling er fullført!";
+            statusMessage = "Stripe ble ikke initialisert. Prøv å laste siden på nytt.";
+            Console.WriteLine("Stripe Module er null");
+            return;
+        }
+
+        try
+        {
+            statusMessage = "Behandler betaling ...";
+
+            var result = await stripeModule.InvokeAsync<StripeResult>("confirmCardPayment");
+
+            if (result.error != null)
+            {
+                statusMessage = $"Feil: {result.error.message}";
+            }
+            else
+            {
+                statusMessage = "Betaling er fullført!";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = "En feil oppstod under betaling.";
+            Console.WriteLine($"Stripe betaling feilet: {ex.Message}");
         }
     }
 }
