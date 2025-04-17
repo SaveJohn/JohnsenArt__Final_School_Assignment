@@ -38,7 +38,23 @@ async function waitForElement(selector) {
 export async function confirmCardPayment() {
     return await stripe.confirmCardPayment(window.clientSecret, {
         payment_method: {
-            card: card
-        }
+            billing_details: {
+                card: card,
+            }
+        },
+        return_url: window.location.href
+    });
+    
+}
+
+export async function confirmKlarnaPayment() {
+    return await stripe.confirmKlarnaPayment(window.clientSecret, {
+        payment_method: {
+            billing_details: {
+                email: document.querySelector('input[type=email]').value,
+                name: document.querySelector('input[name="fullName"]').value
+            }
+        },
+        return_url: window.location.href
     });
 }

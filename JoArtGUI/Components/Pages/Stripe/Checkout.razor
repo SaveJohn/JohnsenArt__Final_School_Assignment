@@ -1,4 +1,5 @@
 ﻿@page "/checkout"
+@using System.Text.Json
 @using JoArtClassLib.Art
 @using JoArtClassLib.Error
 @using JoArtClassLib.Payment
@@ -7,12 +8,17 @@
 
 
 
-@if (product is null)
+@if (!string.IsNullOrEmpty(ErrorMessage))
 {
-    <p>Laster produkt ...</p>
+    <p class="text-danger fw-bold">@ErrorMessage</p>
 }
-else
+else if (isLoading)
 {
+    <p class="text-center pt-5">Laster produkt ...</p>
+}
+else if (product is not null)
+{
+
     <div class="checkout-container mt-4">
         <div class="checkout-card">
             <h3 class="text-center mb-4">Betaling</h3>
@@ -37,7 +43,7 @@ else
                     </div>
                     <div class="mb-3">
                         <p class="mb-1 text-muted">Pris:</p>
-                        <p class="fw-semibold">@($"{product.Price:0.00}"),-</p>
+                        <p class="fw-semibold">@((product?.Price ?? 0).ToString("F2")),-</p>
                     </div>
                 </div>
                 
@@ -46,7 +52,7 @@ else
             <h5 class="mb-4">Kunde informasjon</h5>
             <div class="form-group mb-3">
                 <label>Fullt navn <span class="text-danger">*</span></label>
-                <input class="form-control" @bind="buyer.FullName" required />
+                <input class="form-control" name="fullName" @bind="buyer.FullName" required />
             </div>
             <div class="row mb-3">
                 <div class="col-md-8">
@@ -93,34 +99,74 @@ else
             <div class="mt-2 px-4 pt-3">
                 <div class="d-flex justify-content-between">
                     <p class="mb-1 text-muted">Kunstverk:</p>
-                    <p class="mb-1">@($"{product.Price:0.00}"),-</p>
+                    <p class="mb-1">@((product?.Price ?? 0).ToString("F2")),-</p>
                 </div>
                 @if (!string.IsNullOrWhiteSpace(buyer.DeliveryMethod))
                 {
                     <div class="d-flex justify-content-between">
                         <p class="mb-1 text-muted">Frakt:</p>
-                        <p class="mb-1">@($"{shippingCost:0.00}"),-</p>
+                        @if (buyer.DeliveryMethod == "Hentepunkt")
+                        {
+                            <p class="mb-1">@ShippingCosts.Hente,-</p>
+                        }
+                        else
+                        {
+                            <p class="mb-1">@((shippingCost ?? 0).ToString("F2")),-</p>
+                        }
                     </div>
                     <div class="d-flex justify-content-between">
                         <p class="fw-bold fs-5 mb-0">Total å betale:</p>
                         <p class="fw-bold fs-5 mb-0">
-                            @(((decimal)(shippingCost + product.Price!)).ToString("F2")),-
+                            @(((shippingCost ?? 0) + (product?.Price ?? 0)).ToString("F2")),-
+
                         </p>
                     </div>
                 }
             </div>
             
             <hr class="my-4" />
-            <div class="px-4 pb-4">
-                <h5 class="mb-3">Betal med kort</h5>
-                <div id="card-element" class="stripe-card-wrapper" style="max-width: 400px;"></div>
-                <button class="btn btn-success mt-4" @onclick="HandlePayment">Betal nå</button>
-                <p class="text-danger mt-2">@statusMessage</p>
+            <div class="d-flex justify-content-between">
+                <h5 class="mb-4">Betalingsmetode</h5>
+                <p class="fw-medium text-muted">Velg en betalingsmetode for å fortsette<span class="text-danger">*</span></p>
             </div>
+            
+            <div class="form-check mb-2">
+                <input class="form-check-input" name="card" type="radio" id="card-payment" value="Card"
+                       @onchange="SetPaymentMethod" checked="@("Card" == paymentMethod.Type)"/>
+                <label class="form-check-label" for="card-payment">Kredittkort eller debetkort</label>
+            </div>
+            @if (buyer.DeliveryMethod != "Hentepunkt")
+            {
+                <div class="form-check mb-2">
+                    <input class="form-check-input" name="klarna" type="radio" id="klarna-payment" value="Klarna"
+                           @onchange="SetPaymentMethod" checked="@("Klarna" == paymentMethod.Type)" />
+                    <label class="form-check-label" for="klarna-payment">Betal med Klarna</label>
+                </div>
+            }
+            @if (paymentMethod.Type == "Card")
+            {
+                <div class="px-4 pb-4">
+                    <h5 class="mb-3">Betal med kort</h5>
+                    <div id="card-element" class="stripe-card-wrapper" style="max-width: 400px;"></div>
+                    <button class="btn btn-primary mt-4" @onclick="HandlePayment">Betal nå</button>
+                    <p class="text-danger mt-2">@statusMessage</p>
+                </div>
+            }
+            else if (paymentMethod.Type == "Klarna")
+            {
+                <div class="px-4 pb-4">
+                    <button class="btn btn-primary mt-2" @onclick="HandlePayment">Betal med Klarna</button>
+                </div>
+            }
+            
             
         </div>
     </div>
     
+}
+else
+{
+    <p class="text-danger text-center pt-5 fw-bold">Fant ikke produktet.</p>
 }
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -130,33 +176,48 @@ else
 
 @code {
     // Produkt
+    private bool isLoading = true;
+    
     [Parameter]
     [SupplyParameterFromQuery]
     public int productId { get; set; }
     private ArtworkResponse? product;
     private ImageResponse? image;
 
-    private decimal shippingCost;
+    private decimal? shippingCost;
+    PaymentMethod paymentMethod = new ();
     
     private List<ErrorResponse> errors = new();
     private string? ErrorMessage;
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"Hentet produktId: {productId}");
         try
         {
-            product = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{productId}");
-            if (product is null)
+            var response = await Http.GetAsync($"api/PublicGallery/artworks/{productId}");
+            var content = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Raw data from API:\n{content}");
+
+            if (!response.IsSuccessStatusCode)
             {
-                ErrorMessage = "Obs! Produktet eksisterer ikke lenger.";
-                return;
+                ErrorMessage = $"Klarte ikke hente produktet. Statuskode: {response.StatusCode}";
             }
-            image = product?.Images.FirstOrDefault();
-            if (product is not null && product.WidthDimension is not null && product.HeightDimension is not null)
-            shippingCost = CalculateShippingCosts();
 
-            await SetupStripeAsync();
+            product = JsonSerializer.Deserialize<ArtworkResponse>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
+            Console.WriteLine($"Product fetched: {product?.Title}");
+
+            image = product?.Images?.FirstOrDefault();
+
+            if (product?.WidthDimension is not null && product.HeightDimension is not null)
+            {
+                shippingCost = CalculateShippingCosts();
+            }
+            
         }
         catch (Exception e)
         {
@@ -164,10 +225,12 @@ else
             Console.WriteLine("Error fetching artwork data: " + e.Message);
             
         }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
-    
-    
     
     // BuyerInfo
     private BuyerInfo buyer = new();
@@ -177,7 +240,6 @@ else
         buyer.DeliveryMethod = e.Value?.ToString() ?? "";
         shippingCost = CalculateShippingCosts();
         
-        StateHasChanged(); 
     }
 
     private bool ValidateBuyerInfo()
@@ -227,12 +289,6 @@ else
     public decimal CalculateShippingCosts()
     {
         
-        
-        if (buyer.DeliveryMethod == "Hentepunkt")
-        {
-            return shippingCost = ShippingCosts.Hente;
-        }
-        
         var areal = product!.HeightDimension * product.WidthDimension;
         decimal costs;
 
@@ -251,7 +307,7 @@ else
     private IJSObjectReference? stripeModule;
     private string statusMessage = "";
 
-    private async Task SetupStripeAsync()
+    private async Task SetupStripeCardAsync()
     {
         try
         {
@@ -293,7 +349,18 @@ else
         }
         
     }
+    
+    private async void SetPaymentMethod(ChangeEventArgs e)
+    {
+        paymentMethod.Type = e.Value?.ToString() ?? "";
+
+        if (paymentMethod.Type == "Card")
+        {
+            await SetupStripeCardAsync();
+        }
         
+        
+    }
     
 
     private async Task HandlePayment()
@@ -313,7 +380,14 @@ else
         {
             statusMessage = "Behandler betaling ...";
 
-            var result = await stripeModule.InvokeAsync<StripeResult>("confirmCardPayment");
+            StripeResult result;
+            
+            // Pay with Card
+            if (paymentMethod.Type == "Card")
+                result = await stripeModule.InvokeAsync<StripeResult>("confirmCardPayment");
+            
+            // Pay with Klarna
+            else result = await stripeModule.InvokeAsync<StripeResult>("confirmKlarnaPayment");
 
             if (result.error != null)
             {
@@ -331,3 +405,4 @@ else
         }
     }
 }
+
