@@ -3,16 +3,19 @@ let elements;
 let card;
 
 export async function initializeStripe(publishableKey, clientSecret) {
+    console.log("initializeStripe started");
     stripe = Stripe(publishableKey);
     elements = stripe.elements();
 
     // Wait for #card-element to exist in DOM before mounting Stripe card element
     await waitForElement("#card-element");
+    console.log("card-element found");
     
     card = elements.create('card', {
         hidePostalCode: true
     });
     card.mount('#card-element');
+    
     window.clientSecret = clientSecret;
     console.log("stripeInterop.js loaded");
 
@@ -38,9 +41,7 @@ async function waitForElement(selector) {
 export async function confirmCardPayment() {
     return await stripe.confirmCardPayment(window.clientSecret, {
         payment_method: {
-            billing_details: {
                 card: card,
-            }
         },
         return_url: window.location.href
     });
@@ -57,4 +58,15 @@ export async function confirmKlarnaPayment() {
         },
         return_url: window.location.href
     });
+}
+
+export async function checkPaymentStatus() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientSecret = urlParams.get('payment_intent_client_secret');
+    
+    if (!clientSecret) return null;
+    
+    const result = await stripe.retrievePaymentIntent(clientSecret);
+    return result.paymentIntent?.status ?? null;
+    
 }

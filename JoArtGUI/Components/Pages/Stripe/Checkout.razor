@@ -5,6 +5,7 @@
 @using JoArtClassLib.Payment
 @inject IJSRuntime JS
 @inject HttpClient Http
+@inject NavigationManager Navigation
 
 
 
@@ -14,7 +15,7 @@
 }
 else if (isLoading)
 {
-    <p class="text-center pt-5">Laster produkt ...</p>
+    <p class="text-center pt-5"><i class="spinner-border spinner-border-sm me-2"></i>Laster produkt ...</p>
 }
 else if (product is not null)
 {
@@ -82,13 +83,13 @@ else if (product is not null)
                     <input class="form-control" @bind="buyer.AddressLine" required />
                 </div>
                 <div class="row mb-3">
+                    <div class="col-md-3">
+                        <label>Postnummer <span class="text-danger">*</span></label>
+                        <input class="form-control" maxlength="4" @bind="buyer.PostalCode" required/>
+                    </div>
                     <div class="col-md-8">
                         <label>By <span class="text-danger">*</span></label>
                         <input class="form-control" @bind="buyer.City" required />
-                    </div>
-                    <div class="col-md-4">
-                        <label>Postnummer <span class="text-danger">*</span></label>
-                        <input class="form-control" maxlength="4" @bind="buyer.PostalCode" required />
                     </div>
                 </div>
             }
@@ -134,10 +135,18 @@ else if (product is not null)
                 <input class="form-check-input" name="card" type="radio" id="card-payment" value="Card"
                        @onchange="SetPaymentMethod" checked="@("Card" == paymentMethod.Type)"/>
                 <label class="form-check-label" for="card-payment">Kredittkort eller debetkort</label>
+                <div class="pt-2">
+                    <div id="card-element" class="stripe-card-wrapper" style="max-width: 400px;"></div>
+                </div>
+                
             </div>
+            @if (!isStripeReady)
+            {
+                <p class="text-muted"><i class="spinner-border spinner-border-sm me-2"></i>Laster stripe ...</p>
+            }
             @if (buyer.DeliveryMethod != "Hentepunkt")
             {
-                <div class="form-check mb-2">
+                <div class="form-check mb-2 pt-4">
                     <input class="form-check-input" name="klarna" type="radio" id="klarna-payment" value="Klarna"
                            @onchange="SetPaymentMethod" checked="@("Klarna" == paymentMethod.Type)" />
                     <label class="form-check-label" for="klarna-payment">Betal med Klarna</label>
@@ -146,9 +155,9 @@ else if (product is not null)
             @if (paymentMethod.Type == "Card")
             {
                 <div class="px-4 pb-4">
-                    <h5 class="mb-3">Betal med kort</h5>
-                    <div id="card-element" class="stripe-card-wrapper" style="max-width: 400px;"></div>
-                    <button class="btn btn-primary mt-4" @onclick="HandlePayment">Betal nå</button>
+                    <button class="btn btn-primary mt-4" @onclick="HandlePayment" disabled="@(isStripeReady == false)">
+                        Betal nå
+                    </button>
                     <p class="text-danger mt-2">@statusMessage</p>
                 </div>
             }
@@ -157,6 +166,10 @@ else if (product is not null)
                 <div class="px-4 pb-4">
                     <button class="btn btn-primary mt-2" @onclick="HandlePayment">Betal med Klarna</button>
                 </div>
+                @if (klarnaIsLoaded is false)
+                {
+                    <p class="text-muted"><i class="spinner-border spinner-border-sm me-2"></i>Henter Klarna ...</p>
+                }
             }
             
             
@@ -203,7 +216,7 @@ else
             {
                 ErrorMessage = $"Klarte ikke hente produktet. Statuskode: {response.StatusCode}";
             }
-
+            
             product = JsonSerializer.Deserialize<ArtworkResponse>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -218,6 +231,10 @@ else
                 shippingCost = CalculateShippingCosts();
             }
             
+            isLoading = false;
+            await InvokeAsync(StateHasChanged);
+            await SetupStripeAsync();
+            
         }
         catch (Exception e)
         {
@@ -225,9 +242,42 @@ else
             Console.WriteLine("Error fetching artwork data: " + e.Message);
             
         }
-        finally
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Navigation.Uri.Contains("payment_intent_client_secret"))
         {
-            isLoading = false;
+            try
+            {
+                var status = await JS.InvokeAsync<string>("checkPaymetnStatus");
+
+                if (!string.IsNullOrWhiteSpace(status))
+                {
+                    switch (status)
+                    {
+                        case "succeeded":
+                            statusMessage = "Betaling fullført!";
+                            break;
+                        case "processing":
+                            statusMessage = "Betaling pågår - du vil motta en bekreftelse snart.";
+                            break;
+                        case "requires_payment_method":
+                            statusMessage = "Betaling feilet. Prøv igjen.";
+                            break;
+                        default:
+                            statusMessage = $"Status: {status}";
+                            break;
+                    }
+
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Feil ved henting av betalingsstatus: {ex.Message}");
+            }
+            
         }
     }
 
@@ -306,8 +356,10 @@ else
     // Stripe element
     private IJSObjectReference? stripeModule;
     private string statusMessage = "";
+    bool isStripeReady;
+    bool? klarnaIsLoaded = null;
 
-    private async Task SetupStripeCardAsync()
+    private async Task SetupStripeAsync()
     {
         try
         {
@@ -334,6 +386,9 @@ else
 
                 await stripeModule.InvokeVoidAsync("initializeStripe", publishableKey, clientSecret);
                 Console.WriteLine("initializeStripe js function called.");
+                
+                isStripeReady = true;
+                StateHasChanged();
             }
             else
             {
@@ -350,15 +405,10 @@ else
         
     }
     
-    private async void SetPaymentMethod(ChangeEventArgs e)
+    private void SetPaymentMethod(ChangeEventArgs e)
     {
         paymentMethod.Type = e.Value?.ToString() ?? "";
 
-        if (paymentMethod.Type == "Card")
-        {
-            await SetupStripeCardAsync();
-        }
-        
         
     }
     
@@ -385,10 +435,16 @@ else
             // Pay with Card
             if (paymentMethod.Type == "Card")
                 result = await stripeModule.InvokeAsync<StripeResult>("confirmCardPayment");
-            
-            // Pay with Klarna
-            else result = await stripeModule.InvokeAsync<StripeResult>("confirmKlarnaPayment");
 
+            // Pay with Klarna
+            else
+            {
+                klarnaIsLoaded = false;
+                result = await stripeModule.InvokeAsync<StripeResult>("confirmKlarnaPayment");
+                klarnaIsLoaded = true;
+            }
+            
+            
             if (result.error != null)
             {
                 statusMessage = $"Feil: {result.error.message}";

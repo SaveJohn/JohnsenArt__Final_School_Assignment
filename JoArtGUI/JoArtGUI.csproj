@@ -37,7 +37,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Pages\Admin\Admin.razor" />
       <AdditionalFiles Include="Components\Pages\Login\Login.razor" />
     </ItemGroup>
 
