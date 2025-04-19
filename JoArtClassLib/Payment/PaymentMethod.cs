@@ -2,5 +2,5 @@
 
 public class PaymentMethod
 {
-    public string Type { get; set; } = "";
+    public string Selected { get; set; } = "";
 }

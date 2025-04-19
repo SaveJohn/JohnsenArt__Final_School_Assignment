@@ -58,7 +58,7 @@ else
                         <div class="mb-4">
                             <p><strong>Pris:</strong> @(artwork.Price?.ToString("F2") ?? "0.00") ,-</p>
                             <a class="button-41 mt-2"
-                               href=@($"/checkout?productId={artworkId}")>
+                               href=@($"/checkout/{artworkId}")>
                                 Kjøp <i class="fa-solid fa-bag-shopping"></i>
                             </a>
                         </div>
