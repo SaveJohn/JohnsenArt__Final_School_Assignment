@@ -6,19 +6,19 @@ namespace JohnsenArtAPI.Features.Payments.Services;
 
 public class StripeService : IStripeService
 {
-    private readonly StripeConfigProvider _config;
+    private readonly StripeConfigProvider _stripeConfigProvider ;
     private readonly ILogger<StripeService> _logger;
 
     public StripeService(StripeConfigProvider config, ILogger<StripeService> logger)
     {
-        _config = config;
+        _stripeConfigProvider  = config;
         _logger = logger;
     }
 
     public async Task<PaymentIntent> CreatePaymentIntentAsync(ArtworkResponse artwork)
     {
 
-        var config = await _config.GetStripeConfigAsync();
+        var config = await _stripeConfigProvider .GetStripeConfigAsync();
         StripeConfiguration.ApiKey = config.SecretKey;
         
         var options = new PaymentIntentCreateOptions

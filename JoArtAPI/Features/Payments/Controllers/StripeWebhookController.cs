@@ -1,4 +1,5 @@
-﻿using JohnsenArtAPI.Services.Interfaces;
+﻿using JohnsenArtAPI.Features.Payments.Services;
+using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
 
@@ -9,14 +10,16 @@ namespace JohnsenArtAPI.Features.Payments.Controllers;
 public class StripeWebhookController : ControllerBase
 {
     private readonly ILogger<StripeWebhookController> _logger;
-    private readonly IConfiguration _config;
+    private readonly StripeConfigProvider _stripeConfigProvider ;
     private readonly IAdminGalleryService _adminGalleryService;
 
-    public StripeWebhookController(ILogger<StripeWebhookController> logger, IConfiguration config,
+    public StripeWebhookController(
+        ILogger<StripeWebhookController> logger, 
+        StripeConfigProvider config,
         IAdminGalleryService adminGalleryService)
     {
         _logger = logger;
-        _config = config;
+        _stripeConfigProvider  = config;
         _adminGalleryService = adminGalleryService;
     }
 
@@ -24,8 +27,16 @@ public class StripeWebhookController : ControllerBase
     public async Task<IActionResult> Handle()
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-        var endpointSecret = _config["Stripe:WebhookSecret"];
-
+        
+        var config = await _stripeConfigProvider .GetStripeConfigAsync();
+        var endpointSecret = config.WebhookSecret;
+        
+        if (string.IsNullOrEmpty(endpointSecret))
+        {
+            _logger.LogError("Webhook secret is null or empty.");
+            return StatusCode(500, "Missing Stripe webhook secret.");
+        }
+        
         try
         {
             var stripeSignature = Request.Headers["Stripe-Signature"];
