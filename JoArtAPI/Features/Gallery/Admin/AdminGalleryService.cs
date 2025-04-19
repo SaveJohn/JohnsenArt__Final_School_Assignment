@@ -29,21 +29,21 @@ public class AdminGalleryService : IAdminGalleryService
         _mapper = mapper;
         _logger = logger;
     }
-    
+
     // UPLOAD Artwork
     public async Task<ArtworkResponse> UploadArtworkAsync(ArtworkRequest request)
     {
         _logger.LogInformation($"-------------------- \n Service: UploadArtwork:");
         _logger.LogDebug($"Number of images in the request: {request.Images?.Count}");
-        
-        
+
+
         // Making sure bucket exists (It declared in appsettings.json)
         await _aws.CheckIfS3BucketExists();
 
         // Map DTO to Entity
         var artwork = _mapper.Map<Artwork>(request);
         if (!request.ForSale) artwork.Price = null;
-        
+
         artwork.Images.Clear(); // Remove Automapper placeholders
 
         // Uploading image(s) to S3 bucket
@@ -71,14 +71,14 @@ public class AdminGalleryService : IAdminGalleryService
             }
         }
 
-        
+
         // Saving to database through repository
         var savedArtwork = await _repository.AddArtworkAsync(artwork);
 
         // Return DTO
         return _mapper.Map<ArtworkResponse>(savedArtwork);
     }
-    
+
     // UPDATE Artwork
     public async Task<ArtworkResponse?> UpdateArtworkAsync(int artId, UpdateArtworkRequest request)
     {
@@ -91,12 +91,12 @@ public class AdminGalleryService : IAdminGalleryService
             return null;
         }
 
-        
+
         _mapper.Map(request, existingArtwork);
         existingArtwork.Id = artId;
         if (!request.ForSale) existingArtwork.Price = null;
         existingArtwork.Images.Clear();
-        
+
         // Handle images (managing updates and deletions separately)
         await UpdateArtworkImages(existingArtwork, request.Images);
 
@@ -108,7 +108,7 @@ public class AdminGalleryService : IAdminGalleryService
     {
         _logger.LogInformation($"------------------- \n Service: UpdateArtworkImages ");
         _logger.LogDebug($"Number of images in the request: {images.Count}");
-        
+
         // Storing old Object Keys to delete from S3 if update in database is successful 
         var oldObjectKeys = new List<string>();
         var oldThumbnailKeys = new List<string>();
@@ -123,7 +123,7 @@ public class AdminGalleryService : IAdminGalleryService
             foreach (var image in images)
             {
                 if (image.ImageFile == null) continue;
-                
+
                 // Replace existing image object
                 var newImage = new ArtworkImage
                 {
@@ -136,7 +136,6 @@ public class AdminGalleryService : IAdminGalleryService
 
                 // Adding images to existing artwork
                 existingArtwork.Images.Add(newImage);
-
             }
         }
         catch (Exception ex)
@@ -144,7 +143,7 @@ public class AdminGalleryService : IAdminGalleryService
             _logger.LogError($"Error occured while updating images: {ex.Message}");
             throw;
         }
-        
+
         // Deleting old images from S3
         foreach (var objectKey in oldObjectKeys)
         {
@@ -157,13 +156,13 @@ public class AdminGalleryService : IAdminGalleryService
         }
         
     }
-    
-    
+
+
     // DELETE Artwork
     public async Task<ArtworkResponse?> DeleteArtworkAsync(int artId)
     {
         _logger.LogInformation($"------------------- \n Service: DeleteArtwork : with ID {artId}");
-        
+
         var deletedArtwork = await _repository.DeleteArtworkAsync(artId);
 
         if (deletedArtwork is not null)
@@ -175,7 +174,32 @@ public class AdminGalleryService : IAdminGalleryService
                 _logger.LogInformation($"Deleted image: {image.ObjectKey}");
             }
         }
-        
+
         return _mapper.Map<ArtworkResponse>(deletedArtwork);
+    }
+
+
+    public async Task<bool> MarkAsSoldAsync(int artworkId)
+    {
+        _logger.LogInformation("Marking the artworkd {artworkId} as sold", artworkId);
+
+        var artwork = await _repoGet.GetArtworkByIdAsync(artworkId);
+        if (artwork == null)
+        {
+            _logger.LogWarning("The artwork {artworkId} was not found.", artworkId);
+            return false;
+        }
+
+        if (!artwork.ForSale)
+        {
+            _logger.LogWarning("Artwork {artworkId} is already marked as sold.", artworkId);
+            return false;
+        }
+
+        artwork.ForSale = false;
+        artwork.Price = null;
+
+        await _repository.UpdateArtworkAsync(artwork);
+        return true;
     }
 }
