@@ -2,33 +2,38 @@
 @inject HttpClient Http
 @using System.ComponentModel.DataAnnotations
 
-<h3 class="text-center mb-4" style="color: #6f4e37;">Kontakt skjema</h3>
 
-<div class="d-flex justify-content-center" style="background-color: #d3d3d3; padding-bottom: 6rem;">
-    <div class="container mt-4" style="max-width: 600px; background-color: #f7f3ef; padding: 2rem; border-radius: 12px;">
+<div class="d-flex mail-container justify-content-center" >
+    <div class="mail-card mt-4">
+        <h3 class="text-center mb-4" >Kontakt skjema</h3>
+        <hr class="my-4" />
         <EditForm Model="@emailRequest" OnValidSubmit="@SendEmail">
             <DataAnnotationsValidator/>
 
 
             <div class="mb-3">
-                <label for="name" class="form-label" style="color: #6f4e37;">Navn</label>
+                <label for="name" class="form-label">Navn</label>
                 <InputText id="name" class="form-control shadow-sm" @bind-Value="emailRequest.Name"/>
                 <ValidationMessage For="@(() => emailRequest.Name)"/>
             </div>
 
             <div class="mb-3">
-                <label for="email" class="form-label" style="color: #6f4e37;">Din e-post</label>
+                <label for="email" class="form-label" >Din e-post</label>
                 <InputText id="email" class="form-control shadow-sm" @bind-Value="emailRequest.FromEmail"/>
                 <ValidationMessage For="@(() => emailRequest.FromEmail)"/>
             </div>
 
             <div class="mb-3">
-                <label for="message" class="form-label" style="color: #6f4e37;">Melding</label>
+                <label for="message" class="form-label" >Melding</label>
                 <InputTextArea id="message" class="form-control shadow-sm" rows="6" @bind-Value="emailRequest.Message"/>
                 <ValidationMessage For="@(() => emailRequest.Message)"/>
             </div>
+            
+            <div class="text-center py-4 ">
+                <button type="submit" role="button" class="button-send">Send</button>
+            </div>
 
-            <button type="submit" class="btn w-100" style="background-color: #9c6f56; color: white;">Send</button>
+            
 
             @if (!string.IsNullOrWhiteSpace(responseMessage))
             {
