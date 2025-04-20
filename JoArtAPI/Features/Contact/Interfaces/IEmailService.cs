@@ -4,5 +4,6 @@ namespace JohnsenArtAPI.Features.Contact.Interfaces;
 
 public interface IEmailService
 {
-    Task SendEmailAsync(EmailRequest emailRequest);
+    Task SendContactEmailAsync(EmailRequest emailRequest);
+    Task<string> GetAdminEmailAsync();
 }

@@ -1,4 +1,5 @@
 ﻿@page "/checkout/{productId:int}"
+@using System.Text
 @using System.Text.Json
 @using JoArtClassLib.Art
 @using JoArtClassLib.Error
@@ -353,20 +354,31 @@ else
     bool isStripeReady;
     bool? klarnaIsLoaded = null;
     
+    
     private async Task SetupStripeAsync()
     {
         if (isStripeReady) return;
         
         try
         {
+            // Creating buyer metadata
+            var buyerJson = JsonSerializer.Serialize(buyer);
+            var content = new StringContent(buyerJson, Encoding.UTF8, "application/json");
+            
+            if (string.IsNullOrWhiteSpace(buyer.FullName) || string.IsNullOrWhiteSpace(buyer.Email))
+            {
+                statusMessage = "Manglende kundeinformasjon for betaling.";
+                return;
+            }
             // Get payment intent (client secret)
-            var response = await Http.PostAsync($"http://localhost:8080/api/stripe/create-intent/{productId}", null);
+            var response = await Http.PostAsync($"api/stripe/create-intent/{productId}", content);
             var intent = await response.Content.ReadFromJsonAsync<PaymentIntentResponse>();
             var clientSecret = intent?.ClientSecret ?? "";
             Console.WriteLine($"ClientSecret: {clientSecret}");
             
             // Get publishable key
-            var keyResponse = await Http.GetFromJsonAsync<PublishableKeyResponse>("http://localhost:8080/api/stripe/publishable-key");
+            var keyResponse = await Http.GetFromJsonAsync<PublishableKeyResponse>("api/stripe/publishable-key");
+
             var publishableKey = keyResponse?.PublishableKey;
             Console.WriteLine($"PublishableKey: {publishableKey}");
             
@@ -441,6 +453,7 @@ else
 
         try
         {
+            
             // Pay with Card
             if (paymentMethod.Selected == PaymentMethods.Card.ToString())
             {

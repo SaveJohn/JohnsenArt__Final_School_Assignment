@@ -45,6 +45,7 @@ builder.Services.AddScoped<IGalleryService, GalleryService>();
 builder.Services.AddScoped<IAwsService, AwsService>();
 builder.Services.AddScoped<IStripeService, StripeService>();
 builder.Services.AddScoped<IEmailService, MailKitEmailService>();
+builder.Services.AddScoped<IOrderEmailService, OrderEmailService>();
 
 
 // Mapper injections
@@ -53,6 +54,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Repository injections
 builder.Services.AddScoped<IAdminGalleryRepository, AdminGalleryRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
+builder.Services.AddScoped<IAdminDetailRepository, AdminDetailRepository>();
 
 // AWS
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());

@@ -1,26 +1,36 @@
 ﻿
+using JoArtDataLayer.Repositories;
+using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Features.Contact.DTO;
 using JohnsenArtAPI.Features.Contact.Interfaces;
 using MailKit.Net.Smtp;
+using Microsoft.AspNetCore.Http.HttpResults;
 using MimeKit;
 
 namespace JohnsenArtAPI.Features.Contact.Services;
 
 public class MailKitEmailService : IEmailService
 {
+    private readonly ILogger<MailKitEmailService> _logger;
     private readonly IConfiguration _config;
+    private readonly IAdminDetailRepository _repository;
 
-    public MailKitEmailService(IConfiguration config)
+    public MailKitEmailService(
+        ILogger<MailKitEmailService> logger,
+        IConfiguration config,
+        IAdminDetailRepository repository)
     {
+        _logger = logger;
         _config = config;
+        _repository = repository;
     }
 
-    public async Task SendEmailAsync(EmailRequest emailRequest)
+    public async Task SendContactEmailAsync(EmailRequest emailRequest)
     {
         var email = new MimeMessage();
         email.From.Add(MailboxAddress.Parse(_config["Smtp:From"]));
         email.To.Add(MailboxAddress.Parse("sebastian.kroger.holmen97@gmail.com"));
-        email.Subject = $"Email sendt fra {emailRequest.Name}";
+        email.Subject = $"{emailRequest.Name} har sendt deg en mail via JohnsenArt";
 
         email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
         {
@@ -37,5 +47,11 @@ public class MailKitEmailService : IEmailService
         await smtp.AuthenticateAsync(_config["Smtp:Username"], _config["Smtp:Password"]);
         await smtp.SendAsync(email);
         await smtp.DisconnectAsync(true);
+    }
+
+    public async Task<string> GetAdminEmailAsync()
+    {
+        var email = await _repository.GetAdminEmail();
+        return email;
     }
 }

@@ -1,4 +1,5 @@
-﻿using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
+﻿using JoArtClassLib.Payment;
+using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Features.Payments.Interfaces;
 using JohnsenArtAPI.Features.Payments.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -23,18 +24,17 @@ public class StripeController : ControllerBase
     }
 
     [HttpPost("create-intent/{artworkId}")]
-    public async Task<IActionResult> CreatePaymentIntent(int artworkId)
+    public async Task<IActionResult> CreatePaymentIntent(int artworkId, [FromBody] BuyerInfo buyer)
     {
         _logger.LogInformation($"Creating payment intent for {artworkId}");
 
         var artwork = await _galleryService.GetArtworkByIdAsync(artworkId);
-
         if (artwork == null || artwork.Price == null || artwork.ForSale == false)
         {
             return BadRequest("Chosen artwork is not available for sale.");
         }
 
-        var intent = await _stripeService.CreatePaymentIntentAsync(artwork);
+        var intent = await _stripeService.CreatePaymentIntentAsync(artwork, buyer);
         return Ok(new { clientSecret = intent.ClientSecret });
     }
 

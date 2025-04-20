@@ -1,4 +1,7 @@
-﻿using JohnsenArtAPI.Features.Payments.Services;
+﻿using JohnsenArtAPI.Features.Contact.DTO;
+using JohnsenArtAPI.Features.Contact.Interfaces;
+using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
+using JohnsenArtAPI.Features.Payments.Services;
 using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
@@ -12,15 +15,24 @@ public class StripeWebhookController : ControllerBase
     private readonly ILogger<StripeWebhookController> _logger;
     private readonly StripeConfigProvider _stripeConfigProvider ;
     private readonly IAdminGalleryService _adminGalleryService;
+    private readonly IGalleryService _galleryService;
+    private readonly IEmailService _adminMail;
+    private readonly IOrderEmailService _orderEmailService;
 
     public StripeWebhookController(
         ILogger<StripeWebhookController> logger, 
         StripeConfigProvider config,
-        IAdminGalleryService adminGalleryService)
+        IAdminGalleryService adminGalleryService,
+        IGalleryService galleryService,
+        IEmailService adminMail,
+        IOrderEmailService orderEmailService)
     {
         _logger = logger;
         _stripeConfigProvider  = config;
         _adminGalleryService = adminGalleryService;
+        _galleryService = galleryService;
+        _adminMail = adminMail;
+        _orderEmailService = orderEmailService;
     }
 
     [HttpPost]
@@ -54,17 +66,45 @@ public class StripeWebhookController : ControllerBase
             {
                 case "payment_intent.succeeded":
                     var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+                    var buyerEmail = paymentIntent?.Metadata.GetValueOrDefault("buyer_email");
+                    var buyerName = paymentIntent?.Metadata.GetValueOrDefault("buyer_name");
                     var artworkIdRaw = paymentIntent?.Metadata?.GetValueOrDefault("artworkId");
+                    
 
                     if (int.TryParse(artworkIdRaw, out var artworkId))
                     {
                         _logger.LogInformation("Successful payment for artworkId: {artworkId}", artworkId);
-
+                        var artwork = await _galleryService.GetArtworkByIdAsync(artworkId);
                         var updated = await _adminGalleryService.MarkAsSoldAsync(artworkId);
+                        var adminEmail = await _adminMail.GetAdminEmailAsync();
                         if (updated)
-                            _logger.LogInformation("Artwork {artworkId} marked as sold.", artworkId);
+                        {
+                            await _orderEmailService.SendOrderEmailAsync(new EmailMessage
+                            {
+                                ToEmail = buyerEmail,
+                                Subject = "Takk for bestillingen din hos JohnsenArt!",
+                                HtmlBody = $@"
+                                <p>Hei {buyerName},</p>
+                                <p>Takk for at du kjøpte <strong>{artwork.Title}</strong>.</p>
+                                <p>Du vil bli kontaktet angående levering.</p>
+                                <hr/>
+                                <p>Vennlig hilsen,<br/>JohnsenArt</p>",
+                                ReplyTo = adminEmail
+                            });
+                            await _orderEmailService.SendOrderEmailAsync(new EmailMessage
+                            {
+                                ToEmail = adminEmail,
+                                Subject = $"Nytt salg: {artwork.Title}",
+                                HtmlBody = $@"
+                                <p><strong>{buyerName}</strong> har kjøpt <strong>{artwork.Title}</strong> for {artwork.Price} kr.</p>
+                                <p>Kontakt e-post: {buyerEmail}</p>",
+                                ReplyTo = buyerEmail 
+                            });
+                            
+                            _logger.LogInformation("Artwork {artworkId}, {artwork.Title} marked as sold.", artworkId, artwork.Title);
+                        }
                         else
-                            _logger.LogWarning("Artwork {artworkId} could not be updatedor was already sold.",
+                            _logger.LogWarning("Artwork {artworkId} could not be updated or was already sold.",
                                 artworkId);
                     }
                     else

@@ -1,4 +1,5 @@
 ﻿using JoArtClassLib.Art;
+using JoArtClassLib.Payment;
 using JohnsenArtAPI.Features.Payments.Interfaces;
 using Stripe;
 
@@ -15,7 +16,7 @@ public class StripeService : IStripeService
         _logger = logger;
     }
 
-    public async Task<PaymentIntent> CreatePaymentIntentAsync(ArtworkResponse artwork)
+    public async Task<PaymentIntent> CreatePaymentIntentAsync(ArtworkResponse artwork, BuyerInfo buyer)
     {
 
         var config = await _stripeConfigProvider .GetStripeConfigAsync();
@@ -30,6 +31,8 @@ public class StripeService : IStripeService
             {
                 { "artworkId", artwork.Id.ToString() },
                 { "title", artwork.Title },
+                {"buyer_email", buyer.Email },
+                {"buyer_name", buyer.FullName}
             }
         };
 

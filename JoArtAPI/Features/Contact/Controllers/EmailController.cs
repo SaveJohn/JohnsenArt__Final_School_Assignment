@@ -19,7 +19,7 @@ public class EmailController : ControllerBase
     [HttpPost("send")]
     public async Task<IActionResult> SendEmail([FromBody] EmailRequest emailRequest)
     {
-        await _emailService.SendEmailAsync(emailRequest);
+        await _emailService.SendContactEmailAsync(emailRequest);
         return Ok(new { Message = "Email ble sendt." });
     }
 }
