@@ -28,10 +28,11 @@ public class MailKitEmailService : IEmailService
     public async Task SendContactEmailAsync(EmailRequest emailRequest)
     {
         var email = new MimeMessage();
+        var adminEmail = await _repository.GetAdminEmail();
         email.From.Add(MailboxAddress.Parse(_config["Smtp:From"]));
-        email.To.Add(MailboxAddress.Parse("sebastian.kroger.holmen97@gmail.com"));
+        email.To.Add(MailboxAddress.Parse(adminEmail));
         email.Subject = $"{emailRequest.Name} har sendt deg en mail via JohnsenArt";
-
+        email.ReplyTo.Add(MailboxAddress.Parse(emailRequest.FromEmail));
         email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
         {
             Text = $@"
@@ -42,6 +43,10 @@ public class MailKitEmailService : IEmailService
 
 
         using var smtp = new SmtpClient();
+        
+        // Development test-mode certificate (TODO get real certificate for a "noreply@johnsen.art" or similar)
+        smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
         await smtp.ConnectAsync(_config["Smtp:Host"], int.Parse(_config["Smtp:Port"]),
             MailKit.Security.SecureSocketOptions.StartTls);
         await smtp.AuthenticateAsync(_config["Smtp:Username"], _config["Smtp:Password"]);
