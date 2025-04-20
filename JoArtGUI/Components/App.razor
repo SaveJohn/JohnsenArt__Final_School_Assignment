@@ -1,72 +1,56 @@
-﻿@using Microsoft.AspNetCore.Components.Endpoints
-@using Microsoft.AspNetCore.Components.Web
-@namespace JohnsenArtGUI.Components
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
-    
-
 <head>
-    @*Stripe*@
+    @* Stripe *@
     <script src="https://js.stripe.com/v3/"></script>
-    
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link href="https://cdn.JSdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
-    <base href="/"/>
-    <link rel="stylesheet" href="CSS/app.css"/>
-    <link href="JoArtGUI.styles.css" rel="stylesheet"/>
 
-    @*Imported Google Font*@
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    @* AOS (Animations on Scroll) *@
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    @* Google Font *@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-    <link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet"/>
 
+    @* Bootstrap CSS *@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link href="_content/Syncfusion.Blazor/styles/bootstrap5.css" rel="stylesheet" />
 
-    @*Bootstrap*@
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    @* App CSS *@
+    <link rel="stylesheet" href="CSS/app.css" />
+    <link href="JoArtGUI.styles.css" rel="stylesheet" />
 
-
-    <!-- <link rel="stylesheet" href="JohnsenArtGUI.styles.css"/> -->
-    <HeadOutlet/>
-
+    <HeadOutlet />
 </head>
 
 <body>
-
 <CascadingAuthenticationState>
-
     <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
-
-
 </CascadingAuthenticationState>
 
-@code {
+<script src="_framework/blazor.web.js"></script>
 
-}
-
-@*Bootstrap*@
+@* Bootstrap JS (already included above via CDN, you may not need this second one) *@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<script src="_framework/blazor.web.js"></script>
-<script src="_content/Bootstrap/bootstrap.bundle.min.js"></script>
-
-<!-- CSS Animation libary -->
-<script src="https://cdn.JSdelivr.net/npm/aos@2.3.4/dist/aos.JS"></script>
-<link rel="stylesheet" href="https://cdnJS.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
+@* AOS init script *@
 <script>
-    AOS.init();
+    document.addEventListener("DOMContentLoaded", function () {
+        AOS.init();
+    });
 </script>
+
 <script>
-    // Open filesystem to select a file
     window.triggerClick = (id) => {
         document.getElementById(id)?.click();
     };
 </script>
+
 <script>
     function showImageModal(url) {
         const img = document.getElementById('modalImage');
@@ -75,8 +59,5 @@
         modal.show();
     }
 </script>
-
-
 </body>
-
 </html>
