@@ -1,7 +1,32 @@
 ﻿@page "/takk"
 
-<h3>Takk for handelen!</h3>
 
-@code {
-    
-}
+<div class="success-container text-center">
+    <div class="success-card shadow- p-4 border-0 rounded-4">
+        <div class="card-body ">
+            <img src="images/takk-illustrasjon-small.png" alt="Suksess" style="width: 140px;" class="mb-4"/>
+            <h2 class="fw-bold mb-1">Takk for bestillingen!</h2>
+            <hr class="my-4" />
+            <p class="lead">
+                Kunstneren har mottatt bestillingen din, og vil behandle den snarest.
+            </p>
+            <p class="lead ">
+                Du vil motta en ordrebekreftelse på mail.
+            </p>
+            <p class="lead ">
+                Noe du lurer på? Ta kontakt
+                <a href="/contact" class="link-primary fw-semibold"><bold>
+                    her!
+                </bold></a>
+            </p>
+
+            <p class="mt-4 text-muted">
+                Du kan nå gå tilbake til galleriet
+                og utforske mer kunst ✨
+            </p>
+
+            <a class="btn btn-dark mt-3" href="/gallery">Tilbake til galleriet</a>
+        </div>
+    </div>
+</div>
+

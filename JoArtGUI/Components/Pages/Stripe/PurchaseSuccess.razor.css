@@ -1,1 +1,14 @@
-﻿
+﻿.success-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 4rem;
+    padding-bottom: 2rem;
+}
+
+.success-card {
+    width: 700px;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
