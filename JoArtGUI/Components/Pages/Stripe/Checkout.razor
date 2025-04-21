@@ -353,6 +353,8 @@ else
     {
         buyer.DeliveryMethod = e.Value?.ToString() ?? "";
         shippingCost = CalculateShippingCosts();
+        StateHasChanged();
+        paymentMethod.Selected = null;
         
     }
 
