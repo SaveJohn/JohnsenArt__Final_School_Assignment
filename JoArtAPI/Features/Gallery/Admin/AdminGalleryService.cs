@@ -60,8 +60,7 @@ public class AdminGalleryService : IAdminGalleryService
                 artwork.Images.Add(new ArtworkImage
                 {
                     ObjectKey = fullKey,
-                    ThumbnailKey = thumbKey,
-                    IsWallPreview = image.IsWallPreview
+                    ThumbnailKey = thumbKey
                 });
             }
             else
@@ -131,7 +130,6 @@ public class AdminGalleryService : IAdminGalleryService
                     ArtworkId = existingArtwork.Id,
                     ObjectKey = _aws.UploadImageToS3(image.ImageFile).Result, // Upload image
                     ThumbnailKey = await _aws.UploadThumbnailToS3(image.ImageFile), //Upload thumbnail
-                    IsWallPreview = image.IsWallPreview
                 };
 
                 // Adding images to existing artwork

@@ -9,7 +9,6 @@ public class ImageResponse
     public string ThumbnailUrl { get; set; } = string.Empty;
 
     
-    public bool IsWallPreview { get; set; }
     
 }
 

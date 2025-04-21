@@ -9,7 +9,6 @@ public class UpdateImageRequest
     
     [Required(ErrorMessage = "Bilde er påkrevd.")]
     public IFormFile? ImageFile { get; set; }
-    public bool IsWallPreview { get; set; }
     
     public int ArtworkId { get; set; }
     

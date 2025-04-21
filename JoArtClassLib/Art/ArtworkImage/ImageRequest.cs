@@ -7,6 +7,5 @@ public class ImageRequest
 
     [Required(ErrorMessage = "Bilde er påkrevd.")]
     public IFormFile? ImageFile { get; set; }
-
-    public bool IsWallPreview { get; set; }
+    
 }

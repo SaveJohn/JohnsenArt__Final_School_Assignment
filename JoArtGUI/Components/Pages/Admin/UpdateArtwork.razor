@@ -115,40 +115,6 @@
                         </div>
 
                     </div>
-
-                    <!-- Add Wall preview -->
-                    <div class="mb-3">
-                        <label for="artwork-image"
-                               class="form-lable pt-3">Last opp visning av kunstverk på vegg:</label>
-                        <InputFile id="wallFileInput"
-                                   @ref="_wallInputRef"
-                                   OnChange="LoadArtworkWallpreview"
-                                   class="d-none"/>
-                    </div>
-                    <div class="d-flex flex-wrap gap-3">
-                        <!-- Thumbnail preview of added image(s) -->
-                        @for (int i = 0; i < _wallPreviewImages.Count; i++)
-                        {
-                            var localIndex = i;
-                            <div class="position-relative shadow-sm border rounded"
-                                 style="width: 100px; height: 100px; ">
-                                <img src="@_wallPreviewImages[localIndex]"
-                                     class="img-thumbnail w-100 h-100"
-                                     style="object-fit: cover;"/>
-                                <button type="button"
-                                        class="btn-close position-absolute top-0 end-0"
-                                        @onclick="@(() => RemoveWallPreviewImage(localIndex))"
-                                        title="Fjern bilde">
-                                </button>
-                            </div>
-                        }
-                        <!-- Add Image Button -->
-                        <div class="image-upload-slot"
-                             @onclick="TriggerWallFileDialog">
-                            <span class="plus-icon">+</span>
-                        </div>
-
-                    </div>
                 </div>
                 <div class="mt-4">
                     <button class="btn btn-primary w-100" type="submit">Oppdater</button>
@@ -183,15 +149,12 @@
 
     // Base64 strings for preview-thumbnail images
     private List<string> _artworkImages = new();
-    private List<string> _wallPreviewImages = new();
 
     // Blazor InputFile references 
     private InputFile? _artworkInputRef;
-    private InputFile? _wallInputRef;
 
     //Data collection for images: binary data along with MIME type and original filename.
     private List<(byte[] data, string contentType, string fileName)> _artworkFiles = new();
-    private List<(byte[] data, string contentType, string fileName)> _wallPreviewFiles = new();
 
     // Conditional variables
     private long maxFileSize = 1024 * 1024 * 10; // Max 10MB
@@ -227,9 +190,7 @@
 
             // Load images
             _artworkImages.Clear();
-            _wallPreviewImages.Clear();
             _artworkFiles.Clear();
-            _wallPreviewFiles.Clear();
 
             foreach (var image in _artworkResponse.Images)
             {
@@ -239,16 +200,10 @@
                     var base64 = Convert.ToBase64String(imageBytes);
                     var imageDataUrl = $"data:image/jpeg;base64,{base64}";
 
-                    if (image.IsWallPreview)
-                    {
-                        _wallPreviewImages.Add(imageDataUrl);
-                        _wallPreviewFiles.Add((imageBytes, "image/jpeg", image.ObjectKey));
-                    }
-                    else
-                    {
-                        _artworkImages.Add(imageDataUrl);
-                        _artworkFiles.Add((imageBytes, "image/jpeg", image.ObjectKey));
-                    }
+                    
+                    _artworkImages.Add(imageDataUrl);
+                    _artworkFiles.Add((imageBytes, "image/jpeg", image.ObjectKey));
+                    
                 }
                 catch (Exception ex)
                 {
@@ -278,23 +233,7 @@
             _artworkFiles.Add((bytes, file.ContentType, file.Name));
         }
     }
-
-    // Load WallPreview Image 
-    private async Task LoadArtworkWallpreview(InputFileChangeEventArgs e)
-    {
-        errors.Clear();
-        foreach (IBrowserFile file in e.GetMultipleFiles())
-        {
-            using var stream = file.OpenReadStream(maxFileSize);
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-            var bytes = ms.ToArray();
-            var base64 = Convert.ToBase64String(bytes);
-            var imageDataUrl = $"data:{file.ContentType};base64,{base64}";
-            _wallPreviewImages.Add(imageDataUrl);
-            _wallPreviewFiles.Add((bytes, file.ContentType, file.Name));
-        }
-    }
+    
 
     // Trigger file dialog programmatically via JS using Blazor InputFile referenses
     private async Task TriggerArtworkFileDialog() // Artwork
@@ -315,16 +254,7 @@
             _artworkFiles.RemoveAt(index);
         }
     }
-
-    // Remove WallPreview from input
-    private void RemoveWallPreviewImage(int index)
-    {
-        if (_wallPreviewFiles.Count > index && _wallPreviewImages.Count > index)
-        {
-            _wallPreviewImages.RemoveAt(index);
-            _wallPreviewFiles.RemoveAt(index);
-        }
-    }
+    
 
     // Submit Complete Artwork
     private async Task SubmitArtworkAsync()
@@ -385,16 +315,7 @@
                 content.Add(new StringContent("False"), $"Images[{index}].IsWallPreview");
                 index++;
             }
-            //Wallpreview images
-            foreach (var (data, contentType, fileName) in _wallPreviewFiles)
-            {
-                var streamContent = new StreamContent(new MemoryStream(data));
-                streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-                content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
-                content.Add(new StringContent("True"), $"Images[{index}].IsWallPreview");
-                index++;
-            }
-
+            
 
             // Sending the request to API upload artwork endpoint
             var response = await Http.PutAsync($"admin/api/Gallery/update-artwork/{artworkId}", content);

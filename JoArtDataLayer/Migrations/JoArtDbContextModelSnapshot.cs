@@ -60,9 +60,6 @@ namespace JoArtDataLayer.Migrations
                     b.Property<int>("ArtworkId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsWallPreview")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("ObjectKey")
                         .IsRequired()
                         .HasColumnType("longtext");
