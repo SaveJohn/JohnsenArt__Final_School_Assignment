@@ -1,7 +1,9 @@
 ﻿@page "/Gallery"
 @using JoArtClassLib.Art
 @using JoArtClassLib.Enums
+@using Microsoft.AspNetCore.CookiePolicy
 @inject HttpClient Http
+@inject IJSRuntime JS
 @inject NavigationManager navigationManager
 
 <!-- Toast Container -->
@@ -97,13 +99,17 @@ else
                         </div>
                     }
                 </div>
-
-
+                
             }
+            
         </div>
     </div>
+    
     <br/><br/>
 }
+<div class="col">
+    <div @ref="infiniteScrollTrigger" style="height: 1px;"></div>
+</div>
 
 @code {
     // List of artworks
@@ -142,19 +148,60 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        await LoadArtworksAsync();
+        await LoadArtworkAsync();
+    }
+    
+    // Paging ---
+    private int currentPage = 1;
+    private int perPage = 12;
+    private bool hasMore = true;
+    private bool isLoadingMore = false;
+    private ElementReference infiniteScrollTrigger;
+    private DotNetObjectReference<Gallery> dotNetRef;
+    private IJSObjectReference? _jsModule;
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            dotNetRef = DotNetObjectReference.Create(this);
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/infiniteScroll.js");
+
+            await Task.Delay(100); // Ensure DOM is rendered
+
+            if (infiniteScrollTrigger.Context != null)
+            {
+                await _jsModule.InvokeVoidAsync("observeElement", dotNetRef, infiniteScrollTrigger);
+            }
+            else
+            {
+                Console.WriteLine("Trigger element is not yet available.");
+            }
+            
+        }
     }
 
-    private async Task LoadArtworksAsync()
+    [JSInvokable]
+    public async Task LoadMoreArtworks()
     {
-        // Defining paging parameters (Should be handled more dynamically later)
-        int page = 1;
-        int perPage = 35;
+        if (isLoadingMore || !hasMore) return;
+
+        isLoadingMore = true;
+        currentPage++;
+        await LoadArtworkAsync(append: true);
+        isLoadingMore = false;
+
+        StateHasChanged();
+    }
+    
+    // Load Artworks ---
+    private async Task LoadArtworkAsync(bool append = false)
+    {
         
         // Building query string parameters
         var queryParams = new List<string>
         {
-            $"page={page}",
+            $"page={currentPage}",
             $"perPage={perPage}",
             $"sort={_sortOption}",
             $"filter={_filterOption}"
@@ -165,25 +212,52 @@ else
         
         try
         {
-            artworks = await Http.GetFromJsonAsync<List<ArtworkResponse>>(url);
+            var newItems = await Http.GetFromJsonAsync<List<ArtworkResponse>>(url);
+
+            if (newItems == null || newItems.Count == 0)
+            {
+                hasMore = false;
+                return;
+            }
+            
+            if (append)
+            {
+                artworks.AddRange(newItems);
+            }
+            else
+            {
+                artworks = newItems ?? new();
+                currentPage = 1;
+                hasMore = true;
+            }
+
+            await InvokeAsync(async () =>
+            {
+                await Task.Delay(50);
+                if (_jsModule is null)
+                    _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/infiniteScroll.js");
+
+                dotNetRef ??= DotNetObjectReference.Create(this);
+                await _jsModule.InvokeVoidAsync("observeElement", dotNetRef);
+            });
         }
-        catch (Exception exep)
+        catch (Exception ex)
         {
-            Console.WriteLine(exep);
-            throw;
+            Console.WriteLine($"Feil ved henting av kunstverk: {ex.Message}");
+            hasMore = false;
         }
         
     }
 
     private async Task SortOptionChanged()
     {
-        await LoadArtworksAsync();
+        await LoadArtworkAsync();
         StateHasChanged();
     }
 
     private async Task FilterOptionChanged()
     {
-        await LoadArtworksAsync();
+        await LoadArtworkAsync();
         StateHasChanged();
     }
     
