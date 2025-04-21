@@ -27,86 +27,109 @@ else if (product is not null)
             <h3 class="text-center mb-4">Betaling</h3>
             <hr class="my-4" />
             <div class="row d-flex align-items-start justify-content-center px-4">
+                
+                <!-- Product Summary -->
                 <h5 class="mb-4">Produkt</h5>
+                <!-- Image -->
                 <div class="col-md-auto">
-
                     <img src="@image?.ThumbnailUrl"
                          class="img-fluid rounded shadow-sm"
                          style="max-width: 300px;"/>
                 </div>
-
                 <div class="col-md pt-2">
+                    <!-- Title -->
                     <div class="mb-3">
                         <p class="mb-1 text-muted">Tittel:</p>
                         <p class="fw-semibold">@product.Title</p>
                     </div>
+                    <!-- Dimensions -->
                     <div class="mb-3">
                         <p class="mb-1 text-muted">Dimensjoner:</p>
                         <p class="fw-semibold">@product.WidthDimension x @product.HeightDimension cm</p>
                     </div>
+                    <!-- Price -->
                     <div class="mb-3">
                         <p class="mb-1 text-muted">Pris:</p>
                         <p class="fw-semibold">@((product?.Price ?? 0).ToString("F2")),-</p>
                     </div>
                 </div>
-                
+
             </div>
             <hr class="my-4" />
-            <h5 class="mb-4">Kunde informasjon</h5>
-            <div class="form-group mb-3">
-                <label>Fullt navn <span class="text-danger">*</span></label>
-                <input class="form-control" name="fullName" @bind="buyer.FullName" required />
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-8">
-                    <label>Epost <span class="text-danger">*</span></label>
-                    <input type="email" class="form-control" @bind="buyer.Email" required />
-                </div>
-                <div class="col-md-4">
-                    <label>Telefon <span class="text-danger">*</span></label> 
-                    <input class="form-control" maxlength="12" placeholder="+47..." @bind="buyer.PhoneNumber" />
-                </div>
-            </div>
-            <label class="fw-medium">Hvordan vil du motta kunstverket? <span class="text-danger">*</span></label>
-            <div class="form-check mb-2">
-                <input class="form-check-input" name="delivery" type="radio" id="pickup" value="@DeliveryMethods.PickUp.ToString()" 
-                       @onchange="SetDeliveryMethod" checked="@(DeliveryMethods.PickUp.ToString() == buyer.DeliveryMethod)"/>
-                <label class="form-check-label" for="pickup">Hentepunk: Sandefjord, Breidablikk (kr @ShippingCosts.PickUp)
-                </label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" name="delivery" type="radio" id="post" value="@DeliveryMethods.Post.ToString()"
-                       @onchange="SetDeliveryMethod" checked="@(DeliveryMethods.Post.ToString() == buyer.DeliveryMethod)" />
-                <label class="form-check-label" for="post">Posten (kr @shippingCost)</label>
-            </div>
-            @if (buyer.DeliveryMethod == DeliveryMethods.Post.ToString())
+            
+            @if (readyToPay is false)
             {
+                <!-- Buyer Info Form-->
+                <h5 class="mb-4">Kundeinformasjon</h5>
+                <!-- Full Name -->
                 <div class="form-group mb-3">
-                    <label>Adresse <span class="text-danger">*</span></label>
-                    <input class="form-control" @bind="buyer.AddressLine" required />
+                    <label>Fullt navn <span class="text-danger">*</span></label>
+                    <input class="form-control" name="fullName" @bind="buyer.FullName" required />
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-3">
-                        <label>Postnummer <span class="text-danger">*</span></label>
-                        <input class="form-control" maxlength="4" @bind="buyer.PostalCode" required/>
-                    </div>
+                    <!-- Email -->
                     <div class="col-md-8">
-                        <label>By <span class="text-danger">*</span></label>
-                        <input class="form-control" @bind="buyer.City" required />
+                        <label>Epost <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" @bind="buyer.Email" required/>
+                    </div>
+                    <!-- Phone -->
+                    <div class="col-md-4">
+                        <label>Telefon <span class="text-danger">*</span></label>
+                        <input class="form-control" maxlength="12" placeholder="+47..." @bind="buyer.PhoneNumber"/>
                     </div>
                 </div>
+                
+                <!-- Shipping Options -->
+                <label class="fw-medium">Hvordan vil du motta kunstverket? <span class="text-danger">*</span></label>
+                <!-- Pickup -->
+                <div class="form-check mb-2">
+                    <input class="form-check-input" name="delivery" type="radio" id="pickup" value="@DeliveryMethods.PickUp.ToString()" 
+                           @onchange="SetDeliveryMethod" checked="@(DeliveryMethods.PickUp.ToString() == buyer.DeliveryMethod)"/>
+                    <label class="form-check-label" for="pickup">Hentepunk: Sandefjord, Breidablikk (kr @ShippingCosts.PickUp)
+                    </label>
+                </div>
+                <!-- Post -->
+                <div class="form-check mb-2">
+                    <input class="form-check-input" name="delivery" type="radio" id="post" value="@DeliveryMethods.Post.ToString()"
+                           @onchange="SetDeliveryMethod" checked="@(DeliveryMethods.Post.ToString() == buyer.DeliveryMethod)" />
+                    <label class="form-check-label" for="post">Posten (kr @shippingCost)</label>
+                </div>
+                
+                <!-- Buyer Info Address Form if Shipping is Post-->
+                @if (buyer.DeliveryMethod == DeliveryMethods.Post.ToString())
+                {   <!-- Address -->
+                    <div class="form-group mb-3">
+                        <label>Adresse <span class="text-danger">*</span></label>
+                        <input class="form-control" @bind="buyer.AddressLine" required />
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Postal Code -->
+                        <div class="col-md-3">
+                            <label>Postnummer <span class="text-danger">*</span></label>
+                            <input class="form-control" maxlength="4" @bind="buyer.PostalCode" required/>
+                        </div>
+                        <!-- City -->
+                        <div class="col-md-8">
+                            <label>By <span class="text-danger">*</span></label>
+                            <input class="form-control" @bind="buyer.City" required/>
+                        </div>
+                    </div>
+                }
+                
+                <hr class="my-4" />
             }
             
-            <hr class="my-4" />
-            
+            <!-- Total Price Summary-->
             <h5 class="mb-4">Pris oppsummering</h5>
             <div class="mt-2 px-4 pt-3">
+                <!-- Art Price -->
                 <div class="d-flex justify-content-between">
                     <p class="mb-1 text-muted">Kunstverk:</p>
                     <p class="mb-1">@((product?.Price ?? 0).ToString("F2")),-</p>
                 </div>
                 @if (!string.IsNullOrWhiteSpace(buyer.DeliveryMethod))
-                {
+                {   
+                    <!-- Shipping Costs -->
                     <div class="d-flex justify-content-between">
                         <p class="mb-1 text-muted">Frakt:</p>
                         @if (buyer.DeliveryMethod == DeliveryMethods.PickUp.ToString())
@@ -118,6 +141,7 @@ else if (product is not null)
                             <p class="mb-1">@((shippingCost ?? 0).ToString("F2")),-</p>
                         }
                     </div>
+                    <!-- Total Costs -->
                     <div class="d-flex justify-content-between">
                         <p class="fw-bold fs-5 mb-0">Total å betale:</p>
                         <p class="fw-bold fs-5 mb-0">
@@ -128,85 +152,128 @@ else if (product is not null)
                 }
             </div>
             
-            <hr class="my-4" />
-            <div class="d-flex justify-content-between">
-                <h5 class="mb-4">Betalingsmetode</h5>
-                <p class="fw-medium text-muted">Velg en betalingsmetode for å fortsette<span class="text-danger">*</span></p>
-            </div>
             
-            <div class="form-check mb-2">
-                <input class="form-check-input" name="card" type="radio" id="card-payment" value="@PaymentMethods.Card.ToString()"
-                       @onchange="SetPaymentMethod" checked="@(PaymentMethods.Card.ToString() == paymentMethod.Selected)"/>
-                <label class="form-check-label" for="card-payment">
-                    Kredittkort eller debetkort
-                    <img src="Images/credit-card.png" alt="Kort ikon" class="px-3" style="height: 25px;" />
-                       
-                </label>
-            </div>
-            @if (paymentMethod.Selected == PaymentMethods.Card.ToString())
-            {
-                <div class="form-check mb-2">
-                    <div class="stripe-card-wrapper"style="max-width: 400px">
-                        <label for="card-number-element" class="form-label">kortnummer</label>
-                        <div id="card-number-element" class="form-control mb-3 py-2"></div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="card-expiry-element" class="form-label">Utløpsdato</label>
-                                <div id="card-expiry-element" class="form-control"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="card-cvc-element" class="form-label">CVC</label>
-                                <div id="card-cvc-element" class="form-control"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @if (!isStripeReady)
-                {
-                    <p class="text-muted"><i class="spinner-border spinner-border-sm me-2"></i>Laster stripe ...</p>
-                }
-            }
-            @if (buyer.DeliveryMethod != DeliveryMethods.PickUp.ToString())
-            {
-                <div class="form-check mb-2 pt-4">
-                    <input class="form-check-input" name="klarna" type="radio" id="klarna-payment" value="@PaymentMethods.Klarna.ToString()"
-                           @onchange="SetPaymentMethod" checked="@(PaymentMethods.Klarna.ToString() == paymentMethod.Selected)" />
-                    <label class="form-check-label" for="klarna-payment">
-                        Betal med Klarna 
-                        <img src="Images/klarna.png" alt="klarna ikon" class="px-3" style="height: 25px;"/>
-                    </label>
-                </div>
-            }
             
-            @if (paymentMethod.Selected == PaymentMethods.Card.ToString())
+            @if (readyToPay is false)
             {
-                
+                <hr class="my-4" />
                 <div class="text-center py-4 ">
-                    <button class="button-buy mt-4" @onclick="HandlePayment" disabled="@(isStripeReady == false)">
-                        Betal nå
+                    <button type="submit" role="button" class="button-payment" @onclick="GoToPayment">
+                        Gå videre til betaling
                     </button>
                     <p class="text-danger mt-2">@statusMessage</p>
                 </div>
             }
-            else if (paymentMethod.Selected == PaymentMethods.Klarna.ToString())
+            else
             {
-                <div class="text-center py-4 ">
-                    <button class="button-buy mt-2" @onclick="HandlePayment">Betal med Klarna</button>
+                <hr class="my-4" />
+                
+                <div class=" pb-4">
+                    <button role="button" class="btn btn-outline-secondary" @onclick="GoBack">
+                        <img src="Images/left-arrow.png" alt="tilbake ikon" class="px-3" style="height: 25px;" /> 
+                           Tilbake til Kundeinformasjon
+                    </button>
                 </div>
-                @if (klarnaIsLoaded is false)
+                
+                
+                <!-- Payment Options-->
+                <div class="d-flex justify-content-between">
+                    <h5 class="mb-4">Betalingsmetode</h5>
+                </div>
+
+                <!-- Card Option-->
+                <div class="form-check mb-2">
+                    <input class="form-check-input" name="card" type="radio" id="card-payment" value="@PaymentMethods.Card.ToString()"
+                           @onchange="SetPaymentMethod" checked="@(PaymentMethods.Card.ToString() == paymentMethod.Selected)"/>
+                    <label class="form-check-label" for="card-payment">
+                        Kredittkort eller debetkort
+                        <img src="Images/credit-card.png" alt="Kort ikon" class="px-3" style="height: 25px;" />
+                           
+                    </label>
+                </div>
+
+                
+                @if (paymentMethod.Selected == PaymentMethods.Card.ToString())
                 {
-                    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" role="dialog">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content text-centered p-4 shadow-lg border-0 rounded-3">
-                                <h5 class="fw-bold"><i class="spinner-border spinner-border-sm me-2"></i>Henter Klarna ...</h5>
-                                <p class="text-muted">Vennligst vent mens vi klargjør betalingsvinduet ditt.</p>
+                    <!-- Card Info Form -->
+                    <div class="form-check mb-2">
+                        <div class="stripe-card-wrapper"style="max-width: 400px">
+                            <label for="card-number-element" class="form-label">kortnummer</label>
+                            <div id="card-number-element" class="form-control mb-3 py-2"></div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="card-expiry-element" class="form-label">Utløpsdato</label>
+                                    <div id="card-expiry-element" class="form-control"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="card-cvc-element" class="form-label">CVC</label>
+                                    <div id="card-cvc-element" class="form-control"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-backdrop fade show"></div>
+                    @if (!isStripeReady)
+                    {
+                        
+                        <p class="text-muted"><i class="spinner-border spinner-border-sm me-2"></i>Laster stripe ...</p>
+                        
+                    }
+                }
+                else if (buyer.DeliveryMethod != DeliveryMethods.PickUp.ToString())
+                {
+                    <!-- Klarna Option - only available if Shipping is Post -->
+                    <div class="form-check mb-2 pt-4">
+                        <input class="form-check-input" name="klarna" type="radio" id="klarna-payment" 
+                               value="@PaymentMethods.Klarna.ToString()"
+                               @onchange="SetPaymentMethod" 
+                               checked="@(PaymentMethods.Klarna.ToString() == paymentMethod.Selected)" />
+                        <label class="form-check-label" for="klarna-payment">
+                            Betal med Klarna 
+                            <img src="Images/klarna.png" alt="klarna ikon" class="px-3" style="height: 25px;"/>
+                        </label>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 ">
+                        <p class="fw-medium text-muted">
+                            Velg en betalingsmetode for å fortsette<span class="text-danger">*</span>
+                        </p>
+                    </div>
+                }
+
+                <!-- Payment Buttons -->
+                @if (paymentMethod.Selected == PaymentMethods.Card.ToString()) //  Pay with card
+                {
+                    
+                    <div class="text-center py-4 ">
+                        <button class="button-buy mt-4" @onclick="HandlePayment" disabled="@(isStripeReady == false)">
+                            Betal nå
+                        </button>
+                        <p class="text-danger mt-2">@statusMessage</p>
+                    </div>
+                }
+                else if (paymentMethod.Selected == PaymentMethods.Klarna.ToString()) // Pay with Klarna 
+                {
+                    <div class="text-center py-4 ">
+                        <button class="button-buy mt-2" @onclick="HandlePayment">Betal med Klarna</button>
+                    </div>
+                    @if (klarnaIsLoaded is false)
+                    {
+                        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" role="dialog">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content text-centered p-4 shadow-lg border-0 rounded-3">
+                                    <h5 class="fw-bold"><i class="spinner-border spinner-border-sm me-2"></i>Henter Klarna ...</h5>
+                                    <p class="text-muted">Vennligst vent mens vi klargjør betalingsvinduet ditt.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-backdrop fade show"></div>
+                    }
                 }
             }
+            
         </div>
     </div>
     
@@ -232,7 +299,9 @@ else
 
     private decimal? shippingCost;
     PaymentMethod paymentMethod = new ();
+    bool readyToPay;
     
+    private string statusMessage = "";
     private List<ErrorResponse> errors = new();
     private string? ErrorMessage;
 
@@ -347,10 +416,40 @@ else
         return costs;
 
     }
+
+    private async Task GoToPayment()
+    {
+        // Validating buyer input
+        if (!ValidateBuyerInfo()) return;
+
+        statusMessage = "";
+        
+        readyToPay = true;
+        await InvokeAsync(StateHasChanged);
+        
+        // Setup Stripe
+        if (stripeModule is null || !isStripeReady)
+        {
+            
+            await SetupStripeAsync();
+            
+        }
+        else if (paymentMethod.Selected == PaymentMethods.Card.ToString())
+        {
+            await Task.Delay(50);
+            await stripeModule.InvokeVoidAsync("mountCardElements");
+        }
+        
+    }
+
+    private async Task GoBack()
+    {
+        readyToPay = false;
+        StateHasChanged();
+    }
     
     // Stripe Payment setup
     private IJSObjectReference? stripeModule;
-    private string statusMessage = "";
     bool isStripeReady;
     bool? klarnaIsLoaded = null;
     
@@ -391,9 +490,15 @@ else
                 Console.WriteLine("Loading Stripe module...");
                 stripeModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/stripeInterop.js");
                 Console.WriteLine("Stripe module loaded.");
-                
-                await stripeModule.InvokeVoidAsync("setProductId", productId); // product Id is so Klarna can redirect back
-                await stripeModule.InvokeVoidAsync("initializeStripe", publishableKey, clientSecret);
+                try
+                {
+                    await stripeModule.InvokeVoidAsync("setProductId", productId); // product Id is so Klarna can redirect back
+                    await stripeModule.InvokeVoidAsync("initializeStripe", publishableKey, clientSecret);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Something went wrong when initializing Stripe: {ex.Message}");
+                }
                 Console.WriteLine("initializeStripe js function called.");
                 
                 isStripeReady = true;
@@ -419,11 +524,6 @@ else
         // Setting payment method
         var newType = e.Value?.ToString() ?? "";
         paymentMethod.Selected = newType;
-
-        if (stripeModule is null || !isStripeReady)
-        {
-            await SetupStripeAsync(); 
-        }
         
         // if payment method is Card -> mount card elements
         if (newType == PaymentMethods.Card.ToString())
@@ -437,11 +537,6 @@ else
     
     private async Task HandlePayment()
     {
-        // Validating buyer input
-        if (!ValidateBuyerInfo())
-        {
-            return;
-        }
         
         // Checking stripe module
         if (stripeModule is null)
