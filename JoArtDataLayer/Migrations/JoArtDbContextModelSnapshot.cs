@@ -64,6 +64,10 @@ namespace JoArtDataLayer.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("PreviewKey")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("ThumbnailKey")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -97,6 +101,10 @@ namespace JoArtDataLayer.Migrations
                     b.Property<double?>("HeightDimension")
                         .HasColumnType("double");
 
+                    b.Property<string>("Materials")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(65,30)");
 
@@ -107,6 +115,9 @@ namespace JoArtDataLayer.Migrations
 
                     b.Property<double?>("WidthDimension")
                         .HasColumnType("double");
+
+                    b.Property<bool>("homePageRotation")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 

@@ -7,6 +7,8 @@ public class ImageResponse
     public required string ImageUrl { get; set; } // Pre signed URL
     public string ThumbnailKey { get; set; } = string.Empty;
     public string ThumbnailUrl { get; set; } = string.Empty;
+    public string PreviewKey { get; set; } = string.Empty;
+    public string PreviewUrl{ get; set; } = string.Empty;
 
     
     

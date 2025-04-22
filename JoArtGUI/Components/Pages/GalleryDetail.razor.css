@@ -1,8 +1,49 @@
-﻿
+﻿.image-shadow {
+   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); /* shadow effect */
+   border-radius: 25px; /* soft corners */
+   background-color: transparent; /* no white background */
+   display: block;
+}
+.carousel-image {
+   display: block;
+   margin: 0 auto;
+   border-radius: 25px;
+   max-height: 70vh;
+   object-fit: contain;
+   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+   max-width: 100%;
+   width: auto;            /* <--- holder bredden proporsjonal */
+}
+
+/* Hvis du vil ha en maks bredde for å begrense bildet visuelt */
+@media (min-width: 768px) {
+   .carousel-image {
+      max-width: 900px; /* eller 1000px eller hva som ser bra ut */
+   }
+}
+
+.art-detail-container {
+   flex: 1 1 40%; /* Ta det som er igjen etter carouselen */
+   display: flex;
+   justify-content: flex-start;
+   align-items: flex-start;
+   padding-top: 0.3rem;
+   padding-bottom: 2rem;
+}
+.art-detail-card {
+   background-color: whitesmoke;
+   text-align: left;
+   width: 100%;
+   margin-inline: auto;
+   padding: 1.5rem 2rem;
+   border-radius: 10px;
+}
+
 a.button-41{
    background-color: initial;
    background-image: linear-gradient(-180deg, #00D775, #00BD68);
    border-radius: 5px;
+   min-width: 150px;
    box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
    color: #FFFFFF !important;
    cursor: pointer;
@@ -38,3 +79,98 @@ button.button-41:active {
    transform: scale(0.98);
    box-shadow: rgba(0, 0, 0, 0.1) 0 1px 2px;
 }
+
+@media (min-width: 992px) {
+   .art-detail-card {
+      min-width: 1200px;
+      max-width: 1500px;
+   }
+}
+
+@media (max-width: 768px) {
+   .art-header {
+      flex-direction: column;
+      align-items: flex-start !important;
+      gap: 0.5rem;
+   }
+
+   .art-header .d-flex {
+      justify-content: flex-start;
+      width: 100%;
+   }
+
+   .art-detail-card {
+      padding: 1.25rem;
+      max-width: 100%;
+   }
+
+   .art-detail-container {
+      flex: 1 1 100%;
+      justify-content: center;
+   }
+
+   .carousel-inner img {
+      width: 100%;
+      height: auto;
+      max-height: 80vh;
+      object-fit: contain;
+   }
+   .carousel-inner image {
+      width: 100%;
+      height: auto;
+      max-height: 80vh;
+      object-fit: contain;
+   }
+
+   .art-detail-card p {
+      margin-bottom: 0.5rem;
+   }
+
+   .art-detail-card h5, .art-detail-card h6 {
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+   }
+}
+
+.custom-carousel-arrow {
+   color: white;
+   font-size: 2rem;
+   font-weight: bold;
+   padding: 0.5rem;
+}
+
+.custom-carousel-arrow i {
+   font-size: 2.5rem;
+   font-weight: 800; /* gjør ikonet "tykkere" */
+}
+
+.carousel-indicators {
+   position: static;
+   margin-top: 0.5rem;
+   display: flex;
+   justify-content: center;
+   gap: 8px;
+}
+
+.carousel-indicators button {
+   all: unset;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 22px;
+   height: 22px;
+}
+
+.carousel-indicators i {
+   font-size: 0.9rem;
+   color: #ccc;
+   transition: color 0.2s ease;
+}
+
+.carousel-indicators .active i {
+   color: #333;
+}
+
+
+

@@ -16,67 +16,110 @@
 }
 else
 {
-    <div class="container-fluid px-5">
-        <div class="row justify-content-center">
-            <div class="col-xl-10 d-flex flex-row flex-wrap gap-5">
-                
-                
-                <div id="artworkCarousel" class="carousel slide flex-grow-1" style="min-width: 60%;">
+    <div class="container-fluid px-5 d-flex justify-content-center">
+        
+            <div class="col-xl-10 d-flex flex-row flex-wrap justify-content-center">
+
+
+                <div id="artworkCarousel" class="carousel slide" style="min-width: 60%;" data-bs-ride="false" data-bs-interval="false">
+
+                    <!-- Image slides -->
                     <div class="carousel-inner">
                         @foreach (var img in artwork.Images)
                         {
-                            <div class="carousel-item @((artwork.Images.IndexOf(img) == 0) ? "active" : "")">
-                                <img src="@img.ImageUrl"
-                                     class="d-block w-100"
-                                     style="max-height: 90vh; object-fit: contain; border-radius: 12px; cursor: zoom-in;"
+                            <div class="carousel-item @(artwork.Images.IndexOf(img) == 0 ? "active" : "")">
+                                <img src="@img.PreviewUrl"
+                                     class="carousel-image"
                                      alt="@artwork.Title"
-                                     @onclick="() => ShowDetailedImage(img.ImageUrl)"/>
+                                     @onclick="() => ShowDetailedImage(img.ImageUrl)" />
                             </div>
                         }
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
 
-                <hr class="my-4" />
-                <div class="d-flex flex-column border-top justify-content-start" style="min-width: 30%; font-size: 1.1rem;">
-                    <div class="d-flex flex-column border-bottom justify-content-start" style="min-width: 30%; font-size: 1.1rem;">
-                        <h2 class="fw-bold fs-3 mt-4">@artwork?.Title</h2>
+                    <!-- Arrows only if >1 image -->
+                    @if (artwork.Images.Count > 1)
+                    {
+                        <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
+                            <span class="custom-carousel-arrow">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                        </button>
+
+                        <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next">
+                            <span class="custom-carousel-arrow">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </span>
+                        </button>
+
+                    }
+
+                    <!-- Indicators -->
+                    @if (artwork.Images.Count > 1)
+                    {
+                        <div class="carousel-indicators">
+                            @for (int i = 0; i < artwork.Images.Count; i++)
+                            {
+                                <button type="button"
+                                        data-bs-target="#artworkCarousel"
+                                        data-bs-slide-to="@i"
+                                        class="@(i == 0 ? "active" : "")"
+                                        aria-current="@(i == 0 ? "true" : "false")"
+                                        aria-label="Slide @(i + 1)">
+                                    <i class="@(i == 0 ? "fa-solid fa-circle" : "fa-regular fa-circle")"></i>
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="art-detail-container">
+                    <div class="art-detail-card">
+                        <div class="d-flex justify-content-between align-items-center art-header">
+
+                        <!-- Tittel til venstre -->
+                            <h2 class="fw-bold fs-3 me-auto">@artwork?.Title</h2>
+
+                            <!-- Pris og knapp til høyre -->
+                            <div class="d-flex align-items-center gap-3 fs-5">
+                                @if (artwork.ForSale)
+                                {
+                                    <span class="text-muted">Pris:</span>
+                                    <span class="fw-semibold">@((artwork.Price?.ToString("F2") ?? "0.00")) ,-</span>
+                                    <a class="button-41" href=@($"/checkout/{artworkId}")>
+                                        Kjøp <i class="fa-solid fa-bag-shopping"></i>
+                                    </a>
+                                }else
+                                {
+                                    <span class="badge bg-secondary">Ikke for salg</span>
+                                }
+                                
+                            </div>
+                        </div>
+                        <hr class="my-4" />
+                        <div class="d-flex justify-content-start gap-5 mb-2 flex-wrap">
+                            @if (!string.IsNullOrWhiteSpace(artwork.Materials))
+                            {
+                                <div>
+                                    <h6 class="text-secondary mb-1">Materialer:</h6>
+                                    <p class="mb-0">@artwork.Materials</p>
+                                </div>
+                            }
+                            @if (artwork.WidthDimension is not null && artwork.HeightDimension is not null)
+                            {
+                                <div>
+                                    <h6 class="text-secondary mb-1">Dimensjoner:</h6>
+                                    <p class="mb-0">@artwork.WidthDimension x @artwork.HeightDimension cm</p>
+                                </div>
+                            }
+                        </div>
+                        <div class="mt-4" style="line-height: 1.7;">
+                            <h6 class="text-secondary">Beskrivelse:</h6>
+                            <p>@artwork.Description</p>
+                        </div>
                     </div>
-                    <p class="mt-3" style="line-height: 1.7;">
-                        <strong>Beskrivelse:</strong> @artwork.Description
-                    </p>
-                    <p class="mb-4"><strong>Dimensjoner:</strong> @artwork.WidthDimension x @artwork.HeightDimension cm</p>
-                    @if (artwork.ForSale)
-                    {
-                        <div class="mb-4">
-                            <p><strong>Pris:</strong> @(artwork.Price?.ToString("F2") ?? "0.00") ,-</p>
-                            <a class="button-41 mt-2"
-                               href=@($"/checkout/{artworkId}")>
-                                Kjøp <i class="fa-solid fa-bag-shopping"></i>
-                            </a>
-                        </div>
-
-                    }
-                    @if (!artwork.ForSale)
-                    {
-                        <div class="mb-4">
-                            <span class="badge bg-secondary">Ikke for salg</span>
-                        </div>
-                        
-                    }
-
                 </div>
-
             </div>
         </div>
-    </div>
+    
     
     <!-- Display errors-->
     @if (errors.Count > 0)
@@ -181,14 +224,21 @@ else
 
 @code {
     [Parameter] public int artworkId { get; set; }
+    
 
     private ArtworkResponse? artwork;
+    ImageResponse image;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             artwork = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}");
+            if (artwork.Images.Count > 0)
+            {
+                image =  artwork.Images.FirstOrDefault();
+            }
+            
         }
         catch (Exception e)
         {

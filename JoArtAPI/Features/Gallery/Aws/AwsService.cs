@@ -8,6 +8,9 @@ using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
 using JohnsenArtAPI.Services;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 
 namespace JohnsenArtAPI.Features.Gallery.Aws;
@@ -59,7 +62,29 @@ public class AwsService : IAwsService
         // Creating Object Key
         var objectKey = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
         _logger.LogInformation($"Generated object key: {objectKey}");
+        
+        using var image = await Image.LoadAsync(imageFile.OpenReadStream());
+    
+        const int maxWidth = 1920;
+        const int maxHeight = 1920;
 
+        // Downscaling image if it is bigger than max size
+        image.Mutate(x => x.Resize(new ResizeOptions
+        {
+            Mode = ResizeMode.Max,
+            Size = new Size(maxWidth, maxHeight)
+        }));
+        
+        var outputStream = new MemoryStream();
+        IImageEncoder format = Path.GetExtension(imageFile.FileName).ToLower() switch
+        {
+            ".png" => new PngEncoder(),
+            ".jpg" or ".jpeg" => new JpegEncoder { Quality = 85 },
+            _ => new JpegEncoder { Quality = 85 } // fallback
+        };
+        await image.SaveAsync(outputStream, format);
+        outputStream.Position = 0;
+        
         // Creating S3 ObjectRequest
         var objectRequest = new PutObjectRequest
         {
@@ -81,6 +106,59 @@ public class AwsService : IAwsService
         }
 
         return objectKey;
+    }
+    
+    // UPLOAD preview image
+    public async Task<string> UploadPreviewImageToS3(IFormFile imageFile)
+    {
+        using var image = await Image.LoadAsync(imageFile.OpenReadStream());
+        image.Mutate(x => x.Resize(new ResizeOptions
+        {
+            Mode = ResizeMode.Max,
+            Size = new Size(1200, 800)
+            
+        }));
+
+        using var ms = new MemoryStream();
+        await image.SaveAsJpegAsync(ms, new JpegEncoder { Quality = 85 });
+        ms.Position = 0;
+
+        var key = $"preview/{Guid.NewGuid()}.jpg";
+
+        var putRequest = new PutObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = key,
+            InputStream = ms,
+            ContentType = "image/jpeg"
+        };
+
+        await _s3Client.PutObjectAsync(putRequest);
+        return key;
+    }
+    
+    // UPLOAD thumbnail image
+    public async Task<string> UploadThumbnailToS3(IFormFile imageFile)
+    {
+        using var image = await Image.LoadAsync(imageFile.OpenReadStream());
+        image.Mutate(x => x.Resize(400, 0)); 
+
+        using var ms = new MemoryStream();
+        await image.SaveAsJpegAsync(ms, new JpegEncoder { Quality = 75 });
+        ms.Position = 0;
+
+        var key = $"thumbs/{Guid.NewGuid()}.jpg";
+
+        var putRequest = new PutObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = key,
+            InputStream = ms,
+            ContentType = "image/jpeg"
+        };
+
+        await _s3Client.PutObjectAsync(putRequest);
+        return key;
     }
 
     // DELETE Image From S3
@@ -111,32 +189,8 @@ public class AwsService : IAwsService
             throw;
         }
     }
-
-    // CREATE thumbnail of uploaded image
-    public async Task<string> UploadThumbnailToS3(IFormFile imageFile)
-    {
-        using var image = await Image.LoadAsync(imageFile.OpenReadStream());
-        image.Mutate(x => x.Resize(400, 0)); 
-
-        using var ms = new MemoryStream();
-        await image.SaveAsJpegAsync(ms);
-        ms.Position = 0;
-
-        var key = $"thumbs/{Guid.NewGuid()}.jpg";
-
-        var putRequest = new PutObjectRequest
-        {
-            BucketName = _bucketName,
-            Key = key,
-            InputStream = ms,
-            ContentType = "image/jpeg"
-        };
-
-        await _s3Client.PutObjectAsync(putRequest);
-        return key;
-    }
-
-
+    
+   
     // GENERATE Image Pre-signed URL
     public string GeneratePresignedUrl(string objectKey)
     {

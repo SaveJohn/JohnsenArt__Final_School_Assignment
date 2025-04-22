@@ -55,7 +55,7 @@ public class AdminGalleryService : IAdminGalleryService
             if (image.ImageFile != null)
             {
                 var fullKey = await _aws.UploadImageToS3(image.ImageFile);
-                var thumbKey = await _aws.UploadThumbnailToS3(image.ImageFile);
+                var thumbKey = await _aws.UploadPreviewImageToS3(image.ImageFile);
 
                 artwork.Images.Add(new ArtworkImage
                 {
@@ -110,11 +110,13 @@ public class AdminGalleryService : IAdminGalleryService
 
         // Storing old Object Keys to delete from S3 if update in database is successful 
         var oldObjectKeys = new List<string>();
+        var oldPreviewKeys = new List<string>();
         var oldThumbnailKeys = new List<string>();
         foreach (var image in existingArtwork.Images)
         {
             oldObjectKeys.Add(image.ObjectKey);
             oldThumbnailKeys.Add(image.ThumbnailKey);
+            oldPreviewKeys.Add(image.PreviewKey);
         }
 
         try
@@ -129,6 +131,7 @@ public class AdminGalleryService : IAdminGalleryService
                     Id = image.Id,
                     ArtworkId = existingArtwork.Id,
                     ObjectKey = _aws.UploadImageToS3(image.ImageFile).Result, // Upload image
+                    PreviewKey = await _aws.UploadPreviewImageToS3(image.ImageFile), //Upload preview
                     ThumbnailKey = await _aws.UploadThumbnailToS3(image.ImageFile), //Upload thumbnail
                 };
 
@@ -144,6 +147,11 @@ public class AdminGalleryService : IAdminGalleryService
 
         // Deleting old images from S3
         foreach (var objectKey in oldObjectKeys)
+        {
+            await _aws.DeleteImageFromS3(objectKey);
+        }
+        // Deleting old previews from S3
+        foreach (var objectKey in oldPreviewKeys)
         {
             await _aws.DeleteImageFromS3(objectKey);
         }
@@ -169,6 +177,8 @@ public class AdminGalleryService : IAdminGalleryService
             {
                 if (image is null) continue;
                 await _aws.DeleteImageFromS3(image.ObjectKey);
+                await _aws.DeleteImageFromS3(image.PreviewKey);
+                await _aws.DeleteImageFromS3(image.ThumbnailKey);
                 _logger.LogInformation($"Deleted image: {image.ObjectKey}");
             }
         }

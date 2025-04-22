@@ -51,6 +51,7 @@ public class GalleryService : IGalleryService
                 foreach (var image in response.Images)
                 {
                     image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+                    image.PreviewUrl = _aws.GeneratePresignedUrl(image.PreviewKey);
                     image.ThumbnailUrl = _aws.GeneratePresignedUrl(image.ThumbnailKey);
                 }
 
@@ -84,6 +85,7 @@ public class GalleryService : IGalleryService
         foreach (var image in response.Images)
         {
             image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+            image.PreviewUrl = _aws.GeneratePresignedUrl(image.PreviewKey);
             image.ThumbnailUrl = _aws.GeneratePresignedUrl(image.ThumbnailKey);
         }
 

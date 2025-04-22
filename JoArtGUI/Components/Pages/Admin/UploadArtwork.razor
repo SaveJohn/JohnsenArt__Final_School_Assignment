@@ -41,6 +41,12 @@ else
                                        @bind-Value="_artworkRequest.Title"
                                        placeholder="Tittel"/>
                         </div>
+                        <div class="mb-3">
+                            <label for="Materials">Materialer:</label><br/>
+                            <InputText class="form-control"
+                                       @bind-Value="_artworkRequest.Materials"
+                                       placeholder="Materialer"/>
+                        </div>
                         <div class="row mb-3">
                             <div class="col">
                                 <!-- Width -->
@@ -80,16 +86,7 @@ else
                                 }
 
                             </div>
-                            <!-- Description -->
-                            <div class="mb-3">
-                                <label for="description">Tekst beskrivelse til kunstverk:</label>
-                                <InputTextArea
-                                    class="form-control"
-                                    style="height: 150px;
-                                    resize: vertical;"
-                                    @bind-Value="_artworkRequest.Description"
-                                    placeholder="Bildetekst"/>
-                            </div>
+                            
                         </div>
                     </div>
                     <!-- Right side -->
@@ -127,6 +124,16 @@ else
 
                         </div>
                         
+                    </div>
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label for="description">Tekst beskrivelse til kunstverk:</label>
+                        <InputTextArea
+                            class="form-control"
+                            style="height: 150px;
+                                    resize: vertical;"
+                            @bind-Value="_artworkRequest.Description"
+                            placeholder="Bildetekst"/>
                     </div>
                     <div class="mt-4">
                         <button class="btn btn-primary w-100" type="submit">Last Opp</button>
@@ -198,10 +205,7 @@ else
     {
         await JS.InvokeVoidAsync("triggerClick", "artworkFileInput");
     }
-    private async Task TriggerWallFileDialog() // WallPreview
-    {
-        await JS.InvokeVoidAsync("triggerClick", "wallFileInput");
-    }
+    
     
     // Remove Artwork from input
     private void RemoveArtworkImage(int index)
@@ -250,6 +254,7 @@ else
 
             content.Add(new StringContent(_artworkRequest.Title), "Title");
             content.Add(new StringContent(_artworkRequest.Description ?? ""), "Description");
+            content.Add(new StringContent(_artworkRequest.Materials ?? ""), "Materials");
             content.Add(new StringContent(_artworkRequest.Artist), "Artist");
             content.Add(new StringContent(_artworkRequest.ForSale.ToString()), "ForSale");
 
@@ -270,7 +275,8 @@ else
                 var streamContent = new StreamContent(new MemoryStream(data));
                 streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
                 content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
-                content.Add(new StringContent("False"), $"Images[{index}].IsWallPreview");
+                content.Add(streamContent, $"Images[{index}].ImageFile", fileName);
+                content.Add(new StringContent("0"), $"Images[{index}].Id");
                 index++;
             }
            
