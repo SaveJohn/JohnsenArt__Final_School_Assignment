@@ -12,18 +12,18 @@
    object-fit: contain;
    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
    max-width: 100%;
-   width: auto;            /* <--- holder bredden proporsjonal */
+   width: auto;          
 }
 
-/* Hvis du vil ha en maks bredde for å begrense bildet visuelt */
+
 @media (min-width: 768px) {
    .carousel-image {
-      max-width: 900px; /* eller 1000px eller hva som ser bra ut */
+      max-width: 900px;
    }
 }
 
 .art-detail-container {
-   flex: 1 1 40%; /* Ta det som er igjen etter carouselen */
+   flex: 1 1 40%; 
    display: flex;
    justify-content: flex-start;
    align-items: flex-start;
@@ -100,13 +100,42 @@ button.button-41:active {
    }
 
    .art-detail-card {
-      padding: 1.25rem;
+      border-radius: 12px;
+      padding: 1rem;
+      width: 100%;
       max-width: 100%;
    }
 
+   .art-detail-card .flex-wrap {
+      flex-wrap: nowrap;
+      gap: 1rem;
+      margin-bottom: 0.3rem;
+      margin-top: 0.3rem;
+   }
+
    .art-detail-container {
-      flex: 1 1 100%;
-      justify-content: center;
+      padding: 0 0.5rem;
+      width: 100%;
+   }
+
+   .container-fluid {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+   }
+
+   .col-xl-10 {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+   }
+
+   .price-section {
+      flex-direction: column;
+      align-items: flex-start;
+   }
+
+   .buy-button {
+      width: 100%;
    }
 
    .carousel-inner img {

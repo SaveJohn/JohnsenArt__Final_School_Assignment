@@ -12,21 +12,20 @@
 
 @if (artwork == null)
 {
+    <!-- Loading -->
     <p class="text-center"><i class="spinner-border spinner-border-sm me-2"></i>Kunstverk laster ...</p>
 }
 else
 {
     <div class="container-fluid px-5 d-flex justify-content-center">
-        
             <div class="col-xl-10 d-flex flex-row flex-wrap justify-content-center">
-
-
                 <div id="artworkCarousel" class="carousel slide" style="min-width: 60%;" data-bs-ride="false" data-bs-interval="false">
 
                     <!-- Image slides -->
                     <div class="carousel-inner">
                         @foreach (var img in artwork.Images)
                         {
+                            <!-- Image -->
                             <div class="carousel-item @(artwork.Images.IndexOf(img) == 0 ? "active" : "")">
                                 <img src="@img.PreviewUrl"
                                      class="carousel-image"
@@ -39,12 +38,14 @@ else
                     <!-- Arrows only if >1 image -->
                     @if (artwork.Images.Count > 1)
                     {
+                        <!-- Left arrow -->
                         <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
                             <span class="custom-carousel-arrow">
                                 <i class="fa-solid fa-chevron-left"></i>
                             </span>
                         </button>
-
+                        
+                        <!-- Right arrow -->
                         <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next">
                             <span class="custom-carousel-arrow">
                                 <i class="fa-solid fa-chevron-right"></i>
@@ -75,20 +76,25 @@ else
                     <div class="art-detail-card">
                         <div class="d-flex justify-content-between align-items-center art-header">
 
-                        <!-- Tittel til venstre -->
+                        <!-- Title to the Left -->
                             <h2 class="fw-bold fs-3 me-auto">@artwork?.Title</h2>
 
-                            <!-- Pris og knapp til høyre -->
-                            <div class="d-flex align-items-center gap-3 fs-5">
+                            <!-- Price and button to the Right -->
+                            <div class="d-flex align-items-center gap-3 fs-5 price-section">
                                 @if (artwork.ForSale)
                                 {
-                                    <span class="text-muted">Pris:</span>
-                                    <span class="fw-semibold">@((artwork.Price?.ToString("F2") ?? "0.00")) ,-</span>
+                                    <!-- Price tag -->
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <span class="text-muted">Pris:</span>
+                                        <span class="fw-semibold">@((artwork.Price?.ToString("F2") ?? "0.00")) ,-</span>
+                                    </div>
+                                    <!-- Buy button -->
                                     <a class="button-41" href=@($"/checkout/{artworkId}")>
                                         Kjøp <i class="fa-solid fa-bag-shopping"></i>
                                     </a>
                                 }else
-                                {
+                                {   
+                                    <!-- Not for sale tag -->
                                     <span class="badge bg-secondary">Ikke for salg</span>
                                 }
                                 
@@ -98,23 +104,27 @@ else
                         <div class="d-flex justify-content-start gap-5 mb-2 flex-wrap">
                             @if (!string.IsNullOrWhiteSpace(artwork.Materials))
                             {
+                                <!-- Materials -->
                                 <div>
                                     <h6 class="text-secondary mb-1">Materialer:</h6>
                                     <p class="mb-0">@artwork.Materials</p>
                                 </div>
                             }
                             @if (artwork.WidthDimension is not null && artwork.HeightDimension is not null)
-                            {
+                            {   
+                                <!-- Dimensions -->
                                 <div>
                                     <h6 class="text-secondary mb-1">Dimensjoner:</h6>
                                     <p class="mb-0">@artwork.WidthDimension x @artwork.HeightDimension cm</p>
                                 </div>
                             }
                         </div>
+                        <!-- Description -->
                         <div class="mt-4" style="line-height: 1.7;">
                             <h6 class="text-secondary">Beskrivelse:</h6>
                             <p>@artwork.Description</p>
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -140,7 +150,7 @@ else
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content bg-dark bg-opacity-75 border-0 position-relative overflow-hidden">
 
-            
+                <!-- Exit button -->
                 <button type="button"
                         class="btn-close position-absolute top-0 end-0 m-3 z-3"
                         data-bs-dismiss="modal"
@@ -148,7 +158,7 @@ else
                         style="filter: invert(1); opacity: 0.85;">
                 </button>
 
-            
+                <!-- Image -->
                 <div class="modal-body d-flex justify-content-center align-items-center p-0 z-1">
                     <img id="modalImage"
                          src=""
@@ -166,20 +176,31 @@ else
         <div class="navbarFont">
             <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom py-4">
                 <div class="container">
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item d-flex align-items-center me-3">
-                            <div class="d-flex flex-column">
-                                <button type="button" data-bs-toggle="modal" data-bs-target="#deleteWarningModal"
-                                        class="btn btn-sm btn-outline-danger">
-                                    Slett Kunstverk
-                                </button>
-                            </div>
+                    <ul class="navbar-nav mx-auto flex-column flex-md-row gap-2 align-items-center">
+
+                        <!-- Delete Artwork -->
+                        <li class="nav-item">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#deleteWarningModal"
+                                    class="btn btn-sm btn-outline-danger">
+                                Slett Kunstverk
+                            </button>
                         </li>
-                        <li class="nav-item d-flex align-items-center">
-                            <NavLink class="btn btn-sm btn-outline-warning fw-bold rounded px-2 py-1" 
+
+                        <!-- Update Artwork -->
+                        <li class="nav-item">
+                            <NavLink class="btn btn-sm btn-outline-warning rounded px-2 py-1"
                                      href=@($"/update-artwork/{artworkId}")>
                                 Endre Kunstverk
                             </NavLink>
+                        </li>
+
+                        <!-- Need meta-data in Html head - but need to add the real domain first -->
+                        <li class="nav-item">
+                            <a href="@($"https://www.facebook.com/sharer/sharer.php?u=https://joart.no/gallerydetail/{artworkId}")"
+                               target="_blank"
+                               class="btn btn-sm btn-outline-primary fw-bold rounded px-2 py-1 d-flex align-items-center gap-2">
+                                <i class="fa-brands fa-facebook"></i> Del på Facebook
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -205,10 +226,10 @@ else
 
                     <!-- Footer -->
                     <div class="modal-footer">
-                        <button class="btn btn-secondary"
+                        <button class="btn btn-secondary mb-2"
                                 data-bs-dismiss="modal"
                                 @onclick="CloseConfirmation">Avbryt</button>
-                        <button class="btn btn-danger"
+                        <button class="btn btn-danger mb-2"
                                 data-bs-dismiss="modal"
                                 @onclick="ConfirmDelete">Slett Kunstverk</button>
                     </div>
