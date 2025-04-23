@@ -56,11 +56,13 @@ public class AdminGalleryService : IAdminGalleryService
             {
                 var fullKey = await _aws.UploadImageToS3(image.ImageFile);
                 var thumbKey = await _aws.UploadPreviewImageToS3(image.ImageFile);
+                var previewKey = await _aws.UploadPreviewImageToS3(image.ImageFile);
 
                 artwork.Images.Add(new ArtworkImage
                 {
                     ObjectKey = fullKey,
-                    ThumbnailKey = thumbKey
+                    ThumbnailKey = thumbKey,
+                    PreviewKey = previewKey
                 });
             }
             else
