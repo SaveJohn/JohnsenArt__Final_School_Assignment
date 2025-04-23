@@ -3,20 +3,20 @@ let elements;
 
 export async function initializeStripe(publishableKey, clientSecret) {
     console.log("initializeStripe started");
-    
+
     if (typeof Stripe === "undefined") {
         console.error("Stripe.js er ikke lastet!");
         return;
     }
-    
+
     await waitForStripe();
-    
+
     window.stripe = Stripe(publishableKey);
     if (!window.stripe) {
         console.error("Stripe() returnerte undefined");
         return;
     }
-    
+
     window.clientSecret = clientSecret;
     localStorage.setItem('stripeKey', publishableKey);
     elements =  window.stripe.elements();
@@ -25,7 +25,7 @@ export async function initializeStripe(publishableKey, clientSecret) {
     await waitForElement("#card-number-element");
     await waitForElement("#card-expiry-element");
     await waitForElement("#card-cvc-element");
-    
+
     const style = {
         base: {
             fontSize: "16px",
@@ -40,21 +40,21 @@ export async function initializeStripe(publishableKey, clientSecret) {
             iconColor: '#fa755a'
         }
     };
-    
+
     const cardNumber = elements.create('cardNumber', {style});
     const cardExpiry = elements.create('cardExpiry', {style});
     const cardCvc = elements.create('cardCvc', {style});
-    
+
     cardNumber.mount('#card-number-element');
     cardExpiry.mount('#card-expiry-element');
     cardCvc.mount('#card-cvc-element');
-    
+
     window.cardElements = {
         number: cardNumber,
         expiry: cardExpiry,
         cvc: cardCvc
     };
-    
+
     console.log("Stripe elements loaded");
 
 }
@@ -78,7 +78,7 @@ async function waitForStripe() {
 async function waitForElement(selector) {
     return new Promise(resolve => {
         if (document.querySelector(selector)) return resolve();
-        
+
         const observer = new MutationObserver(() => {
             if (document.querySelector(selector)) {
                 observer.disconnect();
@@ -119,41 +119,59 @@ export async function mountCardElements() {
 
 }
 
-export async function confirmCardPayment() {
-    const result = await window.stripe.confirmCardPayment(window.clientSecret, {
-        payment_method: {
-                card: window.cardElements.number,
-            billing_details: {
-                name: document.querySelector('input[name="fullName"]').value,
-                email: document.querySelector('input[type="email"]').value
-            }
-        }
-    });
-
-    return {
-        error: result.error ?? null,
-        paymentIntent: result.paymentIntent ?? null
-    };
+export async function confirmCardPayment(clientSecret, fullName, email) {
+    try{
+        const result = await window.stripe.confirmCardPayment(
+            clientSecret, {
+                payment_method: {
+                    card: window.cardElements.number,
+                    billing_details: { name: fullName, email: email }
+                }
+            });
+        console.error("Stripe card payment result:", result);
+        return {
+            error: result.error ?? null,
+            paymentIntent: result.paymentIntent ?? null
+        };
+    } catch (error) {
+        console.error(" Stripe threw an error:", err);
+        return {
+            error: { message: err.message },
+            paymentIntent: null
+        };
+    }
+    
 }
 
-export async function confirmKlarnaPayment() {
-    const result = await window.stripe.confirmKlarnaPayment(window.clientSecret, {
-        payment_method: {
-            billing_details: {
-                email: document.querySelector('input[type=email]').value,
-                name: document.querySelector('input[name="fullName"]').value
-            }
-        },
-        return_url: `${window.location.origin}/checkout/${window.productId}?payment_intent_client_secret=${window.clientSecret}`
+export async function confirmKlarnaPayment(clientSecret, fullName, email) {
+    try {
+        const result = await window.stripe.confirmKlarnaPayment(
+            clientSecret, {
+                payment_method: {
+                    billing_details: {
+                        email: email,
+                        name: fullName
+                    }
 
-    });
-    if (!window.productId) {
-        console.warn("ProductId not set before Klarna redirect!");
+                },
+                return_url: `${window.location.origin}/checkout/${window.productId}?payment_intent_client_secret=${window.clientSecret}`
+
+            });
+        if (!window.productId) {
+            console.warn("ProductId not set before Klarna redirect!");
+        }
+        console.error("klarna result:", result);
+        return {
+            error: result.error ?? null,
+            paymentIntent: result.paymentIntent ?? null
+        };
+    } catch (error) {
+        console.error(" Klarna threw an error:", err);
+        return {
+            error: { message: err.message },
+            paymentIntent: null
+        };
     }
-    return {
-        error: result.error ?? null,
-        paymentIntent: result.paymentIntent ?? null
-    };
 }
 
 export function setProductId(id) {
@@ -165,7 +183,7 @@ export async function checkPaymentStatus() {
     const clientSecret = urlParams.get('payment_intent_client_secret');
 
     if (!clientSecret) return null;
-    
+
     if (!window.stripe) {
         const storedKey = localStorage.getItem('stripeKey');
         if (!storedKey) {
@@ -174,8 +192,7 @@ export async function checkPaymentStatus() {
         }
         window.stripe = Stripe(storedKey);
     }
-    
+
     const result = await window.stripe.retrievePaymentIntent(clientSecret);
     return result.paymentIntent?.status ?? null;
 }
-
