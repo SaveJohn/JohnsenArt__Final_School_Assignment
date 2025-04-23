@@ -1,25 +1,87 @@
-﻿.image-shadow {
-   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); /* shadow effect */
-   border-radius: 25px; /* soft corners */
-   background-color: transparent; /* no white background */
+﻿.gallery-detail-wrapper {
+   position: relative;
+}
+.gallery-detail-header {
+   position: relative;
+   
+   margin-bottom: 1rem;
+   text-align: center;          
+}
+.gallery-detail-header h2 {
+   display: inline-block;       
+   margin: 0;                   
+}
+
+.gallery-detail-header .neighbor-button {
+   position: absolute;
+   top: 50%;
+   transform: translateY(-50%);
+}
+
+.gallery-detail-header .neighbor-button.prev {
+   left: 1rem;
+}
+.gallery-detail-header .neighbor-button.next {
+   right: 1rem;
+}
+
+.neighbor-button {
+   top: 1rem;
+   width: 2.5rem;
+   height: 2.5rem;
+   border-radius: 30%;
+   background: rgb(50, 69, 60);
+   color: #fff;
+   font-weight: bold;
+   
+   
+   
+}
+.neighbor-button .neighbor-label {
+   display: none;
+}
+
+.neighbor-button.prev {
+   left: 1rem;
+}
+
+.neighbor-button.next {
+   right: 1rem;
+}
+
+
+.neighbor-button:hover {
+   background: rgb(32, 32, 32);
+   border-color: #999;
+}
+
+#artworkCarousel .carousel-item {
+   display: none;
+}
+
+#artworkCarousel .carousel-item.active {
+   display: flex;           
+   justify-content: center; 
+}
+
+.image-shadow {
+   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); 
+   border-radius: 25px; 
+   background-color: transparent; 
    display: block;
 }
 .carousel-image {
    display: block;
    margin: 0 auto;
-   border-radius: 25px;
+   border-radius: 8px;
    max-height: 70vh;
    object-fit: contain;
    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
    max-width: 100%;
    width: auto;          
 }
-
-
-@media (min-width: 768px) {
-   .carousel-image {
-      max-width: 900px;
-   }
+#artworkCarousel .carousel-inner {
+   overflow: visible !important;
 }
 
 .art-detail-container {
@@ -39,55 +101,42 @@
    border-radius: 10px;
 }
 
-a.button-41{
-   background-color: initial;
-   background-image: linear-gradient(-180deg, #00D775, #00BD68);
-   border-radius: 5px;
-   min-width: 150px;
-   box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
-   color: #FFFFFF !important;
-   cursor: pointer;
-   display: inline-block;
-   font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
-   height: 44px;
-   line-height: 44px;
-   outline: 0;
-   overflow: hidden;
-   padding: 0 20px;
-   pointer-events: auto;
-   position: relative;
-   text-align: center;
-   touch-action: manipulation;
-   user-select: none;
-   -webkit-user-select: none;
-   vertical-align: top;
-   white-space: nowrap;
-   z-index: 9;
-   border: 0;
-   text-decoration: none;
-}
-
-a.button-41:hover,
-button.button-41:hover {
-   background: #00bd68;
-   text-decoration: none;
-   color: #fff;
-}
-
-a.button-41:active,
-button.button-41:active {
-   transform: scale(0.98);
-   box-shadow: rgba(0, 0, 0, 0.1) 0 1px 2px;
-}
-
 @media (min-width: 992px) {
    .art-detail-card {
       min-width: 1200px;
       max-width: 1500px;
    }
+   .neighbor-button {
+      top: 4rem;            
+      width: auto;          
+      height: auto;
+      padding: 0.5rem 1rem; 
+      border-radius: 999px; 
+      background: rgb(173, 177, 173);
+      border: none;
+      outline: none;
+      box-shadow: rgba(112, 112, 112, 0.77) 2px 2px 2px;
+   }
+   .neighbor-button .fa-chevron-left,
+   .neighbor-button .fa-chevron-right {
+      font-size: 1.25rem;
+   }
+   
+   .neighbor-button .neighbor-label {
+      display: inline-block;
+      margin: 0 0.5rem;
+      font-weight: bold;
+      color: #fff;
+      white-space: nowrap;
+   }
 }
 
 @media (max-width: 768px) {
+   
+   .carousel-image {
+      max-width: 900px;
+   }
+   
    .art-header {
       flex-direction: column;
       align-items: flex-start !important;
@@ -159,6 +208,27 @@ button.button-41:active {
       font-size: 1rem;
       margin-bottom: 0.25rem;
    }
+   
+   .neighbor-button {
+      width: auto;               /* lar teksten få plass */
+      padding: 0.5rem 1rem;
+      border-radius: 999px;      /* full pill-form */
+      background: rgba(0,0,0,0.6);
+      border: none;
+   }
+   .neighbor-button.next{
+      left: auto;    
+      right: 1rem;   
+   }
+   .neighbor-button.prev { 
+      left: 1rem; 
+      right: auto; 
+   }
+   .neighbor-button:focus,
+   .neighbor-button:active {
+      outline: none;            
+      background: rgba(0,0,0,0.4);
+   }
 }
 
 .custom-carousel-arrow {
@@ -170,7 +240,7 @@ button.button-41:active {
 
 .custom-carousel-arrow i {
    font-size: 2.5rem;
-   font-weight: 800; /* gjør ikonet "tykkere" */
+   font-weight: 800; 
 }
 
 .carousel-indicators {
@@ -199,6 +269,47 @@ button.button-41:active {
 
 .carousel-indicators .active i {
    color: #333;
+}
+
+a.buy-button{
+   background-color: initial;
+   background-image: linear-gradient(-180deg, #00D775, #00BD68);
+   border-radius: 5px;
+   min-width: 190px;
+   box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+   color: #FFFFFF !important;
+   cursor: pointer;
+   display: inline-block;
+   font-family: Inter,-apple-system,system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+   height: 44px;
+   line-height: 44px;
+   outline: 0;
+   overflow: hidden;
+   padding: 0 20px;
+   pointer-events: auto;
+   position: relative;
+   text-align: center;
+   touch-action: manipulation;
+   user-select: none;
+   -webkit-user-select: none;
+   vertical-align: top;
+   white-space: nowrap;
+   z-index: 9;
+   border: 0;
+   text-decoration: none;
+}
+
+a.buy-button:hover,
+button.buy-button:hover {
+   background: #00bd68;
+   text-decoration: none;
+   color: #fff;
+}
+
+a.buy-button:active,
+button.buy-button:active {
+   transform: scale(0.98);
+   box-shadow: rgba(0, 0, 0, 0.1) 0 1px 2px;
 }
 
 

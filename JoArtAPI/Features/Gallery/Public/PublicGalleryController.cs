@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
+using JoArtClassLib.Art.Artwork;
 using JoArtClassLib.Enums;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -70,5 +71,13 @@ public class PublicGalleryController : ControllerBase
             _logger.LogError(ex, "Error retrieving artwork with ID {artId}", artId);
             return StatusCode(500, "An error occurred while retrieving the artwork.");
         }
+    }
+
+    [HttpGet("artworks/{artId}/neighbors")]
+    public async Task<NeighborsResponse> GetGalleryNeighbors(int artId)
+    {
+        var neighbors = await _galleryService.GetGalleryNeighborsAsync(artId);
+        
+        return neighbors;
     }
 }

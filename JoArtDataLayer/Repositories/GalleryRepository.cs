@@ -1,4 +1,5 @@
 ﻿using JoArtClassLib;
+using JoArtClassLib.Art.Artwork;
 using JoArtClassLib.Enums;
 using JoArtDataLayer.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -110,6 +111,24 @@ public class GalleryRepository : IGalleryRepository
         }
         
     }
-    
-    
+
+    public async Task<Neighbors> GetGalleryNeighborsAsync(int artId)
+    {
+        var allIds = await _context.Artworks
+            .OrderBy(a => a.Id)    
+            .Select(a => a.Id)
+            .ToListAsync();
+        
+        var idx = allIds.IndexOf(artId);
+        if (idx < 0)
+        {
+            return new Neighbors { PreviousId = null, NextId = null };
+        }
+        
+        return new Neighbors {
+            PreviousId = idx < allIds.Count - 1 ? allIds[idx + 1] : (int?)null,
+            NextId = idx > 0 ? allIds[idx - 1] : (int?)null
+                
+        };
+    }
 }

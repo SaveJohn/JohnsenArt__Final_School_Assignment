@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using JoArtClassLib.Art;
+using JoArtClassLib.Art.Artwork;
 using JoArtClassLib.Enums;
 using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
@@ -69,7 +70,6 @@ public class GalleryService : IGalleryService
         _logger.LogInformation($"-------------------- \n Service: GetArtworkById {artId}:");
 
         // Getting artwork from database (mapped to response)
-        var artwork = await _repository.GetArtworkByIdAsync(artId);
         var response = _mapper.Map<ArtworkResponse>(
             await _repository.GetArtworkByIdAsync(artId)
         );
@@ -90,5 +90,13 @@ public class GalleryService : IGalleryService
         }
 
         return response;
+    }
+
+    public async Task<NeighborsResponse> GetGalleryNeighborsAsync(int artId)
+    {
+       var neighbors = await _repository.GetGalleryNeighborsAsync(artId);
+       
+       return _mapper.Map<NeighborsResponse>(neighbors);
+       
     }
 }

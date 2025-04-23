@@ -1,6 +1,7 @@
 ﻿@page "/GalleryDetail/{artworkId:int}"
 @using System.Text.Json
 @using JoArtClassLib.Art
+@using JoArtClassLib.Art.Artwork
 @using JoArtClassLib.Error
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthStateProvider
@@ -16,21 +17,57 @@
     <p class="text-center"><i class="spinner-border spinner-border-sm me-2"></i>Kunstverk laster ...</p>
 }
 else
-{
-    <div class="container-fluid px-5 d-flex justify-content-center">
-            <div class="col-xl-10 d-flex flex-row flex-wrap justify-content-center">
-                <div id="artworkCarousel" class="carousel slide" style="min-width: 60%;" data-bs-ride="false" data-bs-interval="false">
+{   
+    <div class="gallery-detail-wrapper position-relative">
+        <div class="gallery-detail-header">
+            
+            <!-- Prev Artwork Button -->
+            @if (prevArtwork is not null)
+            {
+                <button class="neighbor-button  prev " type="button" @onclick="() => PrevArtwork()">
+                    <i class="fa-solid fa-angles-left"></i>
+                    <span class="neighbor-label">Forrige</span>
+                </button>
+            }
+        
+        
+            <!-- Tittel -->
+            <h2 class="fw-bold fs-3 me-auto border-bottom ">@artwork?.Title</h2>
+        
+            <!-- Next Artwork Button -->
+            @if (nextArtwork is not null)
+            {
+                <button class="neighbor-button next" type="button" @onclick="() => NextArtwork()">
+                    <span class="neighbor-label">Neste</span><i class="fa-solid fa-angles-right"></i>
+                </button>
+            }
+            
+        </div>
 
+        <!-- Artwork Content -->
+        <div class="container-fluid px-5 d-flex justify-content-center">
+            
+            <div class="col-xl-10 d-flex flex-row flex-wrap justify-content-center">
+                
+                <div id="artworkCarousel"
+                     class="carousel slide"
+                     style="min-width: 60%; max-width:  80vw;"
+                     data-bs-ride="false" data-bs-interval="false">
+                    
+                    
                     <!-- Image slides -->
                     <div class="carousel-inner">
+
+
+
                         @foreach (var img in artwork.Images)
                         {
                             <!-- Image -->
-                            <div class="carousel-item @(artwork.Images.IndexOf(img) == 0 ? "active" : "")">
+                            <div class="carousel-item  @(artwork.Images.IndexOf(img) == 0 ? "active" : "")">
                                 <img src="@img.PreviewUrl"
                                      class="carousel-image"
                                      alt="@artwork.Title"
-                                     @onclick="() => ShowDetailedImage(img.ImageUrl)" />
+                                     @onclick="() => ShowDetailedImage(img.ImageUrl)"/>
                             </div>
                         }
                     </div>
@@ -44,7 +81,7 @@ else
                                 <i class="fa-solid fa-chevron-left"></i>
                             </span>
                         </button>
-                        
+
                         <!-- Right arrow -->
                         <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next">
                             <span class="custom-carousel-arrow">
@@ -74,33 +111,35 @@ else
                 </div>
                 <div class="art-detail-container">
                     <div class="art-detail-card">
-                        <div class="d-flex justify-content-between align-items-center art-header">
+                        <div class="d-flex align-items-start art-header">
 
-                        <!-- Title to the Left -->
-                            <h2 class="fw-bold fs-3 me-auto">@artwork?.Title</h2>
+                            <!-- Title to the Left 
+                            <h2 class="fw-bold fs-3 me-auto">@artwork?.Title</h2> justify-content-between -->
 
                             <!-- Price and button to the Right -->
                             <div class="d-flex align-items-center gap-3 fs-5 price-section">
                                 @if (artwork.ForSale)
                                 {
+                                    
+                                    <!-- Buy button -->
+                                    <a class="buy-button" href=@($"/checkout/{artworkId}")>
+                                        Kjøp <i class="fa-solid fa-bag-shopping"></i>
+                                    </a>
                                     <!-- Price tag -->
                                     <div class="d-flex gap-2 align-items-center">
                                         <span class="text-muted">Pris:</span>
                                         <span class="fw-semibold">@((artwork.Price?.ToString("F2") ?? "0.00")) ,-</span>
                                     </div>
-                                    <!-- Buy button -->
-                                    <a class="button-41" href=@($"/checkout/{artworkId}")>
-                                        Kjøp <i class="fa-solid fa-bag-shopping"></i>
-                                    </a>
-                                }else
-                                {   
+                                }
+                                else
+                                {
                                     <!-- Not for sale tag -->
                                     <span class="badge bg-secondary">Ikke for salg</span>
                                 }
-                                
+
                             </div>
                         </div>
-                        <hr class="my-4" />
+                        <hr class="my-4"/>
                         <div class="d-flex justify-content-start gap-5 mb-2 flex-wrap">
                             @if (!string.IsNullOrWhiteSpace(artwork.Materials))
                             {
@@ -111,7 +150,7 @@ else
                                 </div>
                             }
                             @if (artwork.WidthDimension is not null && artwork.HeightDimension is not null)
-                            {   
+                            {
                                 <!-- Dimensions -->
                                 <div>
                                     <h6 class="text-secondary mb-1">Dimensjoner:</h6>
@@ -124,11 +163,14 @@ else
                             <h6 class="text-secondary">Beskrivelse:</h6>
                             <p>@artwork.Description</p>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
         </div>
+        
+    </div>
+    
     
     
     <!-- Display errors-->
@@ -245,56 +287,100 @@ else
 
 @code {
     [Parameter] public int artworkId { get; set; }
-    
 
     private ArtworkResponse? artwork;
     ImageResponse image;
 
-    protected override async Task OnInitializedAsync()
+    // Neighboors
+    private int? prevArtwork;
+    private int? nextArtwork;
+
+    // Tracking old Id when moving to new artwork
+    private int? lastArtworkId;
+
+    protected override async Task OnParametersSetAsync()
     {
         try
         {
-            artwork = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}");
+            artwork = await Http.GetFromJsonAsync<ArtworkResponse>($"/api/PublicGallery/artworks/{artworkId}");
             if (artwork.Images.Count > 0)
             {
-                image =  artwork.Images.FirstOrDefault();
+                image = artwork.Images.FirstOrDefault();
             }
-            
         }
         catch (Exception e)
         {
             Console.WriteLine("Error fetching artwork data: " + e.Message);
-            throw;
         }
+
+        if (artwork is not null)
+        {
+            try
+            {
+                var neighbors = await Http.GetFromJsonAsync<Neighbors>($"/api/PublicGallery/artworks/{artworkId}/neighbors");
+                prevArtwork = neighbors.PreviousId;
+                nextArtwork = neighbors.NextId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error fetching previous and next artwork Ids: " + e.Message);
+            }
+        }
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender || artworkId != lastArtworkId)
+        {
+            lastArtworkId = artworkId;
+
+            await Task.Yield();
+
+            await JS.InvokeVoidAsync("resetCarouselToFirst", "#artworkCarousel");
+        }
+
+    }
+
+
+    private void PrevArtwork()
+    {
+        navigationManager.NavigateTo($"/GalleryDetail/{prevArtwork}");
+    }
+
+    private void NextArtwork()
+    {
+        navigationManager.NavigateTo($"/GalleryDetail/{nextArtwork}");
     }
 
     private async Task ShowDetailedImage(string imageUrl)
     {
         await JS.InvokeVoidAsync("showImageModal", imageUrl);
     }
-    
-// Delete button trigger scenario
+
+    // Delete button trigger scenario
     private bool ShowConfirmation = false;
+
     // Error collections
     private List<ErrorResponse> errors = new();
     private string? ErrorMessage;
-    
+
     // Delete warning 
     private void OpenConfirmation()
     {
         ShowConfirmation = true;
     }
-    
+
     // Delete canceled -> abort deletion
     private void CloseConfirmation()
     {
         ShowConfirmation = false;
     }
-    
+
     // Delete confirmed -> deleting artwork
     private async Task ConfirmDelete()
     {
-        errors.Clear();  // Clear old errors before this attempt
+        errors.Clear(); // Clear old errors before this attempt
 
         try
         {
@@ -369,7 +455,7 @@ else
                 ErrorMessage = "En uventet feil oppstod, og kunstverket ble ikke slettet."
             });
 
-            Console.WriteLine($"\"En uventet feil oppstod: {ex}"); 
+            Console.WriteLine($"\"En uventet feil oppstod: {ex}");
         }
         finally
         {
@@ -377,4 +463,5 @@ else
             ShowConfirmation = false;
         }
     }
+
 }

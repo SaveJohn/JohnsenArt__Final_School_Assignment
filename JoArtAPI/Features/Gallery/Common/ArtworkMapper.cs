@@ -16,6 +16,7 @@ public class ArtworkMapper : Profile
         CreateMap<ArtworkImage, UpdateImageRequest>().ReverseMap();
         CreateMap<Artwork, ArtworkResponse>().ReverseMap();
         CreateMap<ArtworkImage, ImageResponse>().ReverseMap();
+        CreateMap<Neighbors, NeighborsResponse>();
         
     }
 }
