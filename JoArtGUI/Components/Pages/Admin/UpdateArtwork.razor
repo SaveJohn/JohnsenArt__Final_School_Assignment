@@ -132,6 +132,25 @@
             </div>
         </EditForm>
     </div>
+    <!-- Loading feedback for submit -->
+    <div class="modal fade show" tabindex="-1" style="display:@(_isUploading ? "block" : "none"); background-color: rgba(0,0,0,0.5);" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 bg-transparent text-center">
+                <div class="modal-body">
+                    <div class="spinner-border text-light mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <p class="text-white fs-5">Laster opp kunstverket ...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (_isUploading)
+    {
+        <style>
+            body {
+                overflow: hidden;
+            }
+        </style>
+    }
 </div>
 
 @if (errors.Count > 0)
@@ -166,6 +185,9 @@
     // Conditional variables
     private long maxFileSize = 1024 * 1024 * 10; // Max 10MB
     private bool _uploadSuccess = false;
+    
+    // Loading
+    private bool _isUploading = false;
 
     // Error collections
     private List<ErrorResponse> errors = new();
@@ -281,6 +303,10 @@
         // Trying to upload artwork to database and imnages to s3 via API
         try
         {
+            _isUploading = true;
+            ErrorMessage = null;
+            StateHasChanged();
+            
             // Making sure that artwork image is added
             if (!_artworkFiles.Any() || _artworkFiles.Count == 0)
             {
@@ -350,6 +376,11 @@
             ErrorMessage = "En feil oppsto under opplasting.";
             Console.WriteLine("Exception: " + ex.Message);
             StateHasChanged();
+        }
+        finally
+        {
+            _isUploading = false;
+            StateHasChanged(); 
         }
 
     }

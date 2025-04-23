@@ -144,7 +144,27 @@ else
                 </div>
             </EditForm>
         </div>
+        <!-- Loading feedback for submit -->
+        <div class="modal fade show" tabindex="-1" style="display:@(_isUploading ? "block" : "none"); background-color: rgba(0,0,0,0.5);" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 bg-transparent text-center">
+                    <div class="modal-body">
+                        <div class="spinner-border text-light mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                        <p class="text-white fs-5">Laster opp kunstverket ...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (_isUploading)
+        {
+            <style>
+                body {
+                    overflow: hidden;
+                }
+            </style>
+        }
     </div>
+    
     
 }
 
@@ -177,6 +197,9 @@ else
     private long maxFileSize = 1024 * 1024 * 10; // Max 10MB
     private bool _uploadSuccess = false;
     private int? _newArtworkId = null;
+    
+    // Loading
+    private bool _isUploading = false;
     
     // Error collections
     private List<ErrorResponse> errors = new();
@@ -221,7 +244,9 @@ else
     // Submit Complete Artwork
     private async Task SubmitArtworkAsync()
     {
-        Console.WriteLine("Submit Artwork hit.");
+        _isUploading = true;
+        ErrorMessage = null;
+        StateHasChanged();
         
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var token = authState.User.FindFirst("JWT")?.Value;
@@ -302,8 +327,7 @@ else
                     Console.WriteLine($"Content: {rawError}");
                     ErrorMessage = $"Server returned: {(int)response.StatusCode} - {response.ReasonPhrase}";
                 }
-
-                StateHasChanged(); 
+                
             }
 
         }
@@ -312,6 +336,11 @@ else
             ErrorMessage = "En feil oppsto under opplasting.";
             Console.WriteLine("Exception: " + ex.Message);
             StateHasChanged();
+        }
+        finally
+        {
+            _isUploading = false;
+            StateHasChanged(); 
         }
             
     }
