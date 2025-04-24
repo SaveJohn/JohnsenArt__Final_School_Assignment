@@ -197,6 +197,12 @@ else
     // Load Artworks ---
     private async Task LoadArtworkAsync(bool append = false)
     {
+        if (!append)
+        {
+            currentPage = 1;
+            hasMore = true;
+            artworks.Clear();
+        }
         
         // Building query string parameters
         var queryParams = new List<string>
@@ -246,19 +252,17 @@ else
             Console.WriteLine($"Feil ved henting av kunstverk: {ex.Message}");
             hasMore = false;
         }
-        
+        StateHasChanged();
     }
 
     private async Task SortOptionChanged()
     {
         await LoadArtworkAsync();
-        StateHasChanged();
     }
 
     private async Task FilterOptionChanged()
     {
         await LoadArtworkAsync();
-        StateHasChanged();
     }
     
     // Toast scenario for deleted artwork
