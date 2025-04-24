@@ -51,15 +51,6 @@
                                 <label class="form-check-label"
                                        for="forSaleCheckbox">Til salgs</label>
                             </div>
-                        </div>
-                        <div class="col">
-                            <!-- Height -->
-                            <div class="mb-3">
-                                <label for="height">Høyde (cm):</label>
-                                <InputNumber class="form-control"
-                                             @bind-Value="_artworkRequest.HeightDimension"
-                                             placeholder="Høyde"/>
-                            </div>
                             <!-- Price -->
                             <div class="mb-3">
                                 <label for="price">Pris (kr):</label>
@@ -73,6 +64,22 @@
                             {
                                 <div class="alert alert-danger mt-3">@ErrorMessage</div>
                             }
+
+                        </div>
+                        <div class="col">
+                            <!-- Height -->
+                            <div class="mb-3">
+                                <label for="height">Høyde (cm):</label>
+                                <InputNumber class="form-control"
+                                             @bind-Value="_artworkRequest.HeightDimension"
+                                             placeholder="Høyde"/>
+                            </div>
+                            <!-- Home Page Rotation -->
+                            <div class="mb-3 form-check">
+                                <InputCheckbox @bind-Value="_artworkRequest.HomePageRotation" class="form-check-input" id="rotationCheckbox"/>
+                                <label class="form-check-label"
+                                       for="rotationCheckbox">Legg til som forsidebilde</label>
+                            </div>
 
                         </div>
                         
@@ -213,6 +220,7 @@
                 Description = _artworkResponse.Description,
                 ForSale = _artworkResponse.ForSale,
                 Price = _artworkResponse.Price,
+                HomePageRotation = _artworkResponse.HomePageRotation,
                 Materials = _artworkResponse.Materials,
                 WidthDimension = _artworkResponse.WidthDimension,
                 HeightDimension = _artworkResponse.HeightDimension
@@ -324,7 +332,8 @@
             content.Add(new StringContent(_artworkRequest.Materials ?? ""), "Materials");
             content.Add(new StringContent(_artworkRequest.Artist), "Artist");
             content.Add(new StringContent(_artworkRequest.ForSale.ToString()), "ForSale");
-
+            content.Add(new StringContent(_artworkRequest.HomePageRotation.ToString()), "HomePageRotation");
+            
             if (_artworkRequest.Price.HasValue)
                 content.Add(new StringContent(_artworkRequest.Price.Value.ToString()), "Price");
             

@@ -74,10 +74,36 @@ public class PublicGalleryController : ControllerBase
     }
 
     [HttpGet("artworks/{artId}/neighbors")]
-    public async Task<NeighborsResponse> GetGalleryNeighbors(int artId)
+    public async Task<IActionResult> GetGalleryNeighbors(int artId)
     {
-        var neighbors = await _galleryService.GetGalleryNeighborsAsync(artId);
+        _logger.LogInformation("Endpoint : GetGalleryNeighbors called");
+        try
+        {
+            var neighbors = await _galleryService.GetGalleryNeighborsAsync(artId);
         
-        return neighbors;
+            return Ok(neighbors);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving neighbors for artwork ID {artId}", artId);
+            return StatusCode(500, "An error occurred while retrieving neighbors.");
+        }
+        
+    }
+
+    [HttpGet("homePageRotation")]
+    public async Task<IActionResult> GetHomePageRotation()
+    {
+        _logger.LogInformation("Endpoint : GetHomePageRotation called");
+        try
+        {
+            var urls = await _galleryService.GetRotationUrls();
+            return Ok(urls);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving rotation urls.");
+            return StatusCode(500, "An error occurred while retrieving the rotation urls.");
+        }
     }
 }

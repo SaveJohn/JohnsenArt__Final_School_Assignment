@@ -10,4 +10,6 @@ public interface IGalleryService
     public Task<ArtworkResponse?> GetArtworkByIdAsync(int artId);
     
     public Task<NeighborsResponse> GetGalleryNeighborsAsync(int artId);
+    
+    public Task<IEnumerable<string?>> GetRotationUrls();
 }

@@ -5,6 +5,7 @@ using JoArtClassLib.Enums;
 using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
+using Microsoft.IdentityModel.Tokens;
 
 namespace JohnsenArtAPI.Features.Gallery.Common;
 
@@ -98,5 +99,19 @@ public class GalleryService : IGalleryService
        
        return _mapper.Map<NeighborsResponse>(neighbors);
        
+    }
+
+    public async Task<IEnumerable<string?>> GetRotationUrls()
+    {
+        List<string> keys = (List<string>)await _repository.GetRotationObjectKeys();
+        List<string> urls = new ();
+        
+        if (keys.IsNullOrEmpty()) return urls;
+        
+        foreach (var key in keys)
+        {
+            urls.Add(_aws.GeneratePresignedUrl(key));
+        }
+        return urls;
     }
 }

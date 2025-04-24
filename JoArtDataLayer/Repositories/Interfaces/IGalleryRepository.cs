@@ -10,4 +10,6 @@ public interface IGalleryRepository
     public Task<Artwork?> GetArtworkByIdAsync(int artId);
     
     public Task<Neighbors> GetGalleryNeighborsAsync(int artId);
+
+    public Task<IEnumerable<string?>> GetRotationObjectKeys();
 }

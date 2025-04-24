@@ -1,15 +1,69 @@
 ﻿@page "/"
+@using System.Text.Json
+@using JoArtClassLib.Art
+@using Microsoft.IdentityModel.Tokens
 @inject HttpClient Http
 
 <PageTitle>Home</PageTitle>
 
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+else if (urls.Count == 0)
+{
+    <br/><br/>
+    <h2 class="text-center text-secondary">
+        <i class="fa-solid fa-paintbrush"></i>
+            Velkommen til Johnsen Art
+        <i class="fa-solid fa-palette"></i>
+    </h2>
+}
+else
+{
+    <div class="hero-image">
+        @for (var i = 0; i < urls.Count; i++)
+        {
+            <div class="slide @(i == currentIndex ? "active" : "")"
+                 style="background-image: url('@urls[i]');">
+            </div>
+        }
+    </div>
+}
 
-<div class="hero-image"
-     style="
-            background-image: url('https://i.ibb.co/RG1m6trd/Skjermbilde-2025-03-20-185348.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            height: 75vh;">
 
-</div>
+@code{
+
+    List<string> urls = new();
+    private string? ErrorMessage;
+    private int currentIndex;
+    private System.Threading.Timer? _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            urls = await Http.GetFromJsonAsync<List<string>>("/api/PublicGallery/homePageRotation")
+                   ?? new List<string>();
+        }
+        catch (HttpRequestException ex)
+        {
+            ErrorMessage = $"Could not load rotation images: {ex.Message}";
+        }
+
+        if (urls.Count > 1)
+        {
+            _timer = new System.Threading.Timer(_ =>
+            {
+                currentIndex = (currentIndex + 1) % urls.Count;
+                InvokeAsync(StateHasChanged);
+            }, null, 8000, 8000);
+        }
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+
+}

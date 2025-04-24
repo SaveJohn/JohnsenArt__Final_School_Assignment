@@ -131,4 +131,18 @@ public class GalleryRepository : IGalleryRepository
                 
         };
     }
+
+    public async Task<IEnumerable<string?>> GetRotationObjectKeys()
+    {
+        var keys = await _context.Artworks
+            .Where(a => a.HomePageRotation)
+            .Select(a => a.Images
+                .OrderBy(img => img.Id)
+                .Select(img => img.ObjectKey)
+                .FirstOrDefault())
+            .Where(key => key != null)
+            .ToListAsync();
+        
+        return keys;
+    }
 }

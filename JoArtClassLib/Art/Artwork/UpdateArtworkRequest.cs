@@ -25,6 +25,6 @@ public class UpdateArtworkRequest
     [Range(0, double.MaxValue, ErrorMessage = "Bredde må være et positivt tall.")]
     public double? WidthDimension { get; set; }
     public bool ForSale { get; set; }
-    public bool homePageRotation { get; set; }
+    public bool HomePageRotation { get; set; }
     public virtual List<UpdateImageRequest> Images { get; set; } = new();
 }
