@@ -11,6 +11,6 @@ public class ArtworkResponse
     public double? HeightDimension { get; set; }
     public double? WidthDimension { get; set; }
     public bool ForSale { get; set; }
-    public bool homePageRotation { get; set; }
+    public bool HomePageRotation { get; set; }
     public virtual List<ImageResponse> Images { get; set; } = new();
 }

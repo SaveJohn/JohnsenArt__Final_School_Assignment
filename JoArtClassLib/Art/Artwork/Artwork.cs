@@ -17,7 +17,7 @@ public class Artwork
     public double? WidthDimension { get; set; }
     [Required] public bool ForSale { get; set; }
     
-    public bool homePageRotation { get; set; }
+    public bool HomePageRotation { get; set; }
     public virtual List<ArtworkImage?> Images { get; set; } = new();
     
 }
