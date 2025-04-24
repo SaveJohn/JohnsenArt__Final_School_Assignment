@@ -5,8 +5,9 @@
 
 <div class="d-flex mail-container justify-content-center" >
     <div class="mail-card mt-4">
-        <h3 class="text-center mb-4" >Kontakt skjema</h3>
-        <hr class="my-4" />
+        <h1 class="text-center mt-2 mb-2"><i class="fa-solid fa-envelope"></i></h1>
+        <h3 class="text-center mb-4">Kontakt skjema</h3>
+        <hr class="my-4"/>
         <EditForm Model="@emailRequest" OnValidSubmit="@SendEmail">
             <DataAnnotationsValidator/>
 
@@ -18,22 +19,22 @@
             </div>
 
             <div class="mb-3">
-                <label for="email" class="form-label" >Din e-post</label>
+                <label for="email" class="form-label">Din e-post</label>
                 <InputText id="email" class="form-control shadow-sm" @bind-Value="emailRequest.FromEmail"/>
                 <ValidationMessage For="@(() => emailRequest.FromEmail)"/>
             </div>
 
             <div class="mb-3">
-                <label for="message" class="form-label" >Melding</label>
+                <label for="message" class="form-label">Melding</label>
                 <InputTextArea id="message" class="form-control shadow-sm" rows="6" @bind-Value="emailRequest.Message"/>
                 <ValidationMessage For="@(() => emailRequest.Message)"/>
             </div>
-            
+
             <div class="text-center py-4 ">
                 <button type="submit" role="button" class="button-send">Send</button>
             </div>
 
-            
+
 
             @if (!string.IsNullOrWhiteSpace(responseMessage))
             {
