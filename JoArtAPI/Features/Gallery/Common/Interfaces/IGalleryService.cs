@@ -9,7 +9,7 @@ public interface IGalleryService
     public Task<IEnumerable<ArtworkResponse?>> GetArtworksAsync(int page, int perPage, GallerySort sort, GalleryFilter filter);
     public Task<ArtworkResponse?> GetArtworkByIdAsync(int artId);
     
-    public Task<NeighborsResponse> GetGalleryNeighborsAsync(int artId);
+    public Task<NeighborsResponse> GetGalleryNeighborsAsync(int artId, GallerySort sort, GalleryFilter filter);
     
     public Task<IEnumerable<string?>> GetRotationUrls();
 }

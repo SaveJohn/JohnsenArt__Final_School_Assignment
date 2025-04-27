@@ -2,7 +2,9 @@
 @using System.Text.Json
 @using JoArtClassLib.Art
 @using JoArtClassLib.Art.Artwork
+@using JoArtClassLib.Enums
 @using JoArtClassLib.Error
+@using JohnsenArtGUI.Helpers.Interfaces
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthStateProvider
 @inject HttpClient Http
@@ -24,7 +26,10 @@ else
             <!-- Prev Artwork Button -->
             @if (prevArtwork is not null)
             {
-                <button class="neighbor-button  prev " type="button" @onclick="() => PrevArtwork()">
+                <button class="neighbor-button  prev " 
+                        type="button"
+                        title="Sort: @currentSort, Filter: @currentFilter"
+                        @onclick="() => PrevArtwork()">
                     <i class="fa-solid fa-angles-left"></i>
                     <span class="neighbor-label">Forrige</span>
                 </button>
@@ -37,7 +42,10 @@ else
             <!-- Next Artwork Button -->
             @if (nextArtwork is not null)
             {
-                <button class="neighbor-button next" type="button" @onclick="() => NextArtwork()">
+                <button class="neighbor-button next" 
+                        type="button"
+                        title="Sort: @currentSort, Filter: @currentFilter"
+                        @onclick="() => NextArtwork()">
                     <span class="neighbor-label">Neste</span><i class="fa-solid fa-angles-right"></i>
                 </button>
             }
@@ -287,7 +295,9 @@ else
 
 @code {
     [Parameter] public int artworkId { get; set; }
-
+    [Inject] ILocalStorageHelper LocalStorage { get; set; }
+    string currentSort;
+    string currentFilter;
     private ArtworkResponse? artwork;
     ImageResponse image;
 
@@ -297,6 +307,12 @@ else
 
     // Tracking old Id when moving to new artwork
     private int? lastArtworkId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentSort = await LocalStorage.GetItem("sortOption") ?? "Nyeste";
+        currentFilter = await LocalStorage.GetItem("filterOption") ?? "Eldste";
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -317,14 +333,47 @@ else
         {
             try
             {
-                var neighbors = await Http.GetFromJsonAsync<Neighbors>($"/api/PublicGallery/artworks/{artworkId}/neighbors");
+                Console.WriteLine("Trying to retrieve neighbors");
+                
+                // getting sort and filter raw-string from local storage
+                var sortRaw = await LocalStorage.GetItem("sortOption");
+                var filterRaw = await LocalStorage.GetItem("filterOption");
+                
+                // Enmum fallbacks
+                GallerySort sortEnum = GallerySort.Newest;
+                GalleryFilter filterEnum = GalleryFilter.All;
+                
+                // parsing raw-strings to Enum
+                if (!string.IsNullOrEmpty(sortRaw) && Enum.TryParse<GallerySort>(sortRaw, ignoreCase: true, out var sort))
+                {
+                    sortEnum = sort;
+                }
+                if (!string.IsNullOrEmpty(sortRaw) && Enum.TryParse<GalleryFilter>(filterRaw, ignoreCase: true, out var filter))
+                {
+                    filterEnum = filter;
+                }
+                
+                // Building query string parameters
+                var queryParams = new List<string>
+                {
+                    $"sort={sortEnum}",
+                    $"filter={filterEnum}"
+                };
+                
+                // Creating endpoint URL with the query string
+                var url = $"/api/PublicGallery/artworks/{artworkId}/neighbors?{string.Join("&", queryParams)}";
+                
+                var neighbors = await Http.GetFromJsonAsync<Neighbors>(url);
+                
                 prevArtwork = neighbors.PreviousId;
                 nextArtwork = neighbors.NextId;
+                
             }
             catch (Exception e)
             {
                 Console.WriteLine("Error fetching previous and next artwork Ids: " + e.Message);
             }
+            
         }
 
     }

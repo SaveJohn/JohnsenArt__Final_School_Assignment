@@ -112,24 +112,78 @@ public class GalleryRepository : IGalleryRepository
         
     }
 
-    public async Task<Neighbors> GetGalleryNeighborsAsync(int artId)
+    public async Task<Neighbors> GetGalleryNeighborsAsync(int artId, GallerySort sort, GalleryFilter filter)
     {
-        var allIds = await _context.Artworks
-            .OrderBy(a => a.Id)    
-            .Select(a => a.Id)
-            .ToListAsync();
-        
-        var idx = allIds.IndexOf(artId);
-        if (idx < 0)
+        try
         {
-            return new Neighbors { PreviousId = null, NextId = null };
+            // Query
+            var query = _context.Artworks.AsQueryable();
+
+            // Filter
+            switch (filter)
+            {
+                case GalleryFilter.ForSale:
+                    query = query.Where(a => a.ForSale == true);
+                    break;
+                case GalleryFilter.NotForSale:
+                    query = query.Where(a => a.ForSale == false);
+                    break;
+            }
+
+            // Apply sorting
+            switch (sort)
+            {
+                case GallerySort.Newest:
+                    query = query.OrderByDescending(a => a.Id);
+                    break;
+                case GallerySort.Oldest:
+                    query = query.OrderBy(a => a.Id);
+                    break;
+                case GallerySort.HighPrice:
+                    query = query.OrderByDescending(a => a.Price);
+                    break;
+                case GallerySort.LowPrice:
+                    query = query.OrderBy(a => a.Price);
+                    break;
+
+            }
+
+            _logger.LogInformation("Successfully retrieved Artworks from the database.");
+
+            var allIds = await query.Select(a => a.Id).ToListAsync();
+            
+            // Getting List index of current artwork ID
+            var idx = allIds.IndexOf(artId);
+
+            if (idx < 0)
+            {
+                return new Neighbors { PreviousId = null, NextId = null };
+            }
+            
+            // Returning neighbor artworks 
+            return new Neighbors
+            {
+                NextId = idx < allIds.Count - 1 ? allIds[idx + 1] : (int?)null,
+                PreviousId = idx > 0 ? allIds[idx - 1] : (int?)null
+
+            };
         }
-        
-        return new Neighbors {
-            PreviousId = idx < allIds.Count - 1 ? allIds[idx + 1] : (int?)null,
-            NextId = idx > 0 ? allIds[idx - 1] : (int?)null
-                
-        };
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning(ex, "Invalid parameters provided.");
+            throw;
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, "Database query failed due to an invalid operation.");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve GalleryNeighbors from the database.");
+            throw;
+        }
+       
     }
 
     public async Task<IEnumerable<string?>> GetRotationObjectKeys()

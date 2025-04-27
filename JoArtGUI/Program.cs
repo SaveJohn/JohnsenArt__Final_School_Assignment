@@ -4,6 +4,8 @@ using Syncfusion.Blazor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using JohnsenArtGUI.Extensions;
+using JohnsenArtGUI.Helpers;
+using JohnsenArtGUI.Helpers.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1WmFZfVtgcl9DYFZTQmYuP1ZhSXxWdkZhXn9YdXRXQGdcWEV9XUs=");
@@ -51,6 +53,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<ExternalApiService>();
 
+// Local Storage 
+builder.Services.AddScoped<ILocalStorageHelper, LocalStorageHelper>();
 
 
 // TEMPORARY FIX TO PROBLEM I DO NOT KNOW HOW TO FIX YET
