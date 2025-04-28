@@ -12,12 +12,22 @@
 }
 else if (urls.Count == 0)
 {
-    <br/><br/>
-    <h2 class="text-center text-secondary">
-        <i class="fa-solid fa-paintbrush"></i>
+    <div class="hero-image"
+         style="
+             background-image: url('https://i.ibb.co/RG1m6trd/IMG_1481.jpeg');
+             background-size: cover;
+             background-position: center;
+             background-repeat: no-repeat;
+             height: 75vh;">
+
+        <br/><br/>
+        <h2 class="text-center text-secondary">
+            <i class="fa-solid fa-paintbrush"></i>
             Velkommen til Johnsen Art
-        <i class="fa-solid fa-palette"></i>
-    </h2>
+            <i class="fa-solid fa-palette"></i>
+        </h2>
+    </div>
+    
 }
 else
 {
@@ -57,7 +67,7 @@ else
             {
                 currentIndex = (currentIndex + 1) % urls.Count;
                 InvokeAsync(StateHasChanged);
-            }, null, 8000, 8000);
+            }, null, 5000, 5000);
         }
     }
 

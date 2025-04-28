@@ -90,6 +90,7 @@ if (jwtSecrets is null)
 }
 // Jwt config object as a singleton
 builder.Services.AddSingleton(jwtSecrets);
+
 // Jwt setup with config 
 builder.Services.AddJwtAuthentication(jwtSecrets);
 
@@ -132,7 +133,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(options => { options.RouteTemplate = "/openapi/{documentName}.json"; });
     app.MapScalarApiReference();
-    /*
+    /* Use this instead if you prefer swagger GUI:
      * app.UseSwagger();
      * app.UseSwaggerUI();
      */
