@@ -1,12 +1,11 @@
-using System.IdentityModel.Tokens.Jwt;
 using JohnsenArtGUI.Components;
 using Syncfusion.Blazor;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
 using JohnsenArtGUI.Extensions;
 using JohnsenArtGUI.Helpers;
 using JohnsenArtGUI.Helpers.Interfaces;
-using Microsoft.AspNetCore.Authentication;
+using Serilog;
+
 
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1WmFZfVtgcl9DYFZTQmYuP1ZhSXxWdkZhXn9YdXRXQGdcWEV9XUs=");
 
@@ -37,7 +36,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = CookieSecurePolicy.None; // OBS Switch to always in production
         options.ExpireTimeSpan = TimeSpan.FromHours(2);
-        options.SlidingExpiration = true;
+        // options.SlidingExpiration = true; <- This will be used when refresh token is added for JWT in JoArtAPI (will not be done in project-assignment)
         
         // On redirect to login - return to said url after successful login
         options.Events = new CookieAuthenticationEvents()
@@ -62,6 +61,11 @@ builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri("http://localhost:8080")
 });
+
+// Logging
+builder.Host.UseSerilog((context, services, loggerConfiguration) =>
+    loggerConfiguration.ReadFrom.Configuration(context.Configuration)
+);
 
 var app = builder.Build();
 
