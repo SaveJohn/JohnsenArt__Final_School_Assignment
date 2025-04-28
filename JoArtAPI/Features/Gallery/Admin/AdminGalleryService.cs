@@ -58,7 +58,7 @@ public class AdminGalleryService : IAdminGalleryService
                 var thumbKey = await _aws.UploadPreviewImageToS3(image.ImageFile);
                 var previewKey = await _aws.UploadPreviewImageToS3(image.ImageFile);
 
-                artwork.Images.Add(new ArtworkImage
+                artwork.Images.Add(new Image
                 {
                     ObjectKey = fullKey,
                     ThumbnailKey = thumbKey,
@@ -128,7 +128,7 @@ public class AdminGalleryService : IAdminGalleryService
                 if (image.ImageFile == null) continue;
 
                 // Replace existing image object
-                var newImage = new ArtworkImage
+                var newImage = new Image
                 {
                     Id = image.Id,
                     ArtworkId = existingArtwork.Id,

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace JoArtClassLib.Art;
 
-public class ArtworkImage
+public class Image
 {
     [Key] public int Id { get; set; }
     [Required] public required string ObjectKey { get; set; } // S3 file path

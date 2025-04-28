@@ -4,6 +4,7 @@ using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace JohnsenArtAPI.Features.Gallery.Admin;
 
 [Authorize]

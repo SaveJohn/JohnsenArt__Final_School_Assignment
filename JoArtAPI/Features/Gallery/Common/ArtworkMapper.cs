@@ -11,11 +11,11 @@ public class ArtworkMapper : Profile
     {
         
         CreateMap<Artwork, ArtworkRequest>().ReverseMap();
-        CreateMap<ArtworkImage, ImageRequest>().ReverseMap();
+        CreateMap<Image, ImageRequest>().ReverseMap();
         CreateMap<Artwork, UpdateArtworkRequest>().ReverseMap();
-        CreateMap<ArtworkImage, UpdateImageRequest>().ReverseMap();
+        CreateMap<Image, UpdateImageRequest>().ReverseMap();
         CreateMap<Artwork, ArtworkResponse>().ReverseMap();
-        CreateMap<ArtworkImage, ImageResponse>().ReverseMap();
+        CreateMap<Image, ImageResponse>().ReverseMap();
         CreateMap<Neighbors, NeighborsResponse>();
         
     }
