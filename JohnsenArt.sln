@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoArtClassLib", "JoArtClass
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JoArtDataLayer", "JoArtDataLayer\JoArtDataLayer.csproj", "{272A6FCD-4A2A-4942-9E38-B47D96171CBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{5DCA5B45-CA36-4EFF-8175-F6B1C2F87291}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APITests", "APITests\APITests.csproj", "{5DCA5B45-CA36-4EFF-8175-F6B1C2F87291}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

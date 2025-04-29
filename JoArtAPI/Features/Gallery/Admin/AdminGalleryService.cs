@@ -35,17 +35,28 @@ public class AdminGalleryService : IAdminGalleryService
     {
         _logger.LogInformation($"-------------------- \n Service: UploadArtwork:");
         _logger.LogDebug($"Number of images in the request: {request.Images?.Count}");
+        
+        // Making sure artwork contains images
+        if (request.Images == null || request.Images.Count == 0)
+        {
+            _logger.LogError($"No image(s) found in the request.");
+            throw new Exception("No image(s) found in the request.");
+        }
 
-
-        // Making sure bucket exists (It declared in appsettings.json)
-        await _aws.CheckIfS3BucketExists();
-
-        // Map DTO to Entity
+        if (request.ForSale && request.Price is null)
+        {
+            _logger.LogError("Price can't be null when request for sale is true.");
+            throw new Exception("Price can't be null when request for sale is true.");
+        }
+        
+        // Map request to model
         var artwork = _mapper.Map<Artwork>(request);
         if (!request.ForSale) artwork.Price = null;
-
         artwork.Images.Clear(); // Remove Automapper placeholders
-
+        
+        // Making sure bucket exists (It is declared in appsettings.json)
+        await _aws.CheckIfS3BucketExists();
+        
         // Uploading image(s) to S3 bucket
         foreach (var image in request.Images)
         {
@@ -54,12 +65,14 @@ public class AdminGalleryService : IAdminGalleryService
 
             if (image.ImageFile != null)
             {
+                
                 var fullKey = await _aws.UploadImageToS3(image.ImageFile);
-                var thumbKey = await _aws.UploadPreviewImageToS3(image.ImageFile);
                 var previewKey = await _aws.UploadPreviewImageToS3(image.ImageFile);
+                var thumbKey = await _aws.UploadThumbnailToS3(image.ImageFile);
 
                 artwork.Images.Add(new Image
                 {
+                    
                     ObjectKey = fullKey,
                     ThumbnailKey = thumbKey,
                     PreviewKey = previewKey
@@ -67,8 +80,8 @@ public class AdminGalleryService : IAdminGalleryService
             }
             else
             {
-                _logger.LogWarning($"No image found in image upload loop.");
-                throw new Exception("No image found in image upload loop.");
+                _logger.LogWarning($"No image file(s) found in image upload loop.");
+                throw new Exception("No image files(s) found in image upload loop.");
             }
         }
 
@@ -84,7 +97,19 @@ public class AdminGalleryService : IAdminGalleryService
     public async Task<ArtworkResponse?> UpdateArtworkAsync(int artId, UpdateArtworkRequest request)
     {
         _logger.LogInformation($"------------------- \n Service: UpdateArtwork ");
-
+        
+        if (request.Images == null || request.Images.Count == 0)
+        {
+            _logger.LogError($"No image(s) found in the request.");
+            throw new Exception("No image(s) found in the request.");
+        }
+        
+        if (request.ForSale && request.Price is null)
+        {
+            _logger.LogError("Price can't be null when request for sale is true.");
+            throw new Exception("Price can't be null when request for sale is true.");
+        }
+        
         var existingArtwork = await _repoGet.GetArtworkByIdAsync(artId);
         if (existingArtwork == null)
         {
@@ -109,7 +134,8 @@ public class AdminGalleryService : IAdminGalleryService
     {
         _logger.LogInformation($"------------------- \n Service: UpdateArtworkImages ");
         _logger.LogDebug($"Number of images in the request: {images.Count}");
-
+        
+        
         // Storing old Object Keys to delete from S3 if update in database is successful 
         var oldObjectKeys = new List<string>();
         var oldPreviewKeys = new List<string>();
@@ -123,6 +149,9 @@ public class AdminGalleryService : IAdminGalleryService
 
         try
         {
+            // Making sure bucket exists (It is declared in appsettings.json)
+            await _aws.CheckIfS3BucketExists();
+            
             foreach (var image in images)
             {
                 if (image.ImageFile == null) continue;
@@ -132,7 +161,7 @@ public class AdminGalleryService : IAdminGalleryService
                 {
                     Id = image.Id,
                     ArtworkId = existingArtwork.Id,
-                    ObjectKey = _aws.UploadImageToS3(image.ImageFile).Result, // Upload image
+                    ObjectKey = await _aws.UploadImageToS3(image.ImageFile), // Upload image
                     PreviewKey = await _aws.UploadPreviewImageToS3(image.ImageFile), //Upload preview
                     ThumbnailKey = await _aws.UploadThumbnailToS3(image.ImageFile), //Upload thumbnail
                 };
