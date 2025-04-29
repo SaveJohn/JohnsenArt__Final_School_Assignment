@@ -78,8 +78,8 @@ public class GalleryService : IGalleryService
         // No artwork found
         if (response == null)
         {
-            _logger.LogWarning($"Art {artId} not found");
-            return response;
+            _logger.LogError($"Artwork with ID {artId} not found in database.");
+            throw new KeyNotFoundException($"Artwork with ID {artId} not found in database.");
         }
 
         // Setting Pre-Singed Url for each image

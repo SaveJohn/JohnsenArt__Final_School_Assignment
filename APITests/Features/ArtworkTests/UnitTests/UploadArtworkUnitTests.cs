@@ -65,7 +65,7 @@ public class UploadArtworkUnitTests
     
     // Empty Images
     [Fact]
-    public async Task UploadArtworkAsync_EmptyImages_Throws()
+    public async Task UploadArtworkAsync_EmptyImages_ThrowsException()
     {
         // -- ARRANGE ----------
         
@@ -85,10 +85,12 @@ public class UploadArtworkUnitTests
                 Images = new ()
             };
         
-        // -- ACT & ASSERT ----------
+        // -- ACT ----------
         var ex = await Assert.ThrowsAsync<Exception>(
             () => _adminGalleryService.UploadArtworkAsync(artworRequest)
         );
+        
+        // -- ASSERT ----------
         Assert.Equal("No image(s) found in the request.", ex.Message);
         
     }
@@ -297,7 +299,7 @@ public class UploadArtworkUnitTests
     
     // For Sale Price
     [Fact]
-    public async Task UploadArtworkAsync_WhenPriceIsNullAndForSaleIsTrue_Throws()
+    public async Task UploadArtworkAsync_WhenPriceIsNullAndForSaleIsTrue_ThrowsException()
     {
         // -- ARRANGE ----------
         // Mocking Image Requests
@@ -382,7 +384,7 @@ public class UploadArtworkUnitTests
             
     }
     
-    // Map to model
+    // Map from Request to Model
     [Fact]
     public async Task UploadArtworkAsync_MapToModel_WhenRequestIsValid_ReturnsModel()
     {
@@ -449,7 +451,7 @@ public class UploadArtworkUnitTests
     }
     
     
-    // Map to response
+    // Map from Model to Response
     [Fact]
     public async Task UploadArtworkAsync_MapToResponse_WhenModelIsValid_ReturnsResponse()
     {
@@ -524,7 +526,7 @@ public class UploadArtworkUnitTests
     
     // Aws Exceptions
     [Fact]
-    public async Task UploadArtworkAsync_WhenAwsFails_Throws()
+    public async Task UploadArtworkAsync_WhenAwsFails_ThrowsIOException()
     {
         // -- ARRANGE ----------
         // Mocking Image Requests
@@ -567,7 +569,7 @@ public class UploadArtworkUnitTests
     
     // Repository Exceptions
     [Fact]
-    public async Task UploadArtworkAsync_WhenRepositoryFails_Throws()
+    public async Task UploadArtworkAsync_WhenRepositoryFails_ThrowsInvalidOperationException()
     {
         // -- ARRANGE ----------
         // Mocking Image Requests

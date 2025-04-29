@@ -111,48 +111,51 @@ public class AdminGalleryService : IAdminGalleryService
         }
         
         var existingArtwork = await _repoGet.GetArtworkByIdAsync(artId);
-        if (existingArtwork == null)
+        if (existingArtwork is null)
         {
-            _logger.LogWarning($"Artwork with ID {artId} not found.");
-            return null;
+            _logger.LogError($"Artwork with ID {artId} not found in database.");
+            throw new KeyNotFoundException($"Artwork with ID {artId} not found in database.");
         }
+        List<Image> existingImages = existingArtwork.Images.ToList();
 
 
         _mapper.Map(request, existingArtwork);
         existingArtwork.Id = artId;
         if (!request.ForSale) existingArtwork.Price = null;
-        existingArtwork.Images.Clear();
 
         // Handle images (managing updates and deletions separately)
-        await UpdateArtworkImages(existingArtwork, request.Images);
+        await UpdateArtworkImages(existingArtwork, request.Images, existingImages);
 
         var savedArtwork = await _repository.UpdateArtworkAsync(existingArtwork);
+        
         return _mapper.Map<ArtworkResponse>(savedArtwork);
     }
 
-    private async Task UpdateArtworkImages(Artwork existingArtwork, List<UpdateImageRequest> images)
+    private async Task UpdateArtworkImages(Artwork existingArtwork, List<UpdateImageRequest> newImages, List<Image> oldImages)
     {
         _logger.LogInformation($"------------------- \n Service: UpdateArtworkImages ");
-        _logger.LogDebug($"Number of images in the request: {images.Count}");
+        _logger.LogDebug($"Number of images in the request: {newImages.Count}");
         
         
         // Storing old Object Keys to delete from S3 if update in database is successful 
         var oldObjectKeys = new List<string>();
         var oldPreviewKeys = new List<string>();
         var oldThumbnailKeys = new List<string>();
-        foreach (var image in existingArtwork.Images)
+        foreach (var image in oldImages)
         {
             oldObjectKeys.Add(image.ObjectKey);
             oldThumbnailKeys.Add(image.ThumbnailKey);
             oldPreviewKeys.Add(image.PreviewKey);
         }
-
+        
+        existingArtwork.Images.Clear();
+        
         try
         {
             // Making sure bucket exists (It is declared in appsettings.json)
             await _aws.CheckIfS3BucketExists();
             
-            foreach (var image in images)
+            foreach (var image in newImages)
             {
                 if (image.ImageFile == null) continue;
 
@@ -168,6 +171,8 @@ public class AdminGalleryService : IAdminGalleryService
 
                 // Adding images to existing artwork
                 existingArtwork.Images.Add(newImage);
+                
+                
             }
         }
         catch (Exception ex)
@@ -176,21 +181,23 @@ public class AdminGalleryService : IAdminGalleryService
             throw;
         }
 
-        // Deleting old images from S3
-        foreach (var objectKey in oldObjectKeys)
+        try
         {
-            await _aws.DeleteImageFromS3(objectKey);
+            // Deleting old images from S3
+            foreach (var objectKey in oldObjectKeys) await _aws.DeleteImageFromS3(objectKey);
+        
+            // Deleting old previews from S3
+            foreach (var objectKey in oldPreviewKeys) await _aws.DeleteImageFromS3(objectKey);
+        
+            // Deleting old thumbnails from S3
+            foreach (var objectKey in oldThumbnailKeys) await _aws.DeleteImageFromS3(objectKey);
         }
-        // Deleting old previews from S3
-        foreach (var objectKey in oldPreviewKeys)
+        catch (Exception ex)
         {
-            await _aws.DeleteImageFromS3(objectKey);
+            _logger.LogError($"Error Deleting old images from S3: {ex.Message}");
+            throw;
         }
-        // Deleting old thumbnails from S3
-        foreach (var objectKey in oldThumbnailKeys)
-        {
-            await _aws.DeleteImageFromS3(objectKey);
-        }
+        
         
     }
 
