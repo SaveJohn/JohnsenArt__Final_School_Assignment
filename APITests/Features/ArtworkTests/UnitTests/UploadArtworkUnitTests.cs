@@ -456,17 +456,18 @@ public class UploadArtworkUnitTests
     public async Task UploadArtworkAsync_MapToResponse_WhenModelIsValid_ReturnsResponse()
     {
         // -- ARRANGE ----------
-        // Mocking Image Requests
+        var artworkId = 66;
+        // Mocking Image 
         Image? image = new()
         {
-            Id = 99,
+            Id = artworkId,
             ObjectKey = "thumbnail-object-key",
             PreviewKey = "preview-object-key",
             ThumbnailKey = "thumbnail-object-key",
             ArtworkId = 66
         };
         
-        // Mocking Artwork Requests
+        // Mocking Artwork 
         Artwork artwork = 
             new ()
             {
@@ -486,7 +487,7 @@ public class UploadArtworkUnitTests
                 }
             };
         _galleryRepositoryMock
-            .Setup(r => r.GetArtworkByIdAsync(66))
+            .Setup(r => r.GetArtworkByIdAsync(artworkId))
             .ReturnsAsync(artwork);
         
         _awsServiceMock.Setup(a => a.GeneratePresignedUrl(image.ThumbnailKey)).Returns("thumbnail-url");
@@ -496,7 +497,6 @@ public class UploadArtworkUnitTests
         // -- ACT ----------
         
         ArtworkResponse response = await _galleryService.GetArtworkByIdAsync(66);
-        
         
         
         
@@ -564,6 +564,7 @@ public class UploadArtworkUnitTests
         );
         
         // -- ASSERT ----------
+        _awsServiceMock.Verify(a => a.UploadImageToS3(It.IsAny<IFormFile>()), Times.Once);
         Assert.Contains("S3 is down", ex.Message);
     }
     
@@ -607,6 +608,7 @@ public class UploadArtworkUnitTests
         );
         
         // -- ASSERT ----------
+        _adminGalleryRepositoryMock.Verify(r => r.AddArtworkAsync(It.IsAny<Artwork>()), Times.Once);
         Assert.Equal("DB is down", ex.Message);
     }
     

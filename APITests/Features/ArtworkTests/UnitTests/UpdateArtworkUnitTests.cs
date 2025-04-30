@@ -344,7 +344,7 @@ public class UpdateArtworkUnitTests
         // -- ACT ----------
         await _adminGalleryService.UpdateArtworkAsync(artworkId, artworkRequest);
         
-        // -- ACT ----------
+        // -- ASSERT ----------
         foreach (var key in oldObjectKeys)
         {
             _awsServiceMock.Verify(aws => aws.DeleteImageFromS3(key), Times.Once);
@@ -503,6 +503,10 @@ public class UpdateArtworkUnitTests
         
         _galleryRepositoryMock
             .Setup(r => r.GetArtworkByIdAsync(artworkId))
+            .ReturnsAsync(existingArtwork);
+        
+        _adminGalleryRepositoryMock
+            .Setup(r => r.UpdateArtworkAsync(existingArtwork))
             .ThrowsAsync(new InvalidOperationException("DB is down"));
         
         // -- ACT ----------
@@ -511,6 +515,7 @@ public class UpdateArtworkUnitTests
         );
         
         // -- ASSERT ----------
+        _adminGalleryRepositoryMock.Verify(r => r.UpdateArtworkAsync(It.IsAny<Artwork>()), Times.Once);
         Assert.Equal("DB is down", ex.Message);
     }
     
@@ -586,6 +591,7 @@ public class UpdateArtworkUnitTests
         );
         
         // -- ASSERT ----------
+        _awsServiceMock.Verify(a => a.UploadImageToS3(It.IsAny<IFormFile>()), Times.Once);
         Assert.Contains("S3 is down", ex.Message);
     }
     

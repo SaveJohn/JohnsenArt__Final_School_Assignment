@@ -208,18 +208,21 @@ public class AdminGalleryService : IAdminGalleryService
         _logger.LogInformation($"------------------- \n Service: DeleteArtwork : with ID {artId}");
 
         var deletedArtwork = await _repository.DeleteArtworkAsync(artId);
-
-        if (deletedArtwork is not null)
+        if (deletedArtwork is null)
         {
-            foreach (var image in deletedArtwork.Images)
-            {
-                if (image is null) continue;
-                await _aws.DeleteImageFromS3(image.ObjectKey);
-                await _aws.DeleteImageFromS3(image.PreviewKey);
-                await _aws.DeleteImageFromS3(image.ThumbnailKey);
-                _logger.LogInformation($"Deleted image: {image.ObjectKey}");
-            }
+            _logger.LogError($"Artwork with ID {artId} not found in database.");
+            throw new KeyNotFoundException($"Artwork with ID {artId} not found in database.");
         }
+        
+        foreach (var image in deletedArtwork.Images)
+        {
+            if (image is null) continue;
+            await _aws.DeleteImageFromS3(image.ObjectKey);
+            await _aws.DeleteImageFromS3(image.PreviewKey);
+            await _aws.DeleteImageFromS3(image.ThumbnailKey);
+            _logger.LogInformation($"Deleted image: {image.ObjectKey}");
+        }
+        
 
         return _mapper.Map<ArtworkResponse>(deletedArtwork);
     }
