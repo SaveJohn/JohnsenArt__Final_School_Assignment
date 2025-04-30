@@ -14,4 +14,5 @@ public interface IAdminGalleryService
     public Task<ArtworkResponse?> DeleteArtworkAsync(int artId);
 
     public Task<bool> MarkAsSoldAsync(int artworkId);
+    
 }

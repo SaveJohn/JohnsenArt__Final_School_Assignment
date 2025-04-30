@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using IntegrationTests.Features.ArtworkTests.Interfaces;
 using JoArtClassLib.Art;
 using JohnsenArtAPI.Features.Authentication.Models;
 using Microsoft.AspNetCore.Http;
@@ -17,28 +18,14 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
+    private readonly IAuthenticationHandlerTesting _auth;
 
     public UploadArtworkIntegrationTests(CustomWebApplicationFactory factory)
     {
         _factory = factory;
         _client = factory.CreateClient();
-    }
-    
-    private async Task AuthenticateAsync()
-    {
-        LoginRequest loginRequest = new LoginRequest() { Email = "test@mail.com", Password = "TestPassword" };
+        _auth = new AuthenticationHandlerTesting(_client);
         
-        // Uncomment the following line to test with failed authentication:
-        // loginRequest = new LoginRequest() { Email = "test@mail.com", Password = "WrongPassword" };
-        
-        
-        var response = await _client.PostAsJsonAsync("admin/auth/login", loginRequest);
-        response.EnsureSuccessStatusCode();
-
-        var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
-
-        _client.DefaultRequestHeaders.Authorization = 
-            new AuthenticationHeaderValue("Bearer", authResponse.Token);
     }
     
     [Fact]
@@ -46,7 +33,7 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
     {
         // -- Arrange ---------------------
         //Authorization: 
-        await AuthenticateAsync();
+        await _auth.Authenticate_WithCorrectCredentials();
         
         // Mocking Image Requests
         var bytes = Encoding.UTF8.GetBytes("This is a dummy image file");
@@ -139,7 +126,7 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
         if (response.StatusCode != HttpStatusCode.OK)
         {
             var err = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Upload ga {response.StatusCode}: {err}");
+            throw new Exception($"Upload threw {response.StatusCode}: {err}");
         }
     
         // -- Assert ---------------------
@@ -176,15 +163,15 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
     }
     
     [Fact]
-    public async Task UploadArtwork_WithNoImagesInput_ShouldReturnBadRequest()
+    public async Task UploadArtwork_WhenNotAuthenticated_ShouldReturnUnauthorized()
     {
         // -- Arrange ---------------------
         //Authorization: 
-        await AuthenticateAsync();
+        await _auth.Authenticate_WithIncorrectCredentials();
         
         // Mocking Image Requests
         var bytes = Encoding.UTF8.GetBytes("This is a dummy image file");
-        IFormFile imageFile = new FormFile(new MemoryStream(bytes), 0, bytes.Length, "Data", "imageFile.txt");
+        IFormFile imageFile = new FormFile(new MemoryStream(bytes), 0, bytes.Length, "Data", "imageFile.png");
 
         ImageRequest imageRequest = new ImageRequest { ImageFile = imageFile };
         
@@ -202,6 +189,9 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
                 HeightDimension = 90f,
                 HomePageRotation = false,
                 Images = new ()
+                {
+                    imageRequest
+                }
             };
 
         var content = new MultipartFormDataContent();
@@ -226,7 +216,7 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
         
         // Setting up - and adding StreamContent to content
         var fileContent = new StreamContent(ms);
-        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/txt");
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
         
         content.Add(
             fileContent,
@@ -261,48 +251,20 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
                     })
                     .ToList()
             }));
-        
 
         // -- Act --------------------- 
+        
         var endpoint = "admin/api/Gallery/upload-artwork";
         var response = await _client.PostAsync(endpoint, content);
         
-        if (response.StatusCode != HttpStatusCode.OK)
+        if (response.StatusCode != HttpStatusCode.Unauthorized)
         {
             var err = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Upload gav {response.StatusCode}: {err}");
+            throw new Exception($"Upload threw {response.StatusCode}: {err}");
         }
     
         // -- Assert ---------------------
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var artworkResponse = JsonConvert.DeserializeObject<ArtworkResponse>(responseContent);
-        
-        Assert.NotNull(artworkResponse);
-        Assert.IsType<ArtworkResponse>(artworkResponse);
-       
-        // Artwork 
-        Assert.Equal(999, artworkResponse.Id);
-        Assert.Equal(artworkResponse.Title, artworRequest.Title);
-        Assert.Equal(artworkResponse.Description, artworRequest.Description);
-        Assert.Equal(artworkResponse.Materials, artworRequest.Materials);
-        Assert.Equal(artworkResponse.ForSale, artworRequest.ForSale);
-        Assert.Equal(artworkResponse.Price, artworRequest.Price);
-        Assert.Equal(artworkResponse.WidthDimension, artworRequest.WidthDimension);
-        Assert.Equal(artworkResponse.HeightDimension, artworRequest.HeightDimension);
-        Assert.Equal(artworkResponse.HomePageRotation, artworRequest.HomePageRotation);
-        // Image 
-        Assert.NotNull(artworkResponse.Images[0]);
-        var image1 = artworkResponse.Images[0];
-        Assert.NotEqual(0, image1.Id);
-        Assert.NotNull(image1.ObjectKey);
-        Assert.NotNull(image1.PreviewKey);
-        Assert.NotNull(image1.ThumbnailKey);
-        Assert.NotNull(image1.ImageUrl);
-        Assert.NotNull(image1.PreviewUrl);
-        Assert.NotNull(image1.ThumbnailUrl);
-        
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         
     }
     
