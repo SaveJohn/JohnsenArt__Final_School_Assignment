@@ -9,11 +9,17 @@
         <IsTestProject>true</IsTestProject>
         <RootNamespace>IntegrationTests</RootNamespace>
     </PropertyGroup>
+    <ItemGroup>
+        <None Update="TestData\payment_intent_succeeded.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.10"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0"/>
-        <PackageReference Include="Moq" Version="4.20.72" />
+        <PackageReference Include="Moq" Version="4.20.72"/>
+        <PackageReference Include="Stripe.net" Version="48.0.0" />
         <PackageReference Include="xunit" Version="2.4.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,11 +32,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Features\PurchaseTests\" />
+        <Folder Include="Features\PurchaseTests\"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\JoArtAPI\JoArtAPI.csproj" />
+        <ProjectReference Include="..\JoArtAPI\JoArtAPI.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Features\StripeTests\TestData\payment_intent_succeeded.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

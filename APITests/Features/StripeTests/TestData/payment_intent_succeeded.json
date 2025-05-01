@@ -1,0 +1,16 @@
+﻿{
+  "id": "evt_1",
+  "object": "event",
+  "type": "payment_intent.succeeded",
+  "data": {
+    "object": {
+      "id": "pi_12345",
+      "object": "payment_intent",
+      "metadata": {
+        "artworkId": "1",
+        "buyer_email": "buyer@example.com",
+        "buyer_name": "John Doe"
+      }
+    }
+  }
+}
