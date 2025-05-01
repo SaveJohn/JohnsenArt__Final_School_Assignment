@@ -5,17 +5,16 @@ namespace JohnsenArtGUI.Extensions;
 public static class ErrorHandlingExtension
 {
     
-    public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder app)
+    public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder app, ILogger logger)
     {
         app.UseExceptionHandler(errorApp =>
         {
             errorApp.Run(async context =>
             {
-                var exceptionHandlerPathFeature =
-                    context.Features.Get<IExceptionHandlerPathFeature>();
+                var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
                 if (exceptionHandlerPathFeature?.Error != null)
                 {
-                    Console.WriteLine($"Blazor Error: {exceptionHandlerPathFeature.Error.Message}");
+                    logger.LogError(exceptionHandlerPathFeature.Error, "Unhandled blazor error occurred.");
                 }
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsync("An unhandled error occurred.");
@@ -23,5 +22,5 @@ public static class ErrorHandlingExtension
         });
         return app;
     }
-    
+
 }

@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 @inject HttpClient Http
 @inject NavigationManager Navigation
-
+@inject ILogger<Login> _logger
 <div class="login-container">
     <div class="login-card">
         <div class="login-avatar">
@@ -17,17 +17,17 @@
         }
 
         <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <InputText class="form-control" @bind-Value="loginModel.Email" placeholder="Username" />
+                <InputText class="form-control" @bind-Value="loginModel.Email" placeholder="Username"/>
             </div>
 
             <div class="input-group mb-3">
                 <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                <InputText type="@(_showPassword ? "text" : "password")" class="form-control" 
-                           @bind-Value="loginModel.Password" placeholder="Password" />
+                <InputText type="@(_showPassword ? "text" : "password")" class="form-control"
+                           @bind-Value="loginModel.Password" placeholder="Password"/>
                 <span class="input-group-text password-toggle" @onclick="TogglePassword">
                     <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
                 </span>
@@ -43,24 +43,23 @@
     private string errorMessage = "";
     private bool _showPassword = false;
     private string returnUrl = "/";
-    
+
     // Sets redirect URL to previous page url
     protected override async Task OnInitializedAsync()
     {
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        
+
         var queryParams = QueryHelpers.ParseQuery(uri.Query);
-        
+
         if (queryParams.TryGetValue("returnUrl", out var url))
         {
             returnUrl = url.First()!;
-            Console.WriteLine($"if was hit : uri first = {url.First()}");
-            
+            _logger.LogDebug("if was hit : uri first ={returnUrl}", url.First());
         }
         else
         {
             returnUrl = "/";
-            Console.WriteLine("Else was hit : sad face :<");
+            _logger.LogDebug("Else was hit : sad face :<");
         }
     }
 
@@ -91,10 +90,9 @@
                 errorMessage = "Invalid token received.";
                 return;
             }
-            
+
             // Redirect to local endpoint
             Navigation.NavigateTo($"/api/complete-signin?token={Uri.EscapeDataString(result.Token)}&urlRedirct={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
-
         }
         catch (Exception ex)
         {
@@ -117,4 +115,5 @@
     {
         public string? ErrorMessage { get; set; }
     }
+
 }

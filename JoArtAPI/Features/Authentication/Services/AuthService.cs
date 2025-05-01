@@ -27,7 +27,9 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> LoginAsync(LoginRequest loginRequest)
     {
-        Console.WriteLine($"login hit with the id {loginRequest.Email}");
+        _logger.LogInformation("Login request received for email: {Email}", loginRequest.Email);
+
+
         var admin = await _dbContext.Admins
             .FirstOrDefaultAsync(a => a.Email == loginRequest.Email);
 
