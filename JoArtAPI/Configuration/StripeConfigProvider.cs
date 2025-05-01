@@ -2,10 +2,11 @@
 using Amazon.SecretsManager.Model;
 using JoArtClassLib.AwsSecrets;
 using System.Text.Json;
+using JohnsenArtAPI.Features.Payments.Interfaces;
 
 namespace JohnsenArtAPI.Features.Payments.Services;
 
-public class StripeConfigProvider
+public class StripeConfigProvider : IStripeConfigProvider
 {
     private readonly IAmazonSecretsManager _secretsManager;
     private readonly ILogger<StripeConfigProvider> _logger;
