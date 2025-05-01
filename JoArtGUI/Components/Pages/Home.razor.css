@@ -1,4 +1,4 @@
-﻿/* Container */
+﻿
 .hero-image {
     position: relative;
     width: 100%;
@@ -6,7 +6,6 @@
     overflow: hidden;
 }
 
-/* Each slide */
 .hero-image .slide {
     position: absolute;
     top: 0; left: 0;
@@ -15,12 +14,12 @@
     background-position: center;
     background-repeat: no-repeat;
 
-    /* start hidden */
+    
     opacity: 0;
     transition: opacity 1s ease-in-out;
 }
 
-/* The visible slide */
+
 .hero-image .slide.active {
     opacity: 1;
 }

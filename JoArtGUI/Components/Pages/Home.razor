@@ -10,36 +10,16 @@
 {
     <div class="alert alert-danger">@ErrorMessage</div>
 }
-else if (urls.Count == 0)
-{
-    <div class="hero-image"
-         style="
-             background-image: url('https://i.ibb.co/RG1m6trd/IMG_1481.jpeg');
-             background-size: cover;
-             background-position: center;
-             background-repeat: no-repeat;
-             height: 75vh;">
 
-        <br/><br/>
-        <h2 class="text-center text-secondary">
-            <i class="fa-solid fa-paintbrush"></i>
-            Velkommen til Johnsen Art
-            <i class="fa-solid fa-palette"></i>
-        </h2>
-    </div>
-    
-}
-else
-{
-    <div class="hero-image">
-        @for (var i = 0; i < urls.Count; i++)
-        {
-            <div class="slide @(i == currentIndex ? "active" : "")"
-                 style="background-image: url('@urls[i]');">
-            </div>
-        }
-    </div>
-}
+<div class="hero-image">
+    @for (var i = 0; i < urls.Count; i++)
+    {
+        <div class="slide @(i == currentIndex ? "active" : "")"
+             style="background-image: url('@urls[i]');">
+        </div>
+    }
+</div>
+
 
 
 @code{
