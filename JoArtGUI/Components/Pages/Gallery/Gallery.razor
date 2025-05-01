@@ -15,7 +15,7 @@
                 <div class="toast-header">
                     <strong class="me-auto text-danger">Kunstverk slettet</strong>
                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"
-                            @onclick="CloseToast" />
+                            @onclick="CloseToast"/>
                 </div>
                 <div class="toast-body">
                     "@DeletedTitle" er slettet
@@ -25,50 +25,54 @@
     }
 </div>
 
-<!-- Extra option bar for gallery -->
+
 <div class="navbarFont">
-    
     <nav class="navbar navbar-expand-lg border-dark-bottom py-2">
         <div class="container">
-            <div class="d-flex px-2">
-                <div class="d-flex px-2">
-                    <label class="fw-bolder px-2" for="sortOption">Sorter:</label>
-                    <select id="sortOption" class="form-select form-select-sm" style="background: rgb(234, 234, 234)" @bind="SortOption">
-                        <option value=@GallerySort.Newest>Nyeste</option>
-                        <option value="@GallerySort.Oldest">Eldste</option>
-                        @if (_filterOption == GalleryFilter.ForSale)
-                        {
-                            <option value="@GallerySort.LowPrice">Lavest pris</option>
-                            <option value="@GallerySort.HighPrice">Høyest pris</option>
-                        }
-                    </select>
-                </div>
-                <div class="d-flex px-2">
-                    <label class="fw-bolder px-2" for="filterOption">Filtrer:</label>
-                    <select id="filterOption" class="form-select form-select-sm" style="background: rgb(234, 234, 234)" @bind="FilterOption">
-                        <option value=@GalleryFilter.All>Alle</option>
-                        <option value=@GalleryFilter.ForSale>Til Salgs</option>
-                        <option value=@GalleryFilter.NotForSale>Ikke til Salgs</option>
-                    </select>
-                </div>
-            </div>
+            <div class="row w-100">
+                <!-- Dropdowns -->
+                <div class="col-12 col-lg-8 d-flex flex-wrap gap-3 align-items-center justify-content-center justify-content-lg-start">
+                    <div class="d-flex flex-column">
+                        <label class="fw-bolder" for="sortOption">Sorter:</label>
+                        <select id="sortOption" class="form-select form-select-sm" style="background: rgb(234, 234, 234)" @bind="SortOption">
+                            <option value="@GallerySort.Newest">Nyeste</option>
+                            <option value="@GallerySort.Oldest">Eldste</option>
+                            @if (_filterOption == GalleryFilter.ForSale)
+                            {
+                                <option value="@GallerySort.LowPrice">Lavest pris</option>
+                                <option value="@GallerySort.HighPrice">Høyest pris</option>
+                            }
+                        </select>
+                    </div>
 
-            <div class="d-flex justify-content-end">
-                <AuthorizeView>
-                    <NavLink class="btn btn-sm btn-outline-success fw-bold rounded px-2 py-1" href="/upload-artwork">
-                        + Legg til Kunstverk
-                    </NavLink>
-                </AuthorizeView>
+                    <div class="d-flex flex-column">
+                        <label class="fw-bolder" for="filterOption">Filtrer:</label>
+                        <select id="filterOption" class="form-select form-select-sm" style="background: rgb(234, 234, 234)" @bind="FilterOption">
+                            <option value="@GalleryFilter.All">Alle</option>
+                            <option value="@GalleryFilter.ForSale">Til Salgs</option>
+                            <option value="@GalleryFilter.NotForSale">Ikke til Salgs</option>
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="col-12 col-lg-4 d-flex justify-content-center justify-content-lg-end align-items-center mt-3 mt-lg-0">
+                    <AuthorizeView>
+                        <NavLink class="btn btn-outline-success" href="/upload-artwork">
+                            + Legg til Kunstverk
+                        </NavLink>
+                    </AuthorizeView>
+                </div>
             </div>
         </div>
     </nav>
-
 </div>
+
 
 <!--
 <p class="text-center text-muted">@artworks?.Count</p>
 -->
-<br />
+<br/>
 @if (artworks.Count < 1)
 {
     <p class="text-center"><i class="spinner-border spinner-border-sm me-2"></i>Kunstverk laster ...</p>
@@ -104,19 +108,19 @@ else
                                 <p class="art-size">@artwork.WidthDimension x @artwork.HeightDimension cm</p>
                                 @if (artwork.ForSale)
                                 {
-                                    <p class="art-price">Kan kjøpes:    @artwork.Price?.ToString("F2"),-</p>
+                                    <p class="art-price">Kan kjøpes: @artwork.Price?.ToString("F2"),-</p>
                                 }
                             </div>
                         </div>
                     }
                 </div>
-                
             }
-            
+
         </div>
     </div>
-    
-    <br/><br/>
+
+    <br/>
+    <br/>
 }
 <div class="col">
     <div @ref="infiniteScrollTrigger" style="height: 1px;"></div>
@@ -128,7 +132,7 @@ else
     [Inject] ILocalStorageHelper LocalStorage { get; set; }
     private List<ArtworkResponse>? artworks = [];
 
-
+    
     // Sort ---
     // Bound value
     private GallerySort _sortOption = GallerySort.Newest;
@@ -143,7 +147,6 @@ else
             _sortOption = value;
             _ = SortOptionChanged();
         }
-
     }
 
     // Filter ---
@@ -196,7 +199,6 @@ else
     {
         if (firstRender)
         {
-
             dotNetRef = DotNetObjectReference.Create(this);
             _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/infiniteScroll.js");
 
@@ -210,7 +212,6 @@ else
             {
                 Console.WriteLine("Trigger element is not yet available.");
             }
-
         }
     }
 
@@ -253,8 +254,6 @@ else
         // Creating endpoint URL with the query string
         var url = $"api/PublicGallery/artworks?{string.Join("&", queryParams)}";
 
-
-
         try
         {
             var newItems = await Http.GetFromJsonAsync<List<ArtworkResponse>>(url);
@@ -285,7 +284,6 @@ else
                 dotNetRef ??= DotNetObjectReference.Create(this);
                 await _jsModule.InvokeVoidAsync("observeElement", dotNetRef);
             });
-
         }
         catch (Exception ex)
         {
