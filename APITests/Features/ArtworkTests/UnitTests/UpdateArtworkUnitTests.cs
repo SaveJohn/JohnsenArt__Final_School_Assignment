@@ -228,7 +228,7 @@ public class UpdateArtworkUnitTests
         Assert.Single(artwork.Images);
         Assert.NotNull(artwork.Images[0]);
         Assert.NotNull(artwork.Images[0].Id);
-        Assert.NotNull(artwork.Images[0].ObjectKey);
+        Assert.NotNull(artwork.Images[0].FullViewKey);
         Assert.NotNull(artwork.Images[0].PreviewKey);
         Assert.NotNull(artwork.Images[0].ThumbnailKey);
         Assert.NotNull(artwork.Images[0].ArtworkId);
@@ -281,7 +281,7 @@ public class UpdateArtworkUnitTests
         Image image1 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey1", 
+            FullViewKey = "fullViewKey1", 
             PreviewKey = "previewKey1", 
             ThumbnailKey = "ThumbnailKey1", 
             ArtworkId = artworkId
@@ -289,7 +289,7 @@ public class UpdateArtworkUnitTests
         Image image2 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey2", 
+            FullViewKey = "fullViewKey2", 
             PreviewKey = "previewKey2", 
             ThumbnailKey = "ThumbnailKey2", 
             ArtworkId = artworkId
@@ -297,7 +297,7 @@ public class UpdateArtworkUnitTests
         Image image3 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey3", 
+            FullViewKey = "fullViewKey3", 
             PreviewKey = "previewKey3", 
             ThumbnailKey = "ThumbnailKey3", 
             ArtworkId = artworkId
@@ -327,7 +327,7 @@ public class UpdateArtworkUnitTests
         var oldThumbnailKeys = new List<string>();
         foreach (var img in existingArtwork.Images)
         {
-            oldObjectKeys.Add(img.ObjectKey);
+            oldObjectKeys.Add(img.FullViewKey);
             oldThumbnailKeys.Add(img.ThumbnailKey);
             oldPreviewKeys.Add(img.PreviewKey);
         }
@@ -396,7 +396,7 @@ public class UpdateArtworkUnitTests
         Image image = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey1", 
+            FullViewKey = "fullViewKey1", 
             PreviewKey = "previewKey1", 
             ThumbnailKey = "ThumbnailKey1", 
             ArtworkId = artworkId
@@ -478,7 +478,7 @@ public class UpdateArtworkUnitTests
         Image image = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey1", 
+            FullViewKey = "fullViewKey1", 
             PreviewKey = "previewKey1", 
             ThumbnailKey = "ThumbnailKey1", 
             ArtworkId = artworkId
@@ -554,7 +554,7 @@ public class UpdateArtworkUnitTests
         Image image = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey1", 
+            FullViewKey = "fullViewKey1", 
             PreviewKey = "previewKey1", 
             ThumbnailKey = "ThumbnailKey1", 
             ArtworkId = artworkId

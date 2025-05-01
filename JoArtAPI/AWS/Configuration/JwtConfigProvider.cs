@@ -33,13 +33,13 @@ public class JwtConfigProvider
         }
         catch (Exception ex)
         {
-            _logger.LogInformation($"Jwt Secret not found in AWS Secrets Manager. message: {ex.Message}");
+            _logger.LogError($"Jwt Secret not found in AWS Secrets Manager. message: {ex.Message}");
             throw;
         }
         
         if (string.IsNullOrEmpty(response.SecretString))
         {
-            _logger.LogInformation("Jwt Secret not found in AWS Secrets Manager.");
+            _logger.LogError("Jwt Secret not found in AWS Secrets Manager.");
             throw new Exception("Jwt Secret not found in AWS Secrets Manager.");
         }
         
@@ -47,8 +47,8 @@ public class JwtConfigProvider
         
         if (config is null)
         {
-            _logger.LogInformation("Failed to serialize jwt secret config.");
-            throw new Exception($"Failed to serialize jwt secret config.");
+            _logger.LogError("Failed to serialize jwt secret config.");
+            throw new Exception("Failed to serialize jwt secret config.");
         }
 
         return config;

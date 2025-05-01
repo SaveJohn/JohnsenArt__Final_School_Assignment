@@ -83,7 +83,7 @@ else
                     @if (artwork.Images?.Any() == true)
                     {
                         var img = artwork.Images.FirstOrDefault();
-                        var imageSrc = string.IsNullOrWhiteSpace(img?.ThumbnailUrl) ? img?.ImageUrl : img?.ThumbnailUrl;
+                        var imageSrc = string.IsNullOrWhiteSpace(img?.ThumbnailUrl) ? img?.FullViewUrl : img?.ThumbnailUrl;
                         <div class="artwork-entry text-center">
                             <a href="/GalleryDetail/@artwork.Id">
                                 <img src="@imageSrc" class="img-fluid rounded"/>

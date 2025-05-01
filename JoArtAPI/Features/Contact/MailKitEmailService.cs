@@ -13,12 +13,12 @@ public class MailKitEmailService : IEmailService
 {
     private readonly ILogger<MailKitEmailService> _logger;
     private readonly IConfiguration _config;
-    private readonly IAdminDetailRepository _repository;
+    private readonly IAdminUserRepository _repository;
 
     public MailKitEmailService(
         ILogger<MailKitEmailService> logger,
         IConfiguration config,
-        IAdminDetailRepository repository)
+        IAdminUserRepository repository)
     {
         _logger = logger;
         _config = config;

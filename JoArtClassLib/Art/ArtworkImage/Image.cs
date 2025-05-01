@@ -6,7 +6,7 @@ namespace JoArtClassLib.Art;
 public class Image
 {
     [Key] public int Id { get; set; }
-    [Required] public required string ObjectKey { get; set; } // S3 file path
+    [Required] public required string FullViewKey { get; set; } // S3 file path
     
     public string ThumbnailKey { get; set; } = string.Empty;
     public string PreviewKey { get; set; } = string.Empty;

@@ -18,14 +18,14 @@ namespace JohnsenArtAPI.Features.Gallery.Aws;
 public class AwsService : IAwsService
 {
     private readonly IAmazonS3 _s3Client;
-    private readonly IOptions<AwsS3Settings> _config;
+    private readonly IOptions<AwsS3Config> _config;
     private readonly ILogger<AdminGalleryService> _logger;
     private readonly int _expirationInSeconds = 0;
     private readonly string _bucketName;
 
     public AwsService(
         IAmazonS3 s3Client,
-        IOptions<AwsS3Settings> config,
+        IOptions<AwsS3Config> config,
         ILogger<AdminGalleryService> logger)
     {
         _s3Client = s3Client;

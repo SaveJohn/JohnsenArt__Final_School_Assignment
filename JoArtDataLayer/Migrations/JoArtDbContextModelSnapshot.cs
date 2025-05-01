@@ -49,7 +49,7 @@ namespace JoArtDataLayer.Migrations
                     b.ToTable("Admins");
                 });
 
-            modelBuilder.Entity("JoArtClassLib.Art.ArtworkImage", b =>
+            modelBuilder.Entity("JoArtClassLib.Art.Image", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,7 +60,7 @@ namespace JoArtDataLayer.Migrations
                     b.Property<int>("ArtworkId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ObjectKey")
+                    b.Property<string>("FullViewKey")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -124,7 +124,7 @@ namespace JoArtDataLayer.Migrations
                     b.ToTable("Artworks");
                 });
 
-            modelBuilder.Entity("JoArtClassLib.Art.ArtworkImage", b =>
+            modelBuilder.Entity("JoArtClassLib.Art.Image", b =>
                 {
                     b.HasOne("JoArtClassLib.Artwork", "Artwork")
                         .WithMany("Images")

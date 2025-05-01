@@ -94,7 +94,7 @@ public class DeleteArtworkUnitTests
         Image image1 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey1", 
+            FullViewKey = "fullViewKey1", 
             PreviewKey = "previewKey1", 
             ThumbnailKey = "ThumbnailKey1", 
             ArtworkId = artworkId
@@ -102,7 +102,7 @@ public class DeleteArtworkUnitTests
         Image image2 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey2", 
+            FullViewKey = "fullViewKey2", 
             PreviewKey = "previewKey2", 
             ThumbnailKey = "ThumbnailKey2", 
             ArtworkId = artworkId
@@ -110,7 +110,7 @@ public class DeleteArtworkUnitTests
         Image image3 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey3", 
+            FullViewKey = "fullViewKey3", 
             PreviewKey = "previewKey3", 
             ThumbnailKey = "ThumbnailKey3", 
             ArtworkId = artworkId
@@ -145,7 +145,7 @@ public class DeleteArtworkUnitTests
         // -- ASSERT ----------
         foreach (var img in existingArtwork.Images)
         {
-            _awsServiceMock.Verify(aws => aws.DeleteImageFromS3(img.ObjectKey), Times.Once);
+            _awsServiceMock.Verify(aws => aws.DeleteImageFromS3(img.FullViewKey), Times.Once);
             _awsServiceMock.Verify(aws => aws.DeleteImageFromS3(img.PreviewKey), Times.Once);
             _awsServiceMock.Verify(aws => aws.DeleteImageFromS3(img.ThumbnailKey), Times.Once);
         }
@@ -163,7 +163,7 @@ public class DeleteArtworkUnitTests
         Image image1 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey1", 
+            FullViewKey = "fullViewKey1", 
             PreviewKey = "previewKey1", 
             ThumbnailKey = "ThumbnailKey1", 
             ArtworkId = artworkId
@@ -171,7 +171,7 @@ public class DeleteArtworkUnitTests
         Image image2 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey2", 
+            FullViewKey = "fullViewKey2", 
             PreviewKey = "previewKey2", 
             ThumbnailKey = "ThumbnailKey2", 
             ArtworkId = artworkId
@@ -179,7 +179,7 @@ public class DeleteArtworkUnitTests
         Image image3 = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey3", 
+            FullViewKey = "fullViewKey3", 
             PreviewKey = "previewKey3", 
             ThumbnailKey = "ThumbnailKey3", 
             ArtworkId = artworkId
@@ -227,7 +227,7 @@ public class DeleteArtworkUnitTests
         Image? image = new()
         {
             Id = 99,
-            ObjectKey = "thumbnail-object-key",
+            FullViewKey = "thumbnail-object-key",
             PreviewKey = "preview-object-key",
             ThumbnailKey = "thumbnail-object-key",
             ArtworkId = 66
@@ -278,7 +278,7 @@ public class DeleteArtworkUnitTests
         // Image 
         Assert.Single(response.Images);
         Assert.NotNull(response.Images[0]);
-        Assert.NotNull(response.Images[0].ObjectKey);
+        Assert.NotNull(response.Images[0].FullViewKey);
         Assert.NotNull(response.Images[0].PreviewKey);
         Assert.NotNull(response.Images[0].ThumbnailKey);
     }
@@ -294,7 +294,7 @@ public class DeleteArtworkUnitTests
         Image image = new Image
         {
             Id = 99, 
-            ObjectKey = "fullViewKey1", 
+            FullViewKey = "fullViewKey1", 
             PreviewKey = "previewKey1", 
             ThumbnailKey = "ThumbnailKey1", 
             ArtworkId = artworkId

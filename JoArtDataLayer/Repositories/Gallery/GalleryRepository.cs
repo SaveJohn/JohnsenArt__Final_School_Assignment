@@ -192,7 +192,7 @@ public class GalleryRepository : IGalleryRepository
             .Where(a => a.HomePageRotation)
             .Select(a => a.Images
                 .OrderBy(img => img.Id)
-                .Select(img => img.ObjectKey)
+                .Select(img => img.FullViewKey)
                 .FirstOrDefault())
             .Where(key => key != null)
             .ToListAsync();

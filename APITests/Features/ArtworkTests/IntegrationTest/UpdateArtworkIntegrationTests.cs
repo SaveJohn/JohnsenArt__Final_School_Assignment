@@ -108,10 +108,10 @@ public class UpdateArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
                     .Select((imgReq, idx) => new ImageResponse
                     {
                         Id           = artworRequest.Images[0].Id+idx,
-                        ObjectKey    = $"new-FullVeiwKey-{idx}",
+                        FullViewKey    = $"new-FullVeiwKey-{idx}",
                         PreviewKey   = $"new-PreviewKey-{idx}",
                         ThumbnailKey = $"new-ThumbnailKey-{idx}",
-                        ImageUrl     = $"https://test/full-{imgReq.ImageFile.FileName}",
+                        FullViewUrl     = $"https://test/full-{imgReq.ImageFile.FileName}",
                         PreviewUrl   = $"https://test/prev-{imgReq.ImageFile.FileName}",
                         ThumbnailUrl = $"https://test/thumb-{imgReq.ImageFile.FileName}"
                     })
@@ -152,10 +152,10 @@ public class UpdateArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
         Assert.NotNull(artworkResponse.Images[0]);
         var responseImage = artworkResponse.Images[0];
         Assert.NotEqual(0, responseImage.Id);
-        Assert.NotNull(responseImage.ObjectKey);
+        Assert.NotNull(responseImage.FullViewKey);
         Assert.NotNull(responseImage.PreviewKey);
         Assert.NotNull(responseImage.ThumbnailKey);
-        Assert.NotNull(responseImage.ImageUrl);
+        Assert.NotNull(responseImage.FullViewUrl);
         Assert.NotNull(responseImage.PreviewUrl);
         Assert.NotNull(responseImage.ThumbnailUrl);
         
@@ -243,10 +243,10 @@ public class UpdateArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
                     .Select((imgReq, idx) => new ImageResponse
                     {
                         Id           = artworRequest.Images[0].Id+idx,
-                        ObjectKey    = $"new-FullVeiwKey-{idx}",
+                        FullViewKey    = $"new-FullVeiwKey-{idx}",
                         PreviewKey   = $"new-PreviewKey-{idx}",
                         ThumbnailKey = $"new-ThumbnailKey-{idx}",
-                        ImageUrl     = $"https://test/full-{imgReq.ImageFile.FileName}",
+                        FullViewUrl     = $"https://test/full-{imgReq.ImageFile.FileName}",
                         PreviewUrl   = $"https://test/prev-{imgReq.ImageFile.FileName}",
                         ThumbnailUrl = $"https://test/thumb-{imgReq.ImageFile.FileName}"
                     })

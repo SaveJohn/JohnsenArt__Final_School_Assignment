@@ -1,6 +1,6 @@
 ﻿namespace JohnsenArtAPI.Features.Authentication.Models;
 
-public class UserDTO
+public class AdminDTO
 {
     public int AdminId { get; set; }
     public string Email { get; set; } = string.Empty;

@@ -108,10 +108,10 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
                     .Select((imgReq, idx) => new ImageResponse
                     {
                         Id           = idx + 1,
-                        ObjectKey    = $"obj-{idx+1}",
+                        FullViewKey    = $"obj-{idx+1}",
                         PreviewKey   = $"prev-{idx+1}",
                         ThumbnailKey = $"thumb-{idx+1}",
-                        ImageUrl     = $"https://test/{imgReq.ImageFile.FileName}",
+                        FullViewUrl     = $"https://test/{imgReq.ImageFile.FileName}",
                         PreviewUrl   = $"https://test/prev/{imgReq.ImageFile.FileName}",
                         ThumbnailUrl = $"https://test/thumb/{imgReq.ImageFile.FileName}"
                     })
@@ -152,10 +152,10 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
         Assert.NotNull(artworkResponse.Images[0]);
         var image1 = artworkResponse.Images[0];
         Assert.NotEqual(0, image1.Id);
-        Assert.NotNull(image1.ObjectKey);
+        Assert.NotNull(image1.FullViewKey);
         Assert.NotNull(image1.PreviewKey);
         Assert.NotNull(image1.ThumbnailKey);
-        Assert.NotNull(image1.ImageUrl);
+        Assert.NotNull(image1.FullViewUrl);
         Assert.NotNull(image1.PreviewUrl);
         Assert.NotNull(image1.ThumbnailUrl);
         
@@ -242,10 +242,10 @@ public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationF
                     .Select((imgReq, idx) => new ImageResponse
                     {
                         Id           = idx + 1,
-                        ObjectKey    = $"obj-{idx+1}",
+                        FullViewKey    = $"obj-{idx+1}",
                         PreviewKey   = $"prev-{idx+1}",
                         ThumbnailKey = $"thumb-{idx+1}",
-                        ImageUrl     = $"https://test/{imgReq.ImageFile.FileName}",
+                        FullViewUrl     = $"https://test/{imgReq.ImageFile.FileName}",
                         PreviewUrl   = $"https://test/prev/{imgReq.ImageFile.FileName}",
                         ThumbnailUrl = $"https://test/thumb/{imgReq.ImageFile.FileName}"
                     })

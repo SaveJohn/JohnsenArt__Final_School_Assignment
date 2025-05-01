@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Amazon;
 using Amazon.S3;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
@@ -30,6 +31,9 @@ using Serilog;
 using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Environment.EnvironmentName;
+var appName = builder.Environment.ApplicationName;
+
 
 // Dependency Injection
 
@@ -54,13 +58,22 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Repository injections
 builder.Services.AddScoped<IAdminGalleryRepository, AdminGalleryRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
-builder.Services.AddScoped<IAdminDetailRepository, AdminDetailRepository>();
+builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
 // AWS
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonSecretsManager>();
 builder.Services.AddAWSService<IAmazonS3>();
-builder.Services.Configure<AwsS3Settings>(builder.Configuration.GetSection("AwsS3Settings"));
+builder.Services.Configure<AwsS3Config>(builder.Configuration.GetSection("AwsS3Settings"));
+builder.Configuration.AddSecretsManager(region: RegionEndpoint.EUNorth1,
+    configurator: options =>
+    {
+        options.SecretFilter = entry => entry.Name.StartsWith($"{env}_{appName}_");
+        options.KeyGenerator = (entry, s ) => s.Replace($"{env}_{appName}_", string.Empty)
+            .Replace("__", ":");
+        // options.PollingInterval = TimeSpan.FromSeconds(10);
+    });
+
 
 // Health Checks
 builder.Services.AddHealthChecks()
@@ -69,9 +82,12 @@ builder.Services.AddHealthChecks()
 
 
 // Database context
+
 builder.Services.AddDbContext<JoArtDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+
+
 
 
 //JWT Set up

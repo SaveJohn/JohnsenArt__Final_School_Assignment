@@ -1,4 +1,5 @@
 ﻿using JoArtClassLib.AwsSecrets;
+using JohnsenArtAPI.AWS.Configuration;
 using JohnsenArtAPI.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -34,5 +35,15 @@ public static class ServiceCollectionExtension
             };
         });
         return services;
+    }
+    
+    public static void AddAmazonSecretsManager(this IConfigurationBuilder configurationBuilder, 
+        string region,
+        string secretName)
+    {
+        var configurationSource = 
+            new AmazonSecretsManagerConfigurationSource(region, secretName);
+
+        configurationBuilder.Add(configurationSource);
     }
 }

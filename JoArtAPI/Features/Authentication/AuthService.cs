@@ -4,7 +4,9 @@ using BCrypt.Net;
 using JoArtDataLayer;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using AutoMapper;
 using JoArtClassLib.AwsSecrets;
+using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -15,21 +17,27 @@ namespace JohnsenArtAPI.Features.Authentication.Services;
 public class AuthService : IAuthService
 {
     private readonly JwtSecretConfig _jwtConfig;
-    private readonly JoArtDbContext _dbContext;
+    private readonly IAdminUserRepository _repository;
+    private readonly IMapper _mapper;
     private readonly ILogger<AuthService> _logger;
 
-    public AuthService(JwtSecretConfig jwtConfig, JoArtDbContext dbContext, ILogger<AuthService> logger)
+    public AuthService(
+        JwtSecretConfig jwtConfig, 
+        IAdminUserRepository repository, 
+        IMapper mapper,
+        ILogger<AuthService> logger)
     {
-        _dbContext = dbContext;
+        
         _logger = logger;
         _jwtConfig = jwtConfig;
+        _repository = repository;
+        _mapper = mapper;
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest loginRequest)
     {
         Console.WriteLine($"login hit with the id {loginRequest.Email}");
-        var admin = await _dbContext.Admins
-            .FirstOrDefaultAsync(a => a.Email == loginRequest.Email);
+        var admin = await _repository.GetAdmin(loginRequest.Email);
 
         if (admin == null)
         {
@@ -50,8 +58,8 @@ public class AuthService : IAuthService
                 ErrorMessage = "Invalid password entered."
             };
         }
-
-        var user = new UserDTO
+        
+        var user = new AdminDTO
         {
             AdminId = admin.AdminId,
             Email = admin.Email,
@@ -62,7 +70,7 @@ public class AuthService : IAuthService
         return new AuthResponse { Token = token };
     }
 
-    public string GenerateJwtToken(UserDTO user)
+    public string GenerateJwtToken(AdminDTO admin)
     {
         var keyBytes = Convert.FromBase64String(_jwtConfig.Key);
         var key = new SymmetricSecurityKey(keyBytes);
@@ -70,8 +78,8 @@ public class AuthService : IAuthService
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.AdminId.ToString()),
-            new Claim(JwtRegisteredClaimNames.UniqueName, user.Email)
+            new Claim(JwtRegisteredClaimNames.Sub, admin.AdminId.ToString()),
+            new Claim(JwtRegisteredClaimNames.UniqueName, admin.Email)
         };
 
         var token = new JwtSecurityToken(

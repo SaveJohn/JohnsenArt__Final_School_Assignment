@@ -73,7 +73,7 @@ public class AdminGalleryService : IAdminGalleryService
                 artwork.Images.Add(new Image
                 {
                     
-                    ObjectKey = fullKey,
+                    FullViewKey = fullKey,
                     ThumbnailKey = thumbKey,
                     PreviewKey = previewKey
                 });
@@ -87,7 +87,7 @@ public class AdminGalleryService : IAdminGalleryService
 
 
         // Saving to database through repository
-        var savedArtwork = await _repository.AddArtworkAsync(artwork);
+        var savedArtwork = await _repository.UploadArtworkAsync(artwork);
 
         // Return DTO
         return _mapper.Map<ArtworkResponse>(savedArtwork);
@@ -138,12 +138,12 @@ public class AdminGalleryService : IAdminGalleryService
         
         
         // Storing old Object Keys to delete from S3 if update in database is successful 
-        var oldObjectKeys = new List<string>();
+        var oldFullViewKeys = new List<string>();
         var oldPreviewKeys = new List<string>();
         var oldThumbnailKeys = new List<string>();
         foreach (var image in oldImages)
         {
-            oldObjectKeys.Add(image.ObjectKey);
+            oldFullViewKeys.Add(image.FullViewKey);
             oldThumbnailKeys.Add(image.ThumbnailKey);
             oldPreviewKeys.Add(image.PreviewKey);
         }
@@ -164,7 +164,7 @@ public class AdminGalleryService : IAdminGalleryService
                 {
                     Id = image.Id,
                     ArtworkId = existingArtwork.Id,
-                    ObjectKey = await _aws.UploadImageToS3(image.ImageFile), // Upload image
+                    FullViewKey = await _aws.UploadImageToS3(image.ImageFile), // Upload image
                     PreviewKey = await _aws.UploadPreviewImageToS3(image.ImageFile), //Upload preview
                     ThumbnailKey = await _aws.UploadThumbnailToS3(image.ImageFile), //Upload thumbnail
                 };
@@ -184,7 +184,7 @@ public class AdminGalleryService : IAdminGalleryService
         try
         {
             // Deleting old images from S3
-            foreach (var objectKey in oldObjectKeys) await _aws.DeleteImageFromS3(objectKey);
+            foreach (var objectKey in oldFullViewKeys) await _aws.DeleteImageFromS3(objectKey);
         
             // Deleting old previews from S3
             foreach (var objectKey in oldPreviewKeys) await _aws.DeleteImageFromS3(objectKey);
@@ -217,10 +217,10 @@ public class AdminGalleryService : IAdminGalleryService
         foreach (var image in deletedArtwork.Images)
         {
             if (image is null) continue;
-            await _aws.DeleteImageFromS3(image.ObjectKey);
+            await _aws.DeleteImageFromS3(image.FullViewKey);
             await _aws.DeleteImageFromS3(image.PreviewKey);
             await _aws.DeleteImageFromS3(image.ThumbnailKey);
-            _logger.LogInformation($"Deleted image: {image.ObjectKey}");
+            _logger.LogInformation($"Deleted image: {image.FullViewKey}");
         }
         
 

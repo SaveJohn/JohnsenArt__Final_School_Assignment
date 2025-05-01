@@ -227,7 +227,7 @@ public class UploadArtworkUnitTests
         
         Artwork artwork = null;
         _adminGalleryRepositoryMock
-            .Setup(r => r.AddArtworkAsync(It.IsAny<Artwork>()))
+            .Setup(r => r.UploadArtworkAsync(It.IsAny<Artwork>()))
             .Callback<Artwork>(a => artwork = a)
             .ReturnsAsync((Artwork a) => a);
         
@@ -243,13 +243,13 @@ public class UploadArtworkUnitTests
         Assert.NotNull(img1);
         Assert.Equal("thumbnail-object-key-1", img1.ThumbnailKey);
         Assert.Equal("preview-object-key-1", img1.PreviewKey);
-        Assert.Equal("full-view-object-key-1", img1.ObjectKey);
+        Assert.Equal("full-view-object-key-1", img1.FullViewKey);
         
         var img2 = artwork.Images[1];
         Assert.NotNull(img2);
         Assert.Equal("thumbnail-object-key-2", img2.ThumbnailKey);
         Assert.Equal("preview-object-key-2", img2.PreviewKey);
-        Assert.Equal("full-view-object-key-2", img2.ObjectKey);
+        Assert.Equal("full-view-object-key-2", img2.FullViewKey);
         
     }
     
@@ -285,7 +285,7 @@ public class UploadArtworkUnitTests
         
         Artwork artwork = null;
         _adminGalleryRepositoryMock
-            .Setup(r => r.AddArtworkAsync(It.IsAny<Artwork>()))
+            .Setup(r => r.UploadArtworkAsync(It.IsAny<Artwork>()))
             .Callback<Artwork>(a => artwork = a)
             .ReturnsAsync((Artwork a) => a);
         
@@ -329,7 +329,7 @@ public class UploadArtworkUnitTests
         
         Artwork artwork = null;
         _adminGalleryRepositoryMock
-            .Setup(r => r.AddArtworkAsync(It.IsAny<Artwork>()))
+            .Setup(r => r.UploadArtworkAsync(It.IsAny<Artwork>()))
             .Callback<Artwork>(a => artwork = a)
             .ReturnsAsync((Artwork a) => a);
         
@@ -372,7 +372,7 @@ public class UploadArtworkUnitTests
         
         Artwork artwork = null;
         _adminGalleryRepositoryMock
-            .Setup(r => r.AddArtworkAsync(It.IsAny<Artwork>()))
+            .Setup(r => r.UploadArtworkAsync(It.IsAny<Artwork>()))
             .Callback<Artwork>(a => artwork = a)
             .ReturnsAsync((Artwork a) => a);
         
@@ -380,7 +380,7 @@ public class UploadArtworkUnitTests
         await _adminGalleryService.UploadArtworkAsync(artworRequest);
         
         // -- ASSERT ----------
-        _adminGalleryRepositoryMock.Verify(r => r.AddArtworkAsync(It.IsAny<Artwork>()), Times.Once);
+        _adminGalleryRepositoryMock.Verify(r => r.UploadArtworkAsync(It.IsAny<Artwork>()), Times.Once);
             
     }
     
@@ -418,7 +418,7 @@ public class UploadArtworkUnitTests
         _awsServiceMock.Setup(a => a.UploadImageToS3(imageRequest.ImageFile)).ReturnsAsync("full-view-object-key");
         
         Artwork artwork = null;
-        _adminGalleryRepositoryMock.Setup(repo => repo.AddArtworkAsync(It.IsAny<Artwork>()))
+        _adminGalleryRepositoryMock.Setup(repo => repo.UploadArtworkAsync(It.IsAny<Artwork>()))
             .Callback<Artwork>(a => artwork = a)
             .ReturnsAsync((Artwork a) => a);
         
@@ -444,7 +444,7 @@ public class UploadArtworkUnitTests
         Assert.Single(artwork.Images);
         Assert.NotNull(artwork.Images[0]);
         Assert.NotNull(artwork.Images[0].Id);
-        Assert.NotNull(artwork.Images[0].ObjectKey);
+        Assert.NotNull(artwork.Images[0].FullViewKey);
         Assert.NotNull(artwork.Images[0].PreviewKey);
         Assert.NotNull(artwork.Images[0].ThumbnailKey);
         Assert.NotNull(artwork.Images[0].ArtworkId);
@@ -461,7 +461,7 @@ public class UploadArtworkUnitTests
         Image? image = new()
         {
             Id = artworkId,
-            ObjectKey = "thumbnail-object-key",
+            FullViewKey = "thumbnail-object-key",
             PreviewKey = "preview-object-key",
             ThumbnailKey = "thumbnail-object-key",
             ArtworkId = 66
@@ -492,7 +492,7 @@ public class UploadArtworkUnitTests
         
         _awsServiceMock.Setup(a => a.GeneratePresignedUrl(image.ThumbnailKey)).Returns("thumbnail-url");
         _awsServiceMock.Setup(a => a.GeneratePresignedUrl(image.PreviewKey)).Returns("preview-url");
-        _awsServiceMock.Setup(a => a.GeneratePresignedUrl(image.ObjectKey)).Returns("full-view-url");
+        _awsServiceMock.Setup(a => a.GeneratePresignedUrl(image.FullViewKey)).Returns("full-view-url");
         
         // -- ACT ----------
         
@@ -516,10 +516,10 @@ public class UploadArtworkUnitTests
         // Image 
         Assert.Single(response.Images);
         Assert.NotNull(response.Images[0]);
-        Assert.NotNull(response.Images[0].ObjectKey);
+        Assert.NotNull(response.Images[0].FullViewKey);
         Assert.NotNull(response.Images[0].PreviewKey);
         Assert.NotNull(response.Images[0].ThumbnailKey);
-        Assert.NotNull(response.Images[0].ImageUrl);
+        Assert.NotNull(response.Images[0].FullViewUrl);
         Assert.NotNull(response.Images[0].PreviewUrl);
         Assert.NotNull(response.Images[0].ThumbnailUrl);
     }
@@ -598,7 +598,7 @@ public class UploadArtworkUnitTests
                 }
             };
         
-        _adminGalleryRepositoryMock.Setup(r => r.AddArtworkAsync(It.IsAny<Artwork>()))
+        _adminGalleryRepositoryMock.Setup(r => r.UploadArtworkAsync(It.IsAny<Artwork>()))
             .ThrowsAsync(new InvalidOperationException("DB is down"));
         
         
@@ -608,7 +608,7 @@ public class UploadArtworkUnitTests
         );
         
         // -- ASSERT ----------
-        _adminGalleryRepositoryMock.Verify(r => r.AddArtworkAsync(It.IsAny<Artwork>()), Times.Once);
+        _adminGalleryRepositoryMock.Verify(r => r.UploadArtworkAsync(It.IsAny<Artwork>()), Times.Once);
         Assert.Equal("DB is down", ex.Message);
     }
     

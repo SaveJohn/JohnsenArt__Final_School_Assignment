@@ -234,18 +234,18 @@
             {
                 try
                 {
-                    var imageBytes = await Http.GetByteArrayAsync(image.ImageUrl);
+                    var imageBytes = await Http.GetByteArrayAsync(image.FullViewUrl);
                     var base64 = Convert.ToBase64String(imageBytes);
                     var imageDataUrl = $"data:image/jpeg;base64,{base64}";
 
                     
                     _artworkImages.Add(imageDataUrl);
-                    _artworkFiles.Add((imageBytes, "image/jpeg", image.ObjectKey));
+                    _artworkFiles.Add((imageBytes, "image/jpeg", image.FullViewKey));
                     
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to load image: {image.ObjectKey}, {ex.Message}");
+                    Console.WriteLine($"Failed to load image: {image.FullViewKey}, {ex.Message}");
                 }
             }
         }

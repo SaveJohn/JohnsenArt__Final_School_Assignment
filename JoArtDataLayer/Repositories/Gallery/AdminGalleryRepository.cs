@@ -19,7 +19,7 @@ public class AdminGalleryRepository : IAdminGalleryRepository
     }
 
     // ADD Artwork
-    public async Task<Artwork> AddArtworkAsync(Artwork artwork)
+    public async Task<Artwork> UploadArtworkAsync(Artwork artwork)
     {
         _logger.LogInformation("-------------------- \n Repository : AddArtwork:");
         // Trying to save Artwork to Database
@@ -120,30 +120,5 @@ public class AdminGalleryRepository : IAdminGalleryRepository
 
     }
     
-    
-
-    // GET Image Object Key
-    public async Task<string?> GetObjectKeyByImageIdAsync(int? imageId)
-    {
-        _logger.LogInformation($"-------------------- \n Repository : GetObjectKeyByImageId: {imageId}:");
-        try
-        {
-            return await _context.ArtworkImages
-                .Where(i => i.Id == imageId)
-                .Select(i => i.ObjectKey)
-                .FirstOrDefaultAsync();
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogError(ex, "Database query failed due to an invalid operation.");
-            throw;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to retrieve object key from the database.");
-            throw;
-        }
-
-    }
 
 }
