@@ -1,6 +1,6 @@
-﻿namespace JoArtClassLib.AwsSecrets;
+﻿namespace JoArtClassLib.Configuration.Secrets;
 
-public class StripeSecretConfig
+public class StripeConfig
 {
     public string SecretKey { get; set; }
     public string PublishableKey { get; set; }

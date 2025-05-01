@@ -1,4 +1,4 @@
-﻿namespace JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
+﻿namespace JohnsenArtAPI.Features.Gallery.Common.Aws.Interfaces;
 
 public interface IAwsService
 {

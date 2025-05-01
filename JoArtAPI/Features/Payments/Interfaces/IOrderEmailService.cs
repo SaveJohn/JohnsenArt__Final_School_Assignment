@@ -1,6 +1,6 @@
 ﻿using JohnsenArtAPI.Features.Contact.DTO;
 
-namespace JohnsenArtAPI.Features.Contact.Interfaces;
+namespace JohnsenArtAPI.Features.Payments.Interfaces;
 
 public interface IOrderEmailService
 {

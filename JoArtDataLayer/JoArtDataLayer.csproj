@@ -29,14 +29,10 @@
         <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
         <PackageReference Include="Serilog.Sinks.MySQL" Version="5.0.0" />
     </ItemGroup>
-
-    
     <ItemGroup>
-        <None Update="appsettings.DesignTime.json">
-            
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
-        </None>
+      <None Update="appsettings.DesignTime.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

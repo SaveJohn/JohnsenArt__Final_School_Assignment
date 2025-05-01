@@ -3,27 +3,26 @@ using Amazon;
 using Amazon.S3;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
-using JoArtClassLib.AwsSecrets;
+using JoArtClassLib.Configuration.Secrets;
 using JoArtDataLayer;
-using JoArtDataLayer.Health;
 using JoArtDataLayer.Repositories;
 using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Configuration;
 using JohnsenArtAPI.Extensions;
+using JohnsenArtAPI.Features.Authentication;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
-using JohnsenArtAPI.Features.Authentication.Services;
+using JohnsenArtAPI.Features.Contact;
 using JohnsenArtAPI.Features.Contact.Interfaces;
-using JohnsenArtAPI.Features.Contact.Services;
-using JohnsenArtAPI.Features.Gallery.Admin;
-using JohnsenArtAPI.Features.Gallery.Aws;
-using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
+using JohnsenArtAPI.Features.Gallery.AdminAccess;
+using JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common;
+using JohnsenArtAPI.Features.Gallery.Common.Aws;
+using JohnsenArtAPI.Features.Gallery.Common.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
+using JohnsenArtAPI.Features.Health;
 using JohnsenArtAPI.Features.Payments.Interfaces;
 using JohnsenArtAPI.Features.Payments.Services;
-using JohnsenArtAPI.Health;
 using JohnsenArtAPI.Middleware;
-using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -35,32 +34,29 @@ var env = builder.Environment.EnvironmentName;
 var appName = builder.Environment.ApplicationName;
 
 
-// Dependency Injection
+// DEPENDENCY INJECTIONS -----------------------------------------------------------------------------
 
+// Endpoint related 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-// Service injections
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAdminGalleryService, AdminGalleryService>();
-builder.Services.AddScoped<IGalleryService, GalleryService>();
-builder.Services.AddScoped<IAwsService, AwsService>();
-builder.Services.AddScoped<IStripeService, StripeService>();
-builder.Services.AddScoped<IEmailService, MailKitEmailService>();
-builder.Services.AddScoped<IOrderEmailService, OrderEmailService>();
-
-
-// Mapper injections
+// Mapper 
 builder.Services.AddAutoMapper(typeof(Program));
 
-// Repository injections
+// Gallery
+builder.Services.AddScoped<IAdminGalleryService, AdminGalleryService>();
+builder.Services.AddScoped<IGalleryService, GalleryService>();
 builder.Services.AddScoped<IAdminGalleryRepository, AdminGalleryRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
-builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
+
+// Health Checks
+builder.Services.AddHealthChecks()
+    .AddCheck<APIHealthCheck>("api")
+    .AddCheck<DatabaseHealthCheck>("database");
 
 // AWS
+builder.Services.AddScoped<IAwsService, AwsService>();
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonSecretsManager>();
 builder.Services.AddAWSService<IAmazonS3>();
@@ -71,18 +67,13 @@ builder.Configuration.AddSecretsManager(region: RegionEndpoint.EUNorth1,
         options.SecretFilter = entry => entry.Name.StartsWith($"{env}_{appName}_");
         options.KeyGenerator = (entry, s ) => s.Replace($"{env}_{appName}_", string.Empty)
             .Replace("__", ":");
-        // options.PollingInterval = TimeSpan.FromSeconds(10);
+        
+        // The following option is good if changes are made in the secrets value within aws secrets manager,
+        // but to save costs, I will not enable it :
+        // options.PollingInterval = TimeSpan.FromSeconds(10); 
     });
 
-
-// Health Checks
-builder.Services.AddHealthChecks()
-    .AddCheck<APIHealthCheck>("api")
-    .AddCheck<DatabaseHealthCheck>("database");
-
-
-// Database context
-
+// Database Context
 builder.Services.AddDbContext<JoArtDbContext>(options =>
 {
     var conn = builder.Configuration["Database:ConnectionString"];
@@ -95,36 +86,40 @@ builder.Services.AddDbContext<JoArtDbContext>(options =>
     );
 });
 
+//JWT 
+builder.Services.Configure<JwtConfig>(
+    builder.Configuration.GetSection("Jwt"));
 
-//JWT Set up
-// Load Jwt Secrets
-var secretClient = new AmazonSecretsManagerClient();
-var response = await secretClient.GetSecretValueAsync(new GetSecretValueRequest
-{
-    SecretId = "JwtSecrets"
-});
+var jwtConfig = builder.Configuration.GetSection("Jwt")
+    .Get<JwtConfig>() ?? throw new NullReferenceException("JWT secret not configured!");
 
-var jwtSecrets = JsonSerializer.Deserialize<JwtSecretConfig>(response.SecretString);
+builder.Services.AddSingleton(jwtConfig);
+builder.Services.AddJwtAuthentication(jwtConfig);
+builder.Services.AddScoped<IAuthService, AuthService>();
 
-if (jwtSecrets is null)
-{
-    throw new Exception("JWT Secrets not found");
-}
-// Jwt config object as a singleton
-builder.Services.AddSingleton(jwtSecrets);
+// Admin
+builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
-// Jwt setup with config 
-builder.Services.AddJwtAuthentication(jwtSecrets);
+// Stripe
+builder.Services.Configure<StripeConfig>(
+    builder.Configuration.GetSection("Stripe"));
 
-// Config Providers
-builder.Services.AddSingleton<JwtConfigProvider>();
-builder.Services.AddSingleton<StripeConfigProvider>();
+builder.Services.AddScoped<IStripeService, StripeService>();
+
+// Smtp
+builder.Services.Configure<SmtpConfig>(
+    builder.Configuration.GetSection("Smtp"));
+
+// MailKit
+builder.Services.AddScoped<IEmailService, MailKitEmailService>();
+builder.Services.AddScoped<IOrderEmailService, OrderEmailService>();
 
 // Logging
 builder.Host.UseSerilog((context, services, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration)
 );
 
+// APP -----------------------------------------------------------------------------------------------
 var app = builder.Build();
 
 //API Health Check -> Returning json with results for api and database separate 
@@ -155,7 +150,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(options => { options.RouteTemplate = "/openapi/{documentName}.json"; });
     app.MapScalarApiReference();
-    /* Use this instead if you prefer swagger GUI:
+    /*  --- Use this instead if you prefer swagger GUI: ---
      * app.UseSwagger();
      * app.UseSwaggerUI();
      */

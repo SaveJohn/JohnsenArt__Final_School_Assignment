@@ -1,13 +1,10 @@
-﻿
-using JoArtDataLayer.Repositories;
-using JoArtDataLayer.Repositories.Interfaces;
+﻿using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Features.Contact.DTO;
 using JohnsenArtAPI.Features.Contact.Interfaces;
 using MailKit.Net.Smtp;
-using Microsoft.AspNetCore.Http.HttpResults;
 using MimeKit;
 
-namespace JohnsenArtAPI.Features.Contact.Services;
+namespace JohnsenArtAPI.Features.Contact;
 
 public class MailKitEmailService : IEmailService
 {

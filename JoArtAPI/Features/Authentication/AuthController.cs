@@ -1,9 +1,8 @@
 ﻿using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Models;
-using JohnsenArtAPI.Features.Authentication.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JohnsenArtAPI.Features.Authentication.Controllers;
+namespace JohnsenArtAPI.Features.Authentication;
 
 [ApiController]
 [Route("admin/auth")]

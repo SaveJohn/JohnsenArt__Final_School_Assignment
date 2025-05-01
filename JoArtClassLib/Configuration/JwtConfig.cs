@@ -1,6 +1,6 @@
-﻿namespace JoArtClassLib.AwsSecrets;
+﻿namespace JoArtClassLib.Configuration.Secrets;
 
-public class JwtSecretConfig
+public class JwtConfig
 {
     public string Key { get; set; } = "";
     public string Issuer { get; set; } = "";

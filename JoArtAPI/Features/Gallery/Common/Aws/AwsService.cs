@@ -3,9 +3,8 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using JohnsenArtAPI.Configuration;
-using JohnsenArtAPI.Features.Gallery.Admin;
-using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
-using JohnsenArtAPI.Services;
+using JohnsenArtAPI.Features.Gallery.AdminAccess;
+using JohnsenArtAPI.Features.Gallery.Common.Aws.Interfaces;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats;
@@ -13,7 +12,7 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 
-namespace JohnsenArtAPI.Features.Gallery.Aws;
+namespace JohnsenArtAPI.Features.Gallery.Common.Aws;
 
 public class AwsService : IAwsService
 {

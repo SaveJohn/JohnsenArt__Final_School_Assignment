@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using JoArtClassLib.Art;
 using JoArtDataLayer.Repositories.Interfaces;
-using JohnsenArtAPI.Services.Interfaces;
+using JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

@@ -3,10 +3,10 @@ using JoArtClassLib;
 using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
 using JoArtDataLayer.Repositories.Interfaces;
-using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
-using JohnsenArtAPI.Services.Interfaces;
+using JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
+using JohnsenArtAPI.Features.Gallery.Common.Aws.Interfaces;
 
-namespace JohnsenArtAPI.Features.Gallery.Admin;
+namespace JohnsenArtAPI.Features.Gallery.AdminAccess;
 
 public class AdminGalleryService : IAdminGalleryService
 {

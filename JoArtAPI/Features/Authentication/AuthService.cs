@@ -1,28 +1,24 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using BCrypt.Net;
-using JoArtDataLayer;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
 using AutoMapper;
-using JoArtClassLib.AwsSecrets;
+using JoArtClassLib.Configuration.Secrets;
 using JoArtDataLayer.Repositories.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Authentication.Models;
 using Microsoft.IdentityModel.Tokens;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace JohnsenArtAPI.Features.Authentication.Services;
+namespace JohnsenArtAPI.Features.Authentication;
 
 public class AuthService : IAuthService
 {
-    private readonly JwtSecretConfig _jwtConfig;
+    private readonly JwtConfig _jwtConfig;
     private readonly IAdminUserRepository _repository;
     private readonly IMapper _mapper;
     private readonly ILogger<AuthService> _logger;
 
     public AuthService(
-        JwtSecretConfig jwtConfig, 
+        JwtConfig jwtConfig, 
         IAdminUserRepository repository, 
         IMapper mapper,
         ILogger<AuthService> logger)

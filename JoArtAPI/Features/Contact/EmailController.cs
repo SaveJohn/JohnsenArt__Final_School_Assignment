@@ -2,7 +2,7 @@
 using JohnsenArtAPI.Features.Contact.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JohnsenArtAPI.Features.Contact.Controllers;
+namespace JohnsenArtAPI.Features.Contact;
 
 
 [ApiController]

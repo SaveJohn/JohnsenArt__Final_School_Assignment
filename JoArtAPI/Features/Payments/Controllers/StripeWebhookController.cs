@@ -1,9 +1,12 @@
-﻿using JohnsenArtAPI.Features.Contact.DTO;
+﻿using JoArtClassLib.Configuration.Secrets;
+using JohnsenArtAPI.Features.Contact.DTO;
 using JohnsenArtAPI.Features.Contact.Interfaces;
+using JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
+using JohnsenArtAPI.Features.Payments.Interfaces;
 using JohnsenArtAPI.Features.Payments.Services;
-using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Stripe;
 
 namespace JohnsenArtAPI.Features.Payments.Controllers;
@@ -13,7 +16,7 @@ namespace JohnsenArtAPI.Features.Payments.Controllers;
 public class StripeWebhookController : ControllerBase
 {
     private readonly ILogger<StripeWebhookController> _logger;
-    private readonly StripeConfigProvider _stripeConfigProvider ;
+    private readonly StripeConfig _config ;
     private readonly IAdminGalleryService _adminGalleryService;
     private readonly IGalleryService _galleryService;
     private readonly IEmailService _adminMail;
@@ -21,14 +24,14 @@ public class StripeWebhookController : ControllerBase
 
     public StripeWebhookController(
         ILogger<StripeWebhookController> logger, 
-        StripeConfigProvider config,
+        IOptions<StripeConfig> config,
         IAdminGalleryService adminGalleryService,
         IGalleryService galleryService,
         IEmailService adminMail,
         IOrderEmailService orderEmailService)
     {
         _logger = logger;
-        _stripeConfigProvider  = config;
+        _config  = config.Value;
         _adminGalleryService = adminGalleryService;
         _galleryService = galleryService;
         _adminMail = adminMail;
@@ -40,8 +43,7 @@ public class StripeWebhookController : ControllerBase
     {
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
         
-        var config = await _stripeConfigProvider .GetStripeConfigAsync();
-        var endpointSecret = config.WebhookSecret;
+        var endpointSecret = _config.WebhookSecret;
         
         if (string.IsNullOrEmpty(endpointSecret))
         {

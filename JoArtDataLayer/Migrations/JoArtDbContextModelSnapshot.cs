@@ -44,6 +44,11 @@ namespace JoArtDataLayer.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
                     b.HasKey("AdminId");
 
                     b.ToTable("Admins");

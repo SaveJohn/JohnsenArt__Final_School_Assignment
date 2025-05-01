@@ -1,8 +1,11 @@
-﻿using JoArtClassLib.Payment;
+﻿using JoArtClassLib.Configuration.Secrets;
+using JoArtClassLib.Payment;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Features.Payments.Interfaces;
 using JohnsenArtAPI.Features.Payments.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Stripe;
 
 namespace JohnsenArtAPI.Features.Payments.Controllers;
 
@@ -14,7 +17,8 @@ public class StripeController : ControllerBase
     private readonly IGalleryService _galleryService;
     private readonly ILogger<StripeController> _logger;
 
-    public StripeController(IStripeService stripeService,
+    public StripeController(
+        IStripeService stripeService,
         IGalleryService galleryService,
         ILogger<StripeController> logger)
     {
@@ -39,9 +43,8 @@ public class StripeController : ControllerBase
     }
 
     [HttpGet("publishable-key")]
-    public async Task<IActionResult> GetPublishableKey([FromServices] StripeConfigProvider stripeProvider)
+    public async Task<IActionResult> GetPublishableKey()
     {
-        var config = await stripeProvider.GetStripeConfigAsync();
-        return Ok(new { publishableKey = config.PublishableKey });
+        return Ok(new { publishableKey = _stripeService.GetPublishableKey() });
     }
 }

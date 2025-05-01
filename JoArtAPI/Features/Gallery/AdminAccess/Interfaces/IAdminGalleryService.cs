@@ -1,9 +1,7 @@
-﻿using System.Net;
-using JoArtClassLib;
-using JoArtClassLib.Art;
+﻿using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
 
-namespace JohnsenArtAPI.Services.Interfaces;
+namespace JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
 
 public interface IAdminGalleryService
 {

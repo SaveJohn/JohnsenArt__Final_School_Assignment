@@ -1,7 +1,7 @@
 ﻿using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
-using JoArtClassLib.AwsSecrets;
 using System.Text.Json;
+using JoArtClassLib.Configuration.Secrets;
 
 namespace JohnsenArtAPI.Features.Payments.Services;
 
@@ -18,7 +18,7 @@ public class StripeConfigProvider
     
     
     // Getting Stripe secrets from AWS Secrets Manager
-    public async Task<StripeSecretConfig> GetStripeConfigAsync()
+    public async Task<StripeConfig> GetStripeConfigAsync()
     {
         var request = new GetSecretValueRequest
         {
@@ -43,7 +43,7 @@ public class StripeConfigProvider
             throw new Exception($"Stripe Secret not found in AWS Secrets Manager.");
         }
         
-        var config = JsonSerializer.Deserialize<StripeSecretConfig>(response.SecretString);
+        var config = JsonSerializer.Deserialize<StripeConfig>(response.SecretString);
         
         if (config is null)
         {

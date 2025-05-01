@@ -3,7 +3,7 @@ using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
 using JoArtClassLib.Enums;
 using JoArtDataLayer.Repositories.Interfaces;
-using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
+using JohnsenArtAPI.Features.Gallery.Common.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 

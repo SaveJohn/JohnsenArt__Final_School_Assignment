@@ -22,7 +22,7 @@ public class AdminUserRepository : IAdminUserRepository
         _logger.LogInformation("-------------------- \n Repository : Get Admin Email:");
         try
         {
-            var admin = await _dbContext.Admins.OrderByDescending(a => a.Email).FirstOrDefaultAsync();
+            var admin = await _dbContext.Admins.Where(a => a.Role == "Admin").FirstOrDefaultAsync();
 
             if (admin is null)
             {

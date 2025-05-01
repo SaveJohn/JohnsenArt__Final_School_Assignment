@@ -21,8 +21,8 @@ public class AuthenticationHandlerTesting : IAuthenticationHandlerTesting
      *
      * - Or add manually using this mysql script:
      *  use joartdb;
-        insert into admins(email, Name ,hashedpassword)
-        values ('test@mail.com', 'Test User','$2y$10$.4l4Sd4Et647qIgEhw6TW.O0Hg1qvrGCT/aWMWAyxa0TaFIvjKT4S');
+        insert into admins(email, name ,hashedpassword, role)
+        values ('test@mail.com', 'Test User','$2y$10$.4l4Sd4Et647qIgEhw6TW.O0Hg1qvrGCT/aWMWAyxa0TaFIvjKT4S', 'Test');
      */ 
     
     
