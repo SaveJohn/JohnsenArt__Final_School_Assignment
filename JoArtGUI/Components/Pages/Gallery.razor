@@ -1,7 +1,7 @@
 ﻿@page "/Gallery"
 @using JoArtClassLib.Art
 @using JoArtClassLib.Enums
-@using Microsoft.AspNetCore.CookiePolicy
+@using JohnsenArtGUI.Helpers.Interfaces
 @inject HttpClient Http
 @inject IJSRuntime JS
 @inject NavigationManager navigationManager
@@ -118,8 +118,10 @@ else
 @code {
 
     // List of artworks
+    [Inject] ILocalStorageHelper LocalStorage { get; set; }
     private List<ArtworkResponse>? artworks = [];
 
+    
     // Sort ---
     // Bound value
     private GallerySort _sortOption = GallerySort.Newest;
@@ -154,9 +156,25 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await EnsureLocalStorageInitialized();
+        
+        var rawSort = await LocalStorage.GetItem("sortOption");
+        if (!string.IsNullOrWhiteSpace(rawSort))
+            _sortOption = Enum.Parse<GallerySort>(rawSort, ignoreCase: true);
+
+        var rawFilter = await LocalStorage.GetItem("filterOption");
+        if (!string.IsNullOrWhiteSpace(rawFilter))
+            _filterOption = Enum.Parse<GalleryFilter>(rawFilter, ignoreCase: true);
+        
         await LoadArtworkAsync();
     }
 
+    private async Task EnsureLocalStorageInitialized()
+    {
+        // Making a dummy call to make sure module is imported
+        await LocalStorage.GetItem("dummy_key");
+    }
+    
     // Paging ---
     private int currentPage = 1;
     private int perPage = 12;
@@ -195,7 +213,7 @@ else
         currentPage++;
         await LoadArtworkAsync(append: true);
         isLoadingMore = false;
-
+        
         StateHasChanged();
     }
 
@@ -209,18 +227,24 @@ else
             artworks.Clear();
         }
 
+        // Getting sort and filter raw-string from Local Storage - casting to Enum and including fallbacks 
+        var sortEnum = Enum.Parse<GallerySort>(await LocalStorage.GetItem("sortOption") ?? "Newest", true);
+        var filterEnum = Enum.Parse<GalleryFilter>(await LocalStorage.GetItem("filterOption") ?? "All", true);
+        
         // Building query string parameters
         var queryParams = new List<string>
         {
             $"page={currentPage}",
             $"perPage={perPage}",
-            $"sort={_sortOption}",
-            $"filter={_filterOption}"
+            $"sort={sortEnum}",
+            $"filter={filterEnum}"
         };
 
         // Creating endpoint URL with the query string
         var url = $"api/PublicGallery/artworks?{string.Join("&", queryParams)}";
 
+        
+        
         try
         {
             var newItems = await Http.GetFromJsonAsync<List<ArtworkResponse>>(url);
@@ -263,11 +287,13 @@ else
 
     private async Task SortOptionChanged()
     {
+        await LocalStorage.SetItem("sortOption", _sortOption.ToString());
         await LoadArtworkAsync();
     }
 
     private async Task FilterOptionChanged()
     {
+        await LocalStorage.SetItem("filterOption", _filterOption.ToString());
         await LoadArtworkAsync();
     }
 

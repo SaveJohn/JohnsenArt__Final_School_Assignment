@@ -74,12 +74,14 @@ public class PublicGalleryController : ControllerBase
     }
 
     [HttpGet("artworks/{artId}/neighbors")]
-    public async Task<IActionResult> GetGalleryNeighbors(int artId)
+    public async Task<IActionResult> GetGalleryNeighbors(int artId, GallerySort sort, GalleryFilter filter)
     {
         _logger.LogInformation("Endpoint : GetGalleryNeighbors called");
         try
         {
-            var neighbors = await _galleryService.GetGalleryNeighborsAsync(artId);
+            _logger.LogInformation("Art Id: {artId}, sort: {sort}, filter: {filter}", artId, sort, filter);
+            
+            var neighbors = await _galleryService.GetGalleryNeighborsAsync(artId, sort, filter);
         
             return Ok(neighbors);
         }

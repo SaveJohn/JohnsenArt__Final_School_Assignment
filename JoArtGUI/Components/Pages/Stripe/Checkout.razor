@@ -2,6 +2,7 @@
 @page "/checkout/{productId:int}"
 @using System.Text
 @using System.Text.Json
+@using JoArtClassLib
 @using JoArtClassLib.Art
 @using JoArtClassLib.Error
 @using JoArtClassLib.Payment
@@ -19,6 +20,34 @@
 else if (isLoading)
 {
     <p class="text-center pt-5"><i class="spinner-border spinner-border-sm me-2"></i>Laster produkt ...</p>
+}
+else if (!product.ForSale)
+{
+    <div class="notForSale-container text-center"> 
+        <div class="notForSale-card shadow- p-4 border-0 rounded-4">
+            <div class="card-body ">
+                <img src="images/woopsie.png" alt="Ikke for salg!" style="width: 140px;" class="mb-4"/>
+                <h2 class="fw-bold mb-1">Ojsann!</h2>
+                <h2 class="fw-bold mb-1">Dette kunstverke er vist ikke for salgs lenger...</h2>
+                <hr class="my-4" />
+                <p class="lead">
+                    Trykk
+                    <a href=@($"/GalleryDetail/{product.Id}") class="link-primary fw-semibold"><bold>
+                        her!
+                    </bold></a>
+                    for å gå tilbake til kunstverket.
+                </p>
+                <p class="lead ">
+                    Noe som ikke stemmer? Ta gjerne kontakt 
+                    <a href="/contact" class="link-primary fw-semibold"><bold>
+                        her!
+                    </bold></a>
+                </p>
+                
+                <a class="btn btn-dark mt-3" href="/gallery">Tilbake til galleriet</a>
+            </div>
+        </div>
+    </div>
 }
 else if (product is not null)
 {
@@ -93,7 +122,7 @@ else if (product is not null)
                 <div class="form-check mb-2">
                     <input class="form-check-input" name="delivery" type="radio" id="post" value="@DeliveryMethods.Post.ToString()"
                            @onchange="SetDeliveryMethod" checked="@(DeliveryMethods.Post.ToString() == buyer.DeliveryMethod)" />
-                    <label class="form-check-label" for="post">Posten (kr @shippingCost)</label>
+                    <label class="form-check-label" for="post">Posten (kr @shippingCosts)</label>
                 </div>
 
                 <!-- Buyer Info Address Form if Shipping is Post-->
@@ -139,7 +168,7 @@ else if (product is not null)
                         }
                         else
                         {
-                            <p class="mb-1">@((shippingCost ?? 0).ToString("F2")),-</p>
+                            <p class="mb-1">@((finalShippingCosts ?? 0).ToString("F2")),-</p>
                         }
                     </div>
                     <!-- Total Costs -->
@@ -147,7 +176,7 @@ else if (product is not null)
                         <p class="fw-bold fs-5 mb-0">Total å betale:</p>
                         
                         <p class="fw-bold fs-5 mb-0">
-                            @(((shippingCost ?? 0) + (product?.Price ?? 0)).ToString("F2")),-
+                            @(((shippingCosts ?? 0) + (product?.Price ?? 0)).ToString("F2")),-
 
                         </p>
                     </div>
@@ -300,8 +329,10 @@ else
     private ArtworkResponse? product;
     private ImageResponse? image;
 
-    private decimal? shippingCost;
+    private decimal? shippingCosts;
+    private decimal? finalShippingCosts;
     PaymentMethod paymentMethod = new ();
+    
     string stripeClientSecret = "";
     bool readyToPay;
 
@@ -334,7 +365,7 @@ else
 
             if (product?.WidthDimension is not null && product.HeightDimension is not null)
             {
-                shippingCost = CalculateShippingCosts();
+                shippingCosts = CalculateShippingCosts();
             }
 
             isLoading = false;
@@ -356,9 +387,10 @@ else
     private void SetDeliveryMethod(ChangeEventArgs e)
     {
         buyer.DeliveryMethod = e.Value?.ToString() ?? "";
-        shippingCost = buyer.DeliveryMethod == DeliveryMethods.PickUp.ToString() 
+        finalShippingCosts = buyer.DeliveryMethod == DeliveryMethods.PickUp.ToString() 
             ? ShippingCosts.PickUp 
             : CalculateShippingCosts();
+        shippingCosts = CalculateShippingCosts();
         
         StateHasChanged();
         paymentMethod.Selected = null;

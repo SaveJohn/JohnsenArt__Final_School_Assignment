@@ -101,6 +101,9 @@ namespace JoArtDataLayer.Migrations
                     b.Property<double?>("HeightDimension")
                         .HasColumnType("double");
 
+                    b.Property<bool>("HomePageRotation")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Materials")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
@@ -115,9 +118,6 @@ namespace JoArtDataLayer.Migrations
 
                     b.Property<double?>("WidthDimension")
                         .HasColumnType("double");
-
-                    b.Property<bool>("homePageRotation")
-                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Id");
 

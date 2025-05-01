@@ -93,9 +93,9 @@ public class GalleryService : IGalleryService
         return response;
     }
 
-    public async Task<NeighborsResponse> GetGalleryNeighborsAsync(int artId)
+    public async Task<NeighborsResponse> GetGalleryNeighborsAsync(int artId, GallerySort sort, GalleryFilter filter)
     {
-       var neighbors = await _repository.GetGalleryNeighborsAsync(artId);
+       var neighbors = await _repository.GetGalleryNeighborsAsync(artId, sort, filter);
        
        return _mapper.Map<NeighborsResponse>(neighbors);
        
