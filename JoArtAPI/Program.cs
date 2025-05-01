@@ -84,10 +84,16 @@ builder.Services.AddHealthChecks()
 // Database context
 
 builder.Services.AddDbContext<JoArtDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+{
+    var conn = builder.Configuration["Database:ConnectionString"];
+    if (string.IsNullOrWhiteSpace(conn))
+        throw new InvalidOperationException("Database connection string not configured!");
 
-
+    options.UseMySql(
+        conn,
+        ServerVersion.AutoDetect(conn)
+    );
+});
 
 
 //JWT Set up
