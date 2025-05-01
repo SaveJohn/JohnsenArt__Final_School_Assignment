@@ -9,6 +9,8 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject HttpClient Http
 @inject IJSRuntime JS
+@inject ILogger<GalleryDetail> _logger
+
 
 <br/>
 
@@ -19,14 +21,14 @@
     <p class="text-center"><i class="spinner-border spinner-border-sm me-2"></i>Kunstverk laster ...</p>
 }
 else
-{   
+{
     <div class="gallery-detail-wrapper position-relative">
         <div class="gallery-detail-header">
-            
+
             <!-- Prev Artwork Button -->
             @if (prevArtwork is not null)
             {
-                <button class="neighbor-button  prev " 
+                <button class="neighbor-button  prev "
                         type="button"
                         title="Sort: @currentSort, Filter: @currentFilter"
                         @onclick="() => PrevArtwork()">
@@ -34,38 +36,37 @@ else
                     <span class="neighbor-label">Forrige</span>
                 </button>
             }
-        
-        
+
+
             <!-- Tittel -->
             <h2 class="fw-bold text-muted fs-3 me-auto border-bottom ">@artwork?.Title</h2>
-        
+
             <!-- Next Artwork Button -->
             @if (nextArtwork is not null)
             {
-                <button class="neighbor-button next" 
+                <button class="neighbor-button next"
                         type="button"
                         title="Sort: @currentSort, Filter: @currentFilter"
                         @onclick="() => NextArtwork()">
                     <span class="neighbor-label">Neste</span><i class="fa-solid fa-angles-right"></i>
                 </button>
             }
-            
+
         </div>
 
         <!-- Artwork Content -->
         <div class="container-fluid px-5 d-flex justify-content-center">
-            
+
             <div class="col-xl-10 d-flex flex-row flex-wrap justify-content-center">
-                
+
                 <div id="artworkCarousel"
                      class="carousel slide"
                      style="min-width: 60%; max-width:  80vw;"
                      data-bs-ride="false" data-bs-interval="false">
-                    
-                    
+
+
                     <!-- Image slides -->
                     <div class="carousel-inner">
-
 
 
                         @foreach (var img in artwork.Images)
@@ -84,19 +85,20 @@ else
                     @if (artwork.Images.Count > 1)
                     {
                         <!-- Left arrow -->
-                        <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel" data-bs-slide="prev">
+                        <button class="carousel-control-prev" type="button" data-bs-target="#artworkCarousel"
+                                data-bs-slide="prev">
                             <span class="custom-carousel-arrow">
                                 <i class="fa-solid fa-chevron-left"></i>
                             </span>
                         </button>
 
                         <!-- Right arrow -->
-                        <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel" data-bs-slide="next">
+                        <button class="carousel-control-next" type="button" data-bs-target="#artworkCarousel"
+                                data-bs-slide="next">
                             <span class="custom-carousel-arrow">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </span>
                         </button>
-
                     }
 
                     <!-- Indicators -->
@@ -128,7 +130,6 @@ else
                             <div class="d-flex align-items-center gap-3 fs-5 price-section">
                                 @if (artwork.ForSale)
                                 {
-                                    
                                     <!-- Buy button -->
                                     <a class="buy-button" href=@($"/checkout/{artworkId}")>
                                         Kjøp <i class="fa-solid fa-bag-shopping"></i>
@@ -176,11 +177,10 @@ else
                 </div>
             </div>
         </div>
-        
+
     </div>
-    
-    
-    
+
+
     <!-- Display errors-->
     @if (errors.Count > 0)
     {
@@ -192,9 +192,10 @@ else
             }
         </ul>
     }
-    
-    <br/><br/>
-    
+
+    <br/>
+    <br/>
+
     <!-- Modal Image-->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
@@ -213,14 +214,14 @@ else
                     <img id="modalImage"
                          src=""
                          class="img-fluid rounded shadow"
-                         style="max-height: 95vh; pointer-events: none; image-rendering: smooth;" />
+                         style="max-height: 95vh; pointer-events: none; image-rendering: smooth;"/>
 
                 </div>
             </div>
         </div>
     </div>
-    
-    
+
+
     <!-- Extra ADMIN option bar for artwork -->
     <AuthorizeView>
         <div class="navbarFont">
@@ -278,10 +279,12 @@ else
                     <div class="modal-footer">
                         <button class="btn btn-secondary mb-2"
                                 data-bs-dismiss="modal"
-                                @onclick="CloseConfirmation">Avbryt</button>
+                                @onclick="CloseConfirmation">Avbryt
+                        </button>
                         <button class="btn btn-danger mb-2"
                                 data-bs-dismiss="modal"
-                                @onclick="ConfirmDelete">Slett Kunstverk</button>
+                                @onclick="ConfirmDelete">Slett Kunstverk
+                        </button>
                     </div>
 
                 </div>
@@ -326,56 +329,54 @@ else
         }
         catch (Exception e)
         {
-            Console.WriteLine("Error fetching artwork data: " + e.Message);
+            _logger.LogError(e, "Error fetching artwork data.");
         }
 
         if (artwork is not null)
         {
             try
             {
-                Console.WriteLine("Trying to retrieve neighbors");
-                
+                _logger.LogInformation("Attempting to retrieve neighbors.");
+
                 // getting sort and filter raw-string from local storage
                 var sortRaw = await LocalStorage.GetItem("sortOption");
                 var filterRaw = await LocalStorage.GetItem("filterOption");
-                
+
                 // Enmum fallbacks
                 GallerySort sortEnum = GallerySort.Newest;
                 GalleryFilter filterEnum = GalleryFilter.All;
-                
+
                 // parsing raw-strings to Enum
                 if (!string.IsNullOrEmpty(sortRaw) && Enum.TryParse<GallerySort>(sortRaw, ignoreCase: true, out var sort))
                 {
                     sortEnum = sort;
                 }
+
                 if (!string.IsNullOrEmpty(sortRaw) && Enum.TryParse<GalleryFilter>(filterRaw, ignoreCase: true, out var filter))
                 {
                     filterEnum = filter;
                 }
-                
+
                 // Building query string parameters
                 var queryParams = new List<string>
                 {
                     $"sort={sortEnum}",
                     $"filter={filterEnum}"
                 };
-                
+
                 // Creating endpoint URL with the query string
                 var url = $"/api/PublicGallery/artworks/{artworkId}/neighbors?{string.Join("&", queryParams)}";
-                
+
                 var neighbors = await Http.GetFromJsonAsync<Neighbors>(url);
-                
+
                 prevArtwork = neighbors.PreviousId;
                 nextArtwork = neighbors.NextId;
-                
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error fetching previous and next artwork Ids: " + e.Message);
+                _logger.LogError(e, "Failed fetching previous/next artwork Ids.");
             }
-            
         }
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -388,7 +389,6 @@ else
 
             await JS.InvokeVoidAsync("resetCarouselToFirst", "#artworkCarousel");
         }
-
     }
 
 
@@ -451,7 +451,8 @@ else
             // 3) Call the DELETE endpoint
             var response = await Http.DeleteAsync($"http://localhost:8080/admin/api/Gallery/delete-artwork/{artworkId}");
 
-            Console.WriteLine($"Response status code: {response.StatusCode}");
+
+            _logger.LogInformation("DELETE response status: {StatusCode}", response.StatusCode);
 
             if (response.IsSuccessStatusCode)
             {
@@ -467,7 +468,8 @@ else
                 // 4b) On failure, check if the response is JSON
                 var contentType = response.Content.Headers.ContentType?.MediaType;
                 var contentString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Response body on failure: {contentString}");
+
+                _logger.LogWarning("Failure response body: {Body}", contentString);
 
                 if (!string.IsNullOrWhiteSpace(contentString) &&
                     contentType == "application/json")
@@ -504,7 +506,8 @@ else
                 ErrorMessage = "En uventet feil oppstod, og kunstverket ble ikke slettet."
             });
 
-            Console.WriteLine($"\"En uventet feil oppstod: {ex}");
+            
+            _logger.LogError(ex, "Unexpected error during artwork deletin.");
         }
         finally
         {

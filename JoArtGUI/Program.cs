@@ -8,7 +8,8 @@ using JohnsenArtGUI.Helpers;
 using JohnsenArtGUI.Helpers.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1WmFZfVtgcl9DYFZTQmYuP1ZhSXxWdkZhXn9YdXRXQGdcWEV9XUs=");
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
+    "Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1WmFZfVtgcl9DYFZTQmYuP1ZhSXxWdkZhXn9YdXRXQGdcWEV9XUs=");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,13 +33,13 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/login"; 
+        options.LoginPath = "/login";
         options.Cookie.HttpOnly = false; // OBS switch to true in production 
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = CookieSecurePolicy.None; // OBS Switch to always in production
         options.ExpireTimeSpan = TimeSpan.FromHours(2);
         options.SlidingExpiration = true;
-        
+
         // On redirect to login - return to said url after successful login
         options.Events = new CookieAuthenticationEvents()
         {
@@ -65,7 +66,7 @@ builder.Services.AddScoped(sp => new HttpClient
 
 var app = builder.Build();
 
-app.UseCustomExceptionHandler();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthentication();
@@ -73,10 +74,12 @@ app.UseAuthorization();
 app.UseAntiforgery();
 app.MapAuthEndpoints();
 
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+app.UseCustomExceptionHandler(logger);
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 
 await app.RunAsync();
-
