@@ -12,10 +12,25 @@
 }
 
 <div class="hero-image">
-    @for (var i = 0; i < urls.Count; i++)
+    @for (var i = 0; i < slides.Count; i++)
     {
-        <div class="slide @(i == currentIndex ? "active" : "")"
-             style="background-image: url('@urls[i]');">
+        var img = slides[i];
+        <div class="slide @(i == currentIndex ? "active" : "")">
+            <picture>
+                <!-- Mobil: Preview -->
+                <source media="(max-width: 576px)"    srcset="@img.PreviewUrl" />
+                <!-- Tablet / smaller screens: also Preview -->
+                <source media="(max-width: 992px)"    srcset="@img.PreviewUrl" />
+                <!-- Desktop: FullView -->
+                <source media="(min-width: 993px)"    srcset="@img.FullViewUrl" />
+
+                <!-- Fallback / older browser: thumbnail -->
+                <img
+                    src="@img.ThumbnailUrl"
+                    class="slide-image"
+                    alt="Hero slide @(i+1)"
+                    loading="lazy" />
+            </picture>
         </div>
     }
 </div>
@@ -24,7 +39,7 @@
 
 @code{
 
-    List<string> urls = new();
+    private List<ImageResponse> slides = [];
     private string? ErrorMessage;
     private int currentIndex;
     private System.Threading.Timer? _timer;
@@ -33,19 +48,19 @@
     {
         try
         {
-            urls = await Http.GetFromJsonAsync<List<string>>("/api/PublicGallery/homePageRotation")
-                   ?? new List<string>();
+            slides = await Http.GetFromJsonAsync<List<ImageResponse>>("/api/PublicGallery/homePageRotation")
+                     ?? new List<ImageResponse>();
         }
         catch (HttpRequestException ex)
         {
             ErrorMessage = $"Could not load rotation images: {ex.Message}";
         }
 
-        if (urls.Count > 1)
+        if (slides.Count > 1)
         {
             _timer = new System.Threading.Timer(_ =>
             {
-                currentIndex = (currentIndex + 1) % urls.Count;
+                currentIndex = (currentIndex + 1) % slides.Count;
                 InvokeAsync(StateHasChanged);
             }, null, 5000, 5000);
         }

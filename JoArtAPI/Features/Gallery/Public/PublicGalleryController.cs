@@ -92,9 +92,25 @@ public class PublicGalleryController : ControllerBase
         }
         
     }
-
+    
     [HttpGet("homePageRotation")]
     public async Task<IActionResult> GetHomePageRotation()
+    {
+        _logger.LogInformation("Endpoint : GetHomePageRotation called");
+        try
+        {
+            var images = await _galleryService.GetRotationImagesAsync();
+            return Ok(images);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving rotation urls.");
+            return StatusCode(500, "An error occurred while retrieving the rotation urls.");
+        }
+    }
+
+    [HttpGet("homePageRotationURL")]
+    public async Task<IActionResult> GetHomePageRotationURL()
     {
         _logger.LogInformation("Endpoint : GetHomePageRotation called");
         try

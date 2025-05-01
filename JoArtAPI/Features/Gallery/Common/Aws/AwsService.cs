@@ -54,12 +54,12 @@ public class AwsService : IAwsService
     }
 
     // UPLOAD Image to S3 Bucket
-    public async Task<string> UploadImageToS3(IFormFile imageFile)
+    public async Task<string> UploadFullViewToS3(IFormFile imageFile)
     {
         _logger.LogInformation($"-------------------- \n AWS: UploadImageToS3: \n File: {imageFile.FileName}:");
 
         // Creating Object Key
-        var objectKey = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
+        var objectKey = $"fullView/{Guid.NewGuid()}.jpg";
         _logger.LogInformation($"Generated object key: {objectKey}");
         
         using var image = await Image.LoadAsync(imageFile.OpenReadStream());
@@ -89,7 +89,8 @@ public class AwsService : IAwsService
         {
             BucketName = _bucketName, // Using the injected value
             Key = objectKey,
-            InputStream = imageFile.OpenReadStream(),
+            InputStream = outputStream,
+            ContentType = format is PngEncoder ? "image/png" : "image/jpeg",
             StorageClass = S3StorageClass.Standard
         };
 

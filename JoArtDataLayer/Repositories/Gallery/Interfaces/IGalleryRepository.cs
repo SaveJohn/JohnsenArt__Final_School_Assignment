@@ -1,4 +1,5 @@
 ﻿using JoArtClassLib;
+using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
 using JoArtClassLib.Enums;
 
@@ -10,6 +11,8 @@ public interface IGalleryRepository
     public Task<Artwork?> GetArtworkByIdAsync(int artId);
     
     public Task<Neighbors> GetGalleryNeighborsAsync(int artId, GallerySort sort, GalleryFilter filter);
+    
+    public Task<IEnumerable<Image?>> GetRotationImagesAsync();
 
     public Task<IEnumerable<string?>> GetRotationObjectKeys();
 }

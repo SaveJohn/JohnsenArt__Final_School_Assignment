@@ -72,10 +72,19 @@ else
                         {
                             <!-- Image -->
                             <div class="carousel-item  @(artwork.Images.IndexOf(img) == 0 ? "active" : "")">
-                                <img src="@img.PreviewUrl"
-                                     class="carousel-image"
-                                     alt="@artwork.Title"
-                                     @onclick="() => ShowDetailedImage(img.FullViewUrl)"/>
+                                <img
+                                    src="@img.ThumbnailUrl"
+                                    srcset="
+                                        @img.ThumbnailUrl 300w,
+                                        @img.PreviewUrl 800w"
+                                    sizes="(max-width: 992px) 80vw,  
+                                            60vw"                    
+                                    class="carousel-image img-fluid rounded"
+                                    loading="lazy"
+                                    alt="@artwork.Title"
+                                    @onclick="() => ShowDetailedImage(
+                                    img.ThumbnailKey, img.PreviewUrl, img.FullViewUrl)" />
+                                
                             </div>
                         }
                     </div>
@@ -129,7 +138,7 @@ else
                                 @if (artwork.ForSale)
                                 {
                                     
-                                    <!-- Buy button -->
+                                    <!-- Buy button --> 
                                     <a class="buy-button" href=@($"/checkout/{artworkId}")>
                                         Kjøp <i class="fa-solid fa-bag-shopping"></i>
                                     </a>
@@ -212,9 +221,11 @@ else
                 <div class="modal-body d-flex justify-content-center align-items-center p-0 z-1">
                     <img id="modalImage"
                          src=""
+                         srcset=""
+                         sizes=""
+                         alt=""
                          class="img-fluid rounded shadow"
-                         style="max-height: 95vh; pointer-events: none; image-rendering: smooth;" />
-
+                         style="max-height: 95vh; max-width: 95vw; pointer-events: none; image-rendering: smooth;" />
                 </div>
             </div>
         </div>
@@ -402,9 +413,9 @@ else
         navigationManager.NavigateTo($"/GalleryDetail/{nextArtwork}");
     }
 
-    private async Task ShowDetailedImage(string imageUrl)
+    private async Task ShowDetailedImage(string thumb, string preview, string full)
     {
-        await JS.InvokeVoidAsync("showImageModal", imageUrl);
+        await JS.InvokeVoidAsync("showImageModal", thumb, preview, full);
     }
 
     // Delete button trigger scenario

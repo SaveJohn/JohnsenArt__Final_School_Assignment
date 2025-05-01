@@ -66,7 +66,7 @@ public class AdminGalleryService : IAdminGalleryService
             if (image.ImageFile != null)
             {
                 
-                var fullKey = await _aws.UploadImageToS3(image.ImageFile);
+                var fullKey = await _aws.UploadFullViewToS3(image.ImageFile);
                 var previewKey = await _aws.UploadPreviewImageToS3(image.ImageFile);
                 var thumbKey = await _aws.UploadThumbnailToS3(image.ImageFile);
 
@@ -164,7 +164,7 @@ public class AdminGalleryService : IAdminGalleryService
                 {
                     Id = image.Id,
                     ArtworkId = existingArtwork.Id,
-                    FullViewKey = await _aws.UploadImageToS3(image.ImageFile), // Upload image
+                    FullViewKey = await _aws.UploadFullViewToS3(image.ImageFile), // Upload image
                     PreviewKey = await _aws.UploadPreviewImageToS3(image.ImageFile), //Upload preview
                     ThumbnailKey = await _aws.UploadThumbnailToS3(image.ImageFile), //Upload thumbnail
                 };

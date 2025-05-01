@@ -86,7 +86,18 @@ else
                         var imageSrc = string.IsNullOrWhiteSpace(img?.ThumbnailUrl) ? img?.FullViewUrl : img?.ThumbnailUrl;
                         <div class="artwork-entry text-center">
                             <a href="/GalleryDetail/@artwork.Id">
-                                <img src="@imageSrc" class="img-fluid rounded"/>
+                                <img 
+                                    src="@img.ThumbnailUrl"
+                                    srcset="
+                                        @img.ThumbnailUrl   300w,
+                                        @img.PreviewUrl     800w,
+                                        @img.FullViewUrl   1600w"
+                                    sizes="(max-width: 576px) 100vw,
+                                         (max-width: 992px) 50vw,
+                                         25vw"  
+                                    loading="lazy"
+                                    class="img-fluid rounded"
+                                    alt="@artwork.Title" />
                             </a>
                             <div class="artwork-meta">
                                 <p class="art-title">@artwork.Title</p>
@@ -112,15 +123,16 @@ else
 </div>
 
 @code {
+
     // List of artworks
     [Inject] ILocalStorageHelper LocalStorage { get; set; }
     private List<ArtworkResponse>? artworks = [];
-    
-    
+
+
     // Sort ---
     // Bound value
     private GallerySort _sortOption = GallerySort.Newest;
-    
+
     // Property with action if value changed
     private GallerySort SortOption
     {
@@ -131,12 +143,13 @@ else
             _sortOption = value;
             _ = SortOptionChanged();
         }
-        
+
     }
+
     // Filter ---
     // Bound value
     private GalleryFilter _filterOption = GalleryFilter.All;
-    
+
     // Property with action if value changed
     private GalleryFilter FilterOption
     {
@@ -148,11 +161,11 @@ else
             _ = FilterOptionChanged();
         }
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
         await EnsureLocalStorageInitialized();
-        
+
         var rawSort = await LocalStorage.GetItem("sortOption");
         if (!string.IsNullOrWhiteSpace(rawSort))
             _sortOption = Enum.Parse<GallerySort>(rawSort, ignoreCase: true);
@@ -160,16 +173,16 @@ else
         var rawFilter = await LocalStorage.GetItem("filterOption");
         if (!string.IsNullOrWhiteSpace(rawFilter))
             _filterOption = Enum.Parse<GalleryFilter>(rawFilter, ignoreCase: true);
-        
+
         await LoadArtworkAsync();
     }
-    
+
     private async Task EnsureLocalStorageInitialized()
     {
         // Making a dummy call to make sure module is imported
         await LocalStorage.GetItem("dummy_key");
     }
-    
+
     // Paging ---
     private int currentPage = 1;
     private int perPage = 12;
@@ -178,12 +191,12 @@ else
     private ElementReference infiniteScrollTrigger;
     private DotNetObjectReference<Gallery> dotNetRef;
     private IJSObjectReference? _jsModule;
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            
+
             dotNetRef = DotNetObjectReference.Create(this);
             _jsModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/infiniteScroll.js");
 
@@ -197,7 +210,7 @@ else
             {
                 Console.WriteLine("Trigger element is not yet available.");
             }
-            
+
         }
     }
 
@@ -210,10 +223,10 @@ else
         currentPage++;
         await LoadArtworkAsync(append: true);
         isLoadingMore = false;
-        
+
         StateHasChanged();
     }
-    
+
     // Load Artworks ---
     private async Task LoadArtworkAsync(bool append = false)
     {
@@ -223,11 +236,11 @@ else
             hasMore = true;
             artworks.Clear();
         }
-        
+
         // Getting sort and filter raw-string from Local Storage - casting to Enum and including fallbacks 
         var sortEnum = Enum.Parse<GallerySort>(await LocalStorage.GetItem("sortOption") ?? "Newest", true);
         var filterEnum = Enum.Parse<GalleryFilter>(await LocalStorage.GetItem("filterOption") ?? "All", true);
-        
+
         // Building query string parameters
         var queryParams = new List<string>
         {
@@ -236,12 +249,12 @@ else
             $"sort={sortEnum}",
             $"filter={filterEnum}"
         };
-        
+
         // Creating endpoint URL with the query string
         var url = $"api/PublicGallery/artworks?{string.Join("&", queryParams)}";
-        
-        
-        
+
+
+
         try
         {
             var newItems = await Http.GetFromJsonAsync<List<ArtworkResponse>>(url);
@@ -251,7 +264,7 @@ else
                 hasMore = false;
                 return;
             }
-            
+
             if (append)
             {
                 artworks.AddRange(newItems);
@@ -279,6 +292,7 @@ else
             Console.WriteLine($"Feil ved henting av kunstverk: {ex.Message}");
             hasMore = false;
         }
+
         StateHasChanged();
     }
 
@@ -293,7 +307,7 @@ else
         await LocalStorage.SetItem("filterOption", _filterOption.ToString());
         await LoadArtworkAsync();
     }
-    
+
     // Toast scenario for deleted artwork
     private string? DeletedTitle;
 
@@ -316,5 +330,5 @@ else
     {
         DeletedTitle = null;
     }
-    
+
 }

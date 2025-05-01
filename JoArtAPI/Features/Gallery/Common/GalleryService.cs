@@ -101,6 +101,23 @@ public class GalleryService : IGalleryService
        
     }
 
+    public async Task<IEnumerable<ImageResponse?>> GetRotationImagesAsync()
+    {
+        List<Image> images = (List<Image>)await _repository.GetRotationImagesAsync();
+        
+        List<ImageResponse>? imagesResponse = _mapper.Map<List<ImageResponse>>(images);
+        if (imagesResponse.IsNullOrEmpty()) return imagesResponse;
+        
+        foreach (var img in imagesResponse)
+        {
+            img.FullViewUrl = _aws.GeneratePresignedUrl(img.FullViewKey);
+            img.PreviewUrl = _aws.GeneratePresignedUrl(img.PreviewKey);
+            img.ThumbnailUrl = _aws.GeneratePresignedUrl(img.ThumbnailKey);
+        }
+        return imagesResponse;
+    }
+
+
     public async Task<IEnumerable<string?>> GetRotationUrls()
     {
         List<string> keys = (List<string>)await _repository.GetRotationObjectKeys();

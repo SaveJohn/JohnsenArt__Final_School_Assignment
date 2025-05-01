@@ -174,15 +174,15 @@ public class UploadArtworkUnitTests
         
         _awsServiceMock.Verify(a => a.UploadThumbnailToS3(imageRequest1.ImageFile), Times.Once);
         _awsServiceMock.Verify(a => a.UploadPreviewImageToS3(imageRequest1.ImageFile), Times.Once);
-        _awsServiceMock.Verify(a => a.UploadImageToS3(imageRequest1.ImageFile), Times.Once);
+        _awsServiceMock.Verify(a => a.UploadFullViewToS3(imageRequest1.ImageFile), Times.Once);
         
         _awsServiceMock.Verify(a => a.UploadThumbnailToS3(imageRequest2.ImageFile), Times.Once);
         _awsServiceMock.Verify(a => a.UploadPreviewImageToS3(imageRequest2.ImageFile), Times.Once);
-        _awsServiceMock.Verify(a => a.UploadImageToS3(imageRequest2.ImageFile), Times.Once);
+        _awsServiceMock.Verify(a => a.UploadFullViewToS3(imageRequest2.ImageFile), Times.Once);
         
         _awsServiceMock.Verify(a => a.UploadThumbnailToS3(imageRequest3.ImageFile), Times.Once);
         _awsServiceMock.Verify(a => a.UploadPreviewImageToS3(imageRequest3.ImageFile), Times.Once);
-        _awsServiceMock.Verify(a => a.UploadImageToS3(imageRequest3.ImageFile), Times.Once);
+        _awsServiceMock.Verify(a => a.UploadFullViewToS3(imageRequest3.ImageFile), Times.Once);
     }
     
     // Image Entity Population
@@ -219,11 +219,11 @@ public class UploadArtworkUnitTests
 
         _awsServiceMock.Setup(a => a.UploadThumbnailToS3(imageRequest1.ImageFile)).ReturnsAsync("thumbnail-object-key-1");
         _awsServiceMock.Setup(a => a.UploadPreviewImageToS3(imageRequest1.ImageFile)).ReturnsAsync("preview-object-key-1");
-        _awsServiceMock.Setup(a => a.UploadImageToS3(imageRequest1.ImageFile)).ReturnsAsync("full-view-object-key-1");
+        _awsServiceMock.Setup(a => a.UploadFullViewToS3(imageRequest1.ImageFile)).ReturnsAsync("full-view-object-key-1");
         
         _awsServiceMock.Setup(a => a.UploadThumbnailToS3(imageRequest2.ImageFile)).ReturnsAsync("thumbnail-object-key-2");
         _awsServiceMock.Setup(a => a.UploadPreviewImageToS3(imageRequest2.ImageFile)).ReturnsAsync("preview-object-key-2");
-        _awsServiceMock.Setup(a => a.UploadImageToS3(imageRequest2.ImageFile)).ReturnsAsync("full-view-object-key-2");
+        _awsServiceMock.Setup(a => a.UploadFullViewToS3(imageRequest2.ImageFile)).ReturnsAsync("full-view-object-key-2");
         
         Artwork artwork = null;
         _adminGalleryRepositoryMock
@@ -415,7 +415,7 @@ public class UploadArtworkUnitTests
             };
         _awsServiceMock.Setup(a => a.UploadThumbnailToS3(imageRequest.ImageFile)).ReturnsAsync("thumbnail-object-key");
         _awsServiceMock.Setup(a => a.UploadPreviewImageToS3(imageRequest.ImageFile)).ReturnsAsync("preview-object-key");
-        _awsServiceMock.Setup(a => a.UploadImageToS3(imageRequest.ImageFile)).ReturnsAsync("full-view-object-key");
+        _awsServiceMock.Setup(a => a.UploadFullViewToS3(imageRequest.ImageFile)).ReturnsAsync("full-view-object-key");
         
         Artwork artwork = null;
         _adminGalleryRepositoryMock.Setup(repo => repo.UploadArtworkAsync(It.IsAny<Artwork>()))
@@ -555,7 +555,7 @@ public class UploadArtworkUnitTests
             };
         
         _awsServiceMock
-            .Setup(a => a.UploadImageToS3(It.IsAny<IFormFile>()))
+            .Setup(a => a.UploadFullViewToS3(It.IsAny<IFormFile>()))
             .ThrowsAsync(new IOException("S3 is down"));
         
         // -- ACT ----------
@@ -564,7 +564,7 @@ public class UploadArtworkUnitTests
         );
         
         // -- ASSERT ----------
-        _awsServiceMock.Verify(a => a.UploadImageToS3(It.IsAny<IFormFile>()), Times.Once);
+        _awsServiceMock.Verify(a => a.UploadFullViewToS3(It.IsAny<IFormFile>()), Times.Once);
         Assert.Contains("S3 is down", ex.Message);
     }
     

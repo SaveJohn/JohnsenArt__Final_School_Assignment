@@ -1,4 +1,5 @@
 ﻿using JoArtClassLib;
+using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
 using JoArtClassLib.Enums;
 using JoArtDataLayer.Repositories.Interfaces;
@@ -184,6 +185,19 @@ public class GalleryRepository : IGalleryRepository
             throw;
         }
        
+    }
+
+    public async Task<IEnumerable<Image?>> GetRotationImagesAsync()
+    {
+        var keys = await _context.Artworks
+            .Where(a => a.HomePageRotation)
+            .Select(a => a.Images
+                .OrderBy(img => img.Id)
+                .FirstOrDefault())
+            .Where(key => key != null)
+            .ToListAsync();
+        
+        return keys;
     }
 
     public async Task<IEnumerable<string?>> GetRotationObjectKeys()

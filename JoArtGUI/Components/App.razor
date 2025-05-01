@@ -42,6 +42,8 @@
 
 @* Site *@
 <script src="js/site.js"></script>
+<script src="js/responsiveImages.js"></script>
+<script src="js/imageModal.js"></script>
 
 <script src="_framework/blazor.web.js"></script>
 
@@ -58,13 +60,6 @@
     };
 </script>
 
-<script>
-    function showImageModal(url) {
-        const img = document.getElementById('modalImage');
-        img.src = url;
-        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
-        modal.show();
-    }
-</script>
+
 </body>
 </html>

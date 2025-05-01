@@ -195,7 +195,7 @@ public class UpdateArtworkUnitTests
         
         _awsServiceMock.Setup(a => a.UploadThumbnailToS3(imageRequest.ImageFile)).ReturnsAsync("thumbnail-object-key");
         _awsServiceMock.Setup(a => a.UploadPreviewImageToS3(imageRequest.ImageFile)).ReturnsAsync("preview-object-key");
-        _awsServiceMock.Setup(a => a.UploadImageToS3(imageRequest.ImageFile)).ReturnsAsync("full-view-object-key");
+        _awsServiceMock.Setup(a => a.UploadFullViewToS3(imageRequest.ImageFile)).ReturnsAsync("full-view-object-key");
         
         _galleryRepositoryMock
             .Setup(r => r.GetArtworkByIdAsync(artworkId))
@@ -334,7 +334,7 @@ public class UpdateArtworkUnitTests
         
         _awsServiceMock.Setup(a => a.UploadThumbnailToS3(imageRequest.ImageFile)).ReturnsAsync("thumbnail-object-key");
         _awsServiceMock.Setup(a => a.UploadPreviewImageToS3(imageRequest.ImageFile)).ReturnsAsync("preview-object-key");
-        _awsServiceMock.Setup(a => a.UploadImageToS3(imageRequest.ImageFile)).ReturnsAsync("full-view-object-key");
+        _awsServiceMock.Setup(a => a.UploadFullViewToS3(imageRequest.ImageFile)).ReturnsAsync("full-view-object-key");
         
         _galleryRepositoryMock
             .Setup(r => r.GetArtworkByIdAsync(artworkId))
@@ -420,7 +420,7 @@ public class UpdateArtworkUnitTests
         };
         
         _awsServiceMock
-            .Setup(a => a.UploadImageToS3(It.IsAny<IFormFile>()))
+            .Setup(a => a.UploadFullViewToS3(It.IsAny<IFormFile>()))
             .ReturnsAsync("newFullViewKey");
         _awsServiceMock
             .Setup(a => a.UploadPreviewImageToS3(It.IsAny<IFormFile>()))
@@ -582,7 +582,7 @@ public class UpdateArtworkUnitTests
             .ReturnsAsync(existingArtwork);
         
         _awsServiceMock
-            .Setup(a => a.UploadImageToS3(It.IsAny<IFormFile>()))
+            .Setup(a => a.UploadFullViewToS3(It.IsAny<IFormFile>()))
             .ThrowsAsync(new IOException("S3 is down"));
         
         // -- ACT ----------
@@ -591,7 +591,7 @@ public class UpdateArtworkUnitTests
         );
         
         // -- ASSERT ----------
-        _awsServiceMock.Verify(a => a.UploadImageToS3(It.IsAny<IFormFile>()), Times.Once);
+        _awsServiceMock.Verify(a => a.UploadFullViewToS3(It.IsAny<IFormFile>()), Times.Once);
         Assert.Contains("S3 is down", ex.Message);
     }
     
