@@ -13,5 +13,5 @@ public interface IGalleryService
     
     public Task<IEnumerable<ImageResponse?>> GetRotationImagesAsync();
     
-    public Task<IEnumerable<string?>> GetRotationUrls();
+    
 }

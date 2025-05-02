@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using IntegrationTests.Features.StripeTests.IntegrationTests.Helpers;
 using JoArtClassLib.Art;
 using JoArtClassLib.Configuration.Secrets;
 using JohnsenArtAPI.Features.Contact.Interfaces;
@@ -20,7 +19,6 @@ namespace IntegrationTests.Features.StripeTests.IntegrationTests;
 //Integration test checking that the stripewebhook controller proccesses a webhook payload successfully with the help of 
 // a fake parser, and to verify that the artwork is marked as sold.
 
-// OBS for this to work you have to uncomment a fakestripe
 public class StripeWebhookIntegration
 {
     [Fact]
@@ -56,7 +54,6 @@ public class StripeWebhookIntegration
         
 
         var json = await File.ReadAllTextAsync("Features/StripeTests/TestData/payment_intent_succeeded.json");
-        var header = StripeTestHelpers.BuildTestHeader(json, stripeConfig.WebhookSecret);
         
         StripeEventParser fakeParser = (_, _, _) => new Event
         {

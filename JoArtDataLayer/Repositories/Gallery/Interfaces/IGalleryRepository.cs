@@ -14,5 +14,5 @@ public interface IGalleryRepository
     
     public Task<IEnumerable<Image?>> GetRotationImagesAsync();
 
-    public Task<IEnumerable<string?>> GetRotationObjectKeys();
+    
 }

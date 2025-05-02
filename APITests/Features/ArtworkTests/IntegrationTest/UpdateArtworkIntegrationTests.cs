@@ -1,17 +1,15 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using IntegrationTests.Features.ArtworkTests.Interfaces;
 using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
-using JohnsenArtAPI.Features.Authentication.Models;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace IntegrationTests.Features.ArtworkTests;
+namespace IntegrationTests.Features.ArtworkTests.IntegrationTest;
 
 public class UpdateArtworkIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 {

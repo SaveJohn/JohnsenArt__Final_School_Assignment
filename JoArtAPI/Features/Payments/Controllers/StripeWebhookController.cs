@@ -90,7 +90,7 @@ public class StripeWebhookController : ControllerBase
                                 HtmlBody = $@"
                                 <p>Hei {buyerName},</p>
                                 <p>Takk for at du kjøpte <strong>{artwork.Title}</strong>.</p>
-                                <p>Du vil bli kontaktet angående levering.</p>
+                                <p>Du vil bli kontaktet angående levering/henting.</p>
                                 <hr/>
                                 <p>Vennlig hilsen,<br/>JohnsenArt</p>",
                                 ReplyTo = adminEmail

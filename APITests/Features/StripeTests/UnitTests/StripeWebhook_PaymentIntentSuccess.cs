@@ -1,26 +1,25 @@
-﻿using Xunit;
-using Moq;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using JohnsenArtAPI.Features.Payments.Controllers;
-using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
-using JohnsenArtAPI.Features.Contact.Interfaces;
-using JohnsenArtAPI.Features.Payments.Interfaces;
+﻿using System.Text;
 using JoArtClassLib.Art;
 using JoArtClassLib.Configuration.Secrets;
-using JoArtClassLib.Payment;
+using JohnsenArtAPI.Features.Contact.Interfaces;
 using JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
+using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
+using JohnsenArtAPI.Features.Payments.Controllers;
+using JohnsenArtAPI.Features.Payments.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using Stripe;
+using Xunit;
 
 
 // test that simulates stripe sending a successful payment intentwebhook
 // we expect the artwork to be marked as sold, and a 200 ok to be returned
 
+
+namespace IntegrationTests.Features.StripeTests.UnitTests;
 
 public class StripeWebhook_PaymentIntentSuccess
 {

@@ -108,20 +108,5 @@ public class PublicGalleryController : ControllerBase
             return StatusCode(500, "An error occurred while retrieving the rotation urls.");
         }
     }
-
-    [HttpGet("homePageRotationURL")]
-    public async Task<IActionResult> GetHomePageRotationURL()
-    {
-        _logger.LogInformation("Endpoint : GetHomePageRotation called");
-        try
-        {
-            var urls = await _galleryService.GetRotationUrls();
-            return Ok(urls);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving rotation urls.");
-            return StatusCode(500, "An error occurred while retrieving the rotation urls.");
-        }
-    }
+    
 }

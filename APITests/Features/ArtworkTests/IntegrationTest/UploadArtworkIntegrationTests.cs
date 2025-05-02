@@ -1,18 +1,14 @@
-﻿using System.Text;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text.Json;
+using System.Text;
 using IntegrationTests.Features.ArtworkTests.Interfaces;
 using JoArtClassLib.Art;
-using JohnsenArtAPI.Features.Authentication.Models;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace IntegrationTests.Features.ArtworkTests;
+namespace IntegrationTests.Features.ArtworkTests.IntegrationTest;
 
 public class UploadArtworkIntegrationTests : IClassFixture<CustomWebApplicationFactory>
 {
