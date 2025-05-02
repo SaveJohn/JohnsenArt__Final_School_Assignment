@@ -56,9 +56,9 @@ else
 
         <!-- Artwork Content -->
         <div class="container-fluid px-5 d-flex justify-content-center">
-            
+
             <div class="col-xl-10 d-flex flex-row flex-wrap justify-content-center">
-                
+
                 <div id="artworkCarousel"
                      class="carousel slide"
                      style="min-width: 60%; max-width:  80vw;"
@@ -187,7 +187,7 @@ else
             </div>
         </div>
     </div>
-    
+
     <!-- Display errors-->
     @if (errors.Count > 0)
     {
@@ -345,15 +345,15 @@ else
             try
             {
                 _logger.LogInformation("Attempting to retrieve neighbors.");
-                
+
                 // getting sort and filter raw-string from local storage
                 var sortRaw = await LocalStorage.GetItem("sortOption");
                 var filterRaw = await LocalStorage.GetItem("filterOption");
-                
+
                 // Enmum fallbacks
                 GallerySort sortEnum = GallerySort.Newest;
                 GalleryFilter filterEnum = GalleryFilter.All;
-                
+
                 // parsing raw-strings to Enum
                 if (!string.IsNullOrEmpty(sortRaw) && Enum.TryParse<GallerySort>(sortRaw, ignoreCase: true, out var sort))
                 {
@@ -364,30 +364,27 @@ else
                 {
                     filterEnum = filter;
                 }
-                
+
                 // Building query string parameters
                 var queryParams = new List<string>
                 {
                     $"sort={sortEnum}",
                     $"filter={filterEnum}"
                 };
-                
+
                 // Creating endpoint URL with the query string
                 var url = $"/api/PublicGallery/artworks/{artworkId}/neighbors?{string.Join("&", queryParams)}";
-                
+
                 var neighbors = await Http.GetFromJsonAsync<Neighbors>(url);
-                
+
                 prevArtwork = neighbors.PreviousId;
                 nextArtwork = neighbors.NextId;
-                
             }
             catch (Exception e)
             {
                 _logger.LogError(e, "Failed fetching previous/next artwork Ids.");
             }
-            
         }
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -400,7 +397,6 @@ else
 
             await JS.InvokeVoidAsync("resetCarouselToFirst", "#artworkCarousel");
         }
-
     }
 
 

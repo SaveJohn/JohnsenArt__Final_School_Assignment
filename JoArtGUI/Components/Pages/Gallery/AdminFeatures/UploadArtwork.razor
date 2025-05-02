@@ -120,7 +120,7 @@ else
                                 @for (int i = 0; i < _artworkImages.Count; i++)
                                 {
                                     var localIndex = i;
-                                    <div class="position-relative shadow-sm border rounded" style="width: 100px; height: 100px;">
+                                <div class="position-relative shadow-sm border rounded" style="width: 100px; height: 100px; ">
                                         <img src="@_artworkImages[localIndex]"
                                              class="img-thumbnail w-100 h-100"
                                              style="object-fit: cover;"/>
@@ -195,6 +195,7 @@ else
         }
     </ul>
 }
+
 @code {
 
     // Request DTO's
@@ -217,11 +218,11 @@ else
     
     // Loading
     private bool _isUploading = false;
-    
+
     // Error collections
     private List<ErrorResponse> errors = new();
     private string? ErrorMessage;
-    
+
     // Load Artwork Image 
     private async Task LoadArtworkImage(InputFileChangeEventArgs e)
     {
@@ -238,15 +239,15 @@ else
             _artworkFiles.Add((bytes, file.ContentType, file.Name));
         }
     }
-    
-    
+
+
     // Trigger file dialog programmatically via JS using Blazor InputFile referenses
     private async Task TriggerArtworkFileDialog() // Artwork
     {
         await JS.InvokeVoidAsync("triggerClick", "artworkFileInput");
     }
-    
-    
+
+
     // Remove Artwork from input
     private void RemoveArtworkImage(int index)
     {
@@ -256,15 +257,15 @@ else
             _artworkFiles.RemoveAt(index);
         }
     }
-    
-    
+
+
     // Submit Complete Artwork
     private async Task SubmitArtworkAsync()
     {
         _isUploading = true;
         ErrorMessage = null;
         StateHasChanged();
-        
+
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var token = authState.User.FindFirst("JWT")?.Value;
 
@@ -278,7 +279,7 @@ else
         // Attach the token as a Bearer header for API calls.
         Http.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        
+
         // Trying to upload artwork to database and imnages to s3 via API
         try
         {
@@ -291,7 +292,7 @@ else
                 StateHasChanged();
                 return;
             }
-            
+
             // Creating our Request model to send to API endpoint
             var content = new MultipartFormDataContent();
 
@@ -310,7 +311,7 @@ else
 
             if (_artworkRequest.HeightDimension.HasValue)
                 content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "HeightDimension");
-            
+
             // Adding virtual properties to request model (Images)
             int index = 0;
             // Artwork images
@@ -323,7 +324,7 @@ else
                 content.Add(new StringContent("0"), $"Images[{index}].Id");
                 index++;
             }
-           
+
             // Sending the request to API upload artwork endpoint
             var response = await Http.PostAsync("admin/api/Gallery/upload-artwork", content);
 
@@ -363,18 +364,18 @@ else
         finally
         {
             _isUploading = false;
-            StateHasChanged(); 
+            StateHasChanged();
         }
     }
-    
+
     // When artwork is uploaded ------
-    
+
     // View uploaded artwork
     private void ViewArtwork()
     {
         Navigation.NavigateTo($"/GalleryDetail/{_newArtworkId}");
     }
-    
+
     // Upload another artwork
     private void UploadAnother()
     {

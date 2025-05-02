@@ -48,7 +48,8 @@
 
                     <div class="d-flex flex-column">
                         <label class="fw-bolder" for="filterOption">Filtrer:</label>
-                        <select id="filterOption" class="form-select form-select-sm" style="background: rgb(234, 234, 234)" @bind="FilterOption">
+                        <select id="filterOption" class="form-select form-select-sm" style="background: rgb(234, 234, 234)" 
+                                @bind="FilterOption">
                             <option value="@GalleryFilter.All">Alle</option>
                             <option value="@GalleryFilter.ForSale">Til Salgs</option>
                             <option value="@GalleryFilter.NotForSale">Ikke til Salgs</option>
@@ -253,7 +254,7 @@ else
 
         // Creating endpoint URL with the query string
         var url = $"api/PublicGallery/artworks?{string.Join("&", queryParams)}";
-
+        
         try
         {
             var newItems = await Http.GetFromJsonAsync<List<ArtworkResponse>>(url);
