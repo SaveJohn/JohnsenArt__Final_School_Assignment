@@ -10,7 +10,7 @@
 @inject IJSRuntime JS
 @inject HttpClient Http
 @inject NavigationManager Navigation
-
+@inject Logger<Checkout> _logger
 
 
 @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -342,12 +342,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine($"Hentet produktId: {productId}");
+        
+        _logger.LogInformation("Fetched produktId: {ProductId}", productId);
+
         try
         {
             var response = await Http.GetAsync($"api/PublicGallery/artworks/{productId}");
             var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Raw data from API:\n{content}");
+            
+            _logger.LogDebug("Raw data from API: {Content}", content);
+
 
             if (!response.IsSuccessStatusCode)
             {
@@ -359,7 +363,10 @@ else
                 PropertyNameCaseInsensitive = true
             });
 
-            Console.WriteLine($"Product fetched: {product?.Title}");
+           
+            _logger.LogInformation("Product fetched: {Title}", product?.Title);
+
+
 
             image = product?.Images?.FirstOrDefault();
 
@@ -375,7 +382,9 @@ else
         catch (Exception e)
         {
             ErrorMessage = "Noe gikk galt ved henting av produktet.";
-            Console.WriteLine("Error fetching artwork data: " + e.Message);
+            
+            _logger.LogError(e, "Error fetching artwork data.");
+
 
         }
     }
@@ -514,13 +523,17 @@ else
             var response = await Http.PostAsync($"api/stripe/create-intent/{productId}", content);
             var intent = await response.Content.ReadFromJsonAsync<PaymentIntentResponse>();
             stripeClientSecret = intent?.ClientSecret ?? "";
-            Console.WriteLine($"ClientSecret: {stripeClientSecret}");
+           
+            _logger.LogDebug("Stripe client secret received: {ClientSecret}", stripeClientSecret);
+
 
             // Get publishable key
             var keyResponse = await Http.GetFromJsonAsync<PublishableKeyResponse>("api/stripe/publishable-key");
 
             var publishableKey = keyResponse?.PublishableKey;
-            Console.WriteLine($"PublishableKey: {publishableKey}");
+           
+            _logger.LogDebug("Stripe publishable key received: {Key}", publishableKey);
+
 
             // Calling js method 
             if (!string.IsNullOrWhiteSpace(stripeClientSecret) && !string.IsNullOrWhiteSpace(publishableKey))
@@ -528,9 +541,13 @@ else
                 // Ensure DOM is fully updated
                 await InvokeAsync(StateHasChanged);
 
-                Console.WriteLine("Loading Stripe module...");
+                
+                _logger.LogInformation("Loading Stripe module...");
+
                 stripeModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/stripeInterop.js");
-                Console.WriteLine("Stripe module loaded.");
+                
+                _logger.LogInformation("Stripe module successfully loaded.");
+
                 try
                 {
                     await stripeModule.InvokeVoidAsync("setProductId", productId); // product Id is so Klarna can redirect back
@@ -538,9 +555,13 @@ else
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Something went wrong when initializing Stripe: {ex.Message}");
+                    
+                    _logger.LogError(ex, "Error initializing Stripe.");
+
                 }
-                Console.WriteLine("initializeStripe js function called.");
+                
+                _logger.LogDebug("Stripe js function 'initializeStripe' called.");
+
 
                 isStripeReady = true;
                 StateHasChanged();
@@ -548,13 +569,17 @@ else
             else
             {
                 statusMessage = "Klarte ikke hente Stripe-nøkler";
-                Console.WriteLine($"Klarte ikke hente stripe nøkler - client secret: {stripeClientSecret} publishable key: {publishableKey}");
+                
+                _logger.LogWarning("Failed to fetch Stripe keys. ClientSecret: {ClientSecret}, PublishableKey: {PublishableKey}", stripeClientSecret, publishableKey);
+
             }
 
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Stripe error: {ex.Message}");
+            
+            _logger.LogError(ex, "Stripe setup failed.");
+
             statusMessage = "Noe gikk galt ved oppsett av Stripe.";
         }
 
@@ -583,7 +608,9 @@ else
         if (stripeModule is null)
         {
             statusMessage = "Stripe ble ikke initialisert. Prøv å laste siden på nytt.";
-            Console.WriteLine("Stripe Module er null");
+            
+            _logger.LogWarning("Stripe module is null.");
+
             return;
         }
 
@@ -599,7 +626,9 @@ else
                     buyer.FullName,
                     buyer.Email
                     );
-                Console.WriteLine("Card payment complete");
+                
+                _logger.LogInformation("Card payment completed.");
+
 
                 if (result?.error != null)
                 {
@@ -637,7 +666,9 @@ else
         catch (Exception ex)
         {
             statusMessage = "En feil oppstod under betaling.";
-            Console.WriteLine($"Stripe betaling feilet: {ex.Message}");
+            
+            _logger.LogError(ex, "Stripe payment failed.");
+
         }
     }
 
@@ -655,7 +686,9 @@ else
 
                 var status = await stripeModule.InvokeAsync<string>("checkPaymentStatus");
 
-                Console.WriteLine($"Betalingsstatus: {status}");
+                
+                _logger.LogInformation("Stripe payment status: {Status}", status);
+
 
                 if (!string.IsNullOrWhiteSpace(status))
                 {
@@ -681,7 +714,8 @@ else
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Feil ved henting av betalingsstatus: {ex.Message}");
+                _logger.LogError(ex, "Error checking Stripe payment status.");
+
             }
         }
     }

@@ -32,7 +32,8 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> LoginAsync(LoginRequest loginRequest)
     {
-        Console.WriteLine($"login hit with the id {loginRequest.Email}");
+        _logger.LogInformation("Login request received for email: {Email}", loginRequest.Email);
+        
         var admin = await _repository.GetAdmin(loginRequest.Email);
 
         if (admin == null)
@@ -82,7 +83,7 @@ public class AuthService : IAuthService
             issuer: _jwtConfig.Issuer,
             audience: _jwtConfig.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(2),
+            expires: DateTime.UtcNow.AddHours(3),
             signingCredentials: creds
         );
         return new JwtSecurityTokenHandler().WriteToken(token);

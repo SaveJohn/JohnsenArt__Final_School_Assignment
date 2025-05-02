@@ -7,7 +7,8 @@ using JohnsenArtGUI.Helpers.Interfaces;
 using Serilog;
 
 
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1WmFZfVtgcl9DYFZTQmYuP1ZhSXxWdkZhXn9YdXRXQGdcWEV9XUs=");
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(
+    "Ngo9BigBOggjHTQxAR8/V1NNaF5cXmBCekx1WmFZfVtgcl9DYFZTQmYuP1ZhSXxWdkZhXn9YdXRXQGdcWEV9XUs=");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/login"; 
+        options.LoginPath = "/login";
         options.Cookie.HttpOnly = false; // OBS switch to true in production 
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = CookieSecurePolicy.None; // OBS Switch to always in production
@@ -69,7 +70,7 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) =>
 
 var app = builder.Build();
 
-app.UseCustomExceptionHandler();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthentication();
@@ -77,10 +78,12 @@ app.UseAuthorization();
 app.UseAntiforgery();
 app.MapAuthEndpoints();
 
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+app.UseCustomExceptionHandler(logger);
+
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 
 await app.RunAsync();
-

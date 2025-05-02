@@ -8,6 +8,7 @@
 @inject IJSRuntime JS
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+@inject Logger<UpdateArtwork> _logger
 
 <PageTitle>Oppdater kunstverk</PageTitle>
 
@@ -47,7 +48,8 @@
                             </div>
                             <!-- For sale? -->
                             <div class="mb-3 form-check">
-                                <InputCheckbox @bind-Value="_artworkRequest.ForSale" class="form-check-input" id="forSaleCheckbox"/>
+                                <InputCheckbox @bind-Value="_artworkRequest.ForSale" class="form-check-input"
+                                               id="forSaleCheckbox"/>
                                 <label class="form-check-label"
                                        for="forSaleCheckbox">Til salgs</label>
                             </div>
@@ -76,13 +78,12 @@
                             </div>
                             <!-- Home Page Rotation -->
                             <div class="mb-3 form-check">
-                                <InputCheckbox @bind-Value="_artworkRequest.HomePageRotation" class="form-check-input" id="rotationCheckbox"/>
+                                <InputCheckbox @bind-Value="_artworkRequest.HomePageRotation" class="form-check-input"
+                                               id="rotationCheckbox"/>
                                 <label class="form-check-label"
                                        for="rotationCheckbox">Legg til som forsidebilde</label>
                             </div>
-
                         </div>
-                        
                     </div>
                 </div>
                 <!-- Right side -->
@@ -101,7 +102,8 @@
                         @for (int i = 0; i < _artworkImages.Count; i++)
                         {
                             var localIndex = i;
-                            <div class="position-relative shadow-sm border rounded" style="width: 100px; height: 100px; ">
+                            <div class="position-relative shadow-sm border rounded"
+                                 style="width: 100px; height: 100px; ">
                                 <img src="@_artworkImages[localIndex]"
                                      class="img-thumbnail w-100 h-100"
                                      style="object-fit: cover;"/>
@@ -134,13 +136,15 @@
                     <button class="btn btn-primary w-100" type="submit">Oppdater</button>
                 </div>
                 <div class="mt-4">
-                    <NavLink class="btn btn-outline-warning w-100" href=@($"/GalleryDetail/{artworkId}")>Avbryt</NavLink>
+                    <NavLink class="btn btn-outline-warning w-100" href=@($"/GalleryDetail/{artworkId}")>Avbryt
+                    </NavLink>
                 </div>
             </div>
         </EditForm>
     </div>
     <!-- Loading feedback for submit -->
-    <div class="modal fade show" tabindex="-1" style="display:@(_isUploading ? "block" : "none"); background-color: rgba(0,0,0,0.5);" aria-hidden="true">
+    <div class="modal fade show" tabindex="-1"
+         style="display:@(_isUploading ? "block" : "none"); background-color: rgba(0,0,0,0.5);" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 bg-transparent text-center">
                 <div class="modal-body">
@@ -173,7 +177,7 @@
 
 @code {
     [Parameter] public int artworkId { get; set; }
-    
+
     // Request DTO's
     private UpdateArtworkRequest _artworkRequest = new();
     private ImageRequest? _imageRequest;
@@ -192,7 +196,7 @@
     // Conditional variables
     private long maxFileSize = 1024 * 1024 * 10; // Max 10MB
     private bool _uploadSuccess = false;
-    
+
     // Loading
     private bool _isUploading = false;
 
@@ -204,11 +208,12 @@
     {
         await LoadCurrentArtworkDataAsync();
     }
+
     protected override async Task OnInitializedAsync()
     {
         await LoadCurrentArtworkDataAsync();
     }
-    
+
     private async Task LoadCurrentArtworkDataAsync()
     {
         try
@@ -238,20 +243,20 @@
                     var base64 = Convert.ToBase64String(imageBytes);
                     var imageDataUrl = $"data:image/jpeg;base64,{base64}";
 
-                    
+
                     _artworkImages.Add(imageDataUrl);
                     _artworkFiles.Add((imageBytes, "image/jpeg", image.FullViewKey));
                     
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to load image: {image.FullViewKey}, {ex.Message}");
+                    _logger.LogWarning(ex, "Failed to load image: {FullViewKey}", image.FullViewKey);
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error fetching artwork data: " + ex.Message);
+            _logger.LogError(ex, "Error fetching artwork data");
         }
     }
 
@@ -287,13 +292,13 @@
             _artworkFiles.RemoveAt(index);
         }
     }
-    
+
 
     // Submit Complete Artwork
     private async Task SubmitArtworkAsync()
     {
-        Console.WriteLine("Submit Artwork hit.");
-        
+        _logger.LogInformation("SubmitArtworkAsync called.");
+
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var token = authState.User.FindFirst("JWT")?.Value;
 
@@ -307,19 +312,20 @@
         // Attach the token as a Bearer header for API calls.
         Http.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        
+
         // Trying to upload artwork to database and imnages to s3 via API
         try
         {
             _isUploading = true;
             ErrorMessage = null;
             StateHasChanged();
-            
+
             // Making sure that artwork image is added
             if (!_artworkFiles.Any() || _artworkFiles.Count == 0)
             {
                 ErrorMessage = "Minst ett bilde må lastes opp.";
-                Console.WriteLine("Mangler bilder.");
+
+                _logger.LogWarning("Attempted to submit artwork without image.");
                 StateHasChanged();
                 return;
             }
@@ -333,10 +339,10 @@
             content.Add(new StringContent(_artworkRequest.Artist), "Artist");
             content.Add(new StringContent(_artworkRequest.ForSale.ToString()), "ForSale");
             content.Add(new StringContent(_artworkRequest.HomePageRotation.ToString()), "HomePageRotation");
-            
+
             if (_artworkRequest.Price.HasValue)
                 content.Add(new StringContent(_artworkRequest.Price.Value.ToString()), "Price");
-            
+
             if (!string.IsNullOrWhiteSpace(_artworkRequest.Materials))
                 content.Add(new StringContent(_artworkRequest.Materials), "Materials");
 
@@ -360,40 +366,41 @@
 
                 index++;
             }
-            
+
 
             // Sending the request to API upload artwork endpoint
             var response = await Http.PutAsync($"admin/api/Gallery/update-artwork/{artworkId}", content);
-            Console.WriteLine("📡 Statuskode: " + response.StatusCode);
+
+            _logger.LogInformation("Received response with status code: {StatusCode}", response.StatusCode);
 
             // Result
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Opplasting fullført.");
+                _logger.LogInformation("Artwork upload completed successfully.");
                 Navigation.NavigateTo($"/GalleryDetail/{artworkId}", forceLoad: true);
                 _uploadSuccess = true;
             }
             else
             {
                 ErrorMessage = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Server-feil: " + ErrorMessage);
+
+                _logger.LogError("Upload failed. Server response: {Error}", ErrorMessage);
                 StateHasChanged();
             }
         }
         catch (Exception ex)
         {
             ErrorMessage = "En feil oppsto under opplasting.";
-            Console.WriteLine("Exception: " + ex.Message);
+            
+            _logger.LogError(ex, "exception during artwork submission.");
             StateHasChanged();
         }
         finally
         {
             _isUploading = false;
-            StateHasChanged(); 
+            StateHasChanged();
         }
-
     }
 
-   
 
 }

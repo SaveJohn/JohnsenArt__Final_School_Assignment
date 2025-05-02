@@ -7,6 +7,7 @@
 @inject IJSRuntime JS
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
+@inject Logger<UploadArtwork> _logger
 
 <PageTitle>Lastopp nytt kunstverk</PageTitle>
 
@@ -62,11 +63,10 @@ else
                                 </div>
                                 <!-- For sale? -->
                                 <div class="mb-3 form-check">
-                                    <InputCheckbox @bind-Value="_artworkRequest.ForSale" class="form-check-input" id="forSaleCheckbox"/>
+                                    <InputCheckbox @bind-Value="_artworkRequest.ForSale" class="form-check-input"
+                                                   id="forSaleCheckbox"/>
                                     <label class="form-check-label"
-                                           for="forSaleCheckbox">
-                                        Til salgs
-                                    </label>
+                                           for="forSaleCheckbox">Til salgs</label>
                                 </div>
                                 <!-- Price -->
                                 <div class="mb-3">
@@ -81,7 +81,7 @@ else
                                 {
                                     <div class="alert alert-danger mt-3">@ErrorMessage</div>
                                 }
-
+                                
                             </div>
                             <div class="col">
                                 <!-- Height -->
@@ -93,19 +93,17 @@ else
                                 </div>
                                 <!-- Home Page Rotation -->
                                 <div class="mb-3 form-check">
-                                    <InputCheckbox @bind-Value="_artworkRequest.HomePageRotation" class="form-check-input" id="rotationCheckbox"/>
+                                    <InputCheckbox @bind-Value="_artworkRequest.HomePageRotation"
+                                                   class="form-check-input" id="rotationCheckbox"/>
                                     <label class="form-check-label"
-                                           for="rotationCheckbox">
-                                        Legg til som forsidebilde
-                                    </label>
+                                           for="rotationCheckbox">Legg til som forsidebilde</label>
                                 </div>
 
                             </div>
-
+                            
                         </div>
                     </div>
                     <!-- Right side -->
-
                     <div class="col-md-6 border-start ps-4">
                         <div class="d-flex flex-column gap-3">
                             <!-- Add Artwork Image -->
@@ -139,6 +137,7 @@ else
                                     <span class="plus-icon">+</span>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
@@ -162,11 +161,13 @@ else
             </EditForm>
         </div>
         <!-- Loading feedback for submit -->
-        <div class="modal fade show" tabindex="-1" style="display:@(_isUploading ? "block" : "none"); background-color: rgba(0,0,0,0.5);" aria-hidden="true">
+        <div class="modal fade show" tabindex="-1"
+             style="display:@(_isUploading ? "block" : "none"); background-color: rgba(0,0,0,0.5);" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 bg-transparent text-center">
                     <div class="modal-body">
-                        <div class="spinner-border text-light mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                        <div class="spinner-border text-light mb-3" role="status"
+                             style="width: 3rem; height: 3rem;"></div>
                         <p class="text-white fs-5">Laster opp kunstverket ...</p>
                     </div>
                 </div>
@@ -194,34 +195,33 @@ else
         }
     </ul>
 }
-
 @code {
 
     // Request DTO's
     private ArtworkRequest _artworkRequest = new();
     private ImageRequest? _imageRequest;
-
+    
     // Base64 strings for preview-thumbnail images
     private List<string> _artworkImages = new();
-
+    
     // Blazor InputFile references 
     private InputFile? _artworkInputRef;
-
+    
     //Data collection for images: binary data along with MIME type and original filename.
     private List<(byte[] data, string contentType, string fileName)> _artworkFiles = new();
-
+    
     // Conditional variables
     private long maxFileSize = 1024 * 1024 * 10; // Max 10MB
     private bool _uploadSuccess = false;
     private int? _newArtworkId = null;
-
+    
     // Loading
     private bool _isUploading = false;
-
+    
     // Error collections
     private List<ErrorResponse> errors = new();
     private string? ErrorMessage;
-
+    
     // Load Artwork Image 
     private async Task LoadArtworkImage(InputFileChangeEventArgs e)
     {
@@ -238,15 +238,15 @@ else
             _artworkFiles.Add((bytes, file.ContentType, file.Name));
         }
     }
-
-
+    
+    
     // Trigger file dialog programmatically via JS using Blazor InputFile referenses
     private async Task TriggerArtworkFileDialog() // Artwork
     {
         await JS.InvokeVoidAsync("triggerClick", "artworkFileInput");
     }
-
-
+    
+    
     // Remove Artwork from input
     private void RemoveArtworkImage(int index)
     {
@@ -256,15 +256,15 @@ else
             _artworkFiles.RemoveAt(index);
         }
     }
-
-
+    
+    
     // Submit Complete Artwork
     private async Task SubmitArtworkAsync()
     {
         _isUploading = true;
         ErrorMessage = null;
         StateHasChanged();
-
+        
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var token = authState.User.FindFirst("JWT")?.Value;
 
@@ -278,7 +278,7 @@ else
         // Attach the token as a Bearer header for API calls.
         Http.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
+        
         // Trying to upload artwork to database and imnages to s3 via API
         try
         {
@@ -286,11 +286,12 @@ else
             if (!_artworkFiles.Any() || _artworkFiles.Count == 0)
             {
                 ErrorMessage = "Minst ett bilde må lastes opp.";
-                Console.WriteLine("Mangler bilder.");
+
+                _logger.LogWarning("No image files provided.");
                 StateHasChanged();
                 return;
             }
-
+            
             // Creating our Request model to send to API endpoint
             var content = new MultipartFormDataContent();
 
@@ -309,7 +310,7 @@ else
 
             if (_artworkRequest.HeightDimension.HasValue)
                 content.Add(new StringContent(_artworkRequest.HeightDimension.Value.ToString()), "HeightDimension");
-
+            
             // Adding virtual properties to request model (Images)
             int index = 0;
             // Artwork images
@@ -322,15 +323,16 @@ else
                 content.Add(new StringContent("0"), $"Images[{index}].Id");
                 index++;
             }
-
+           
             // Sending the request to API upload artwork endpoint
             var response = await Http.PostAsync("admin/api/Gallery/upload-artwork", content);
-            Console.WriteLine("📡 Statuskode: " + response.StatusCode);
+
+            _logger.LogInformation("Api response status code: {StatusCode}", response.StatusCode);
 
             // Result
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Opplasting fullført.");
+                _logger.LogInformation("Upload completed successfully.");
                 var result = await response.Content.ReadFromJsonAsync<ArtworkResponse>();
                 _newArtworkId = result?.Id;
                 _uploadSuccess = true;
@@ -340,9 +342,13 @@ else
                 if (!response.IsSuccessStatusCode)
                 {
                     var rawError = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(" error uploading:");
-                    Console.WriteLine($"Status: {response.StatusCode}");
-                    Console.WriteLine($"Content: {rawError}");
+
+
+                    _logger.LogError("Upload error occurred.");
+
+                    _logger.LogError("API returned status code {StatusCode} with content: {Content}", response.StatusCode, rawError);
+
+                    _logger.LogError(rawError, "Exception during artwork upload.");
                     ErrorMessage = $"Server returned: {(int)response.StatusCode} - {response.ReasonPhrase}";
                 }
             }
@@ -350,24 +356,25 @@ else
         catch (Exception ex)
         {
             ErrorMessage = "En feil oppsto under opplasting.";
-            Console.WriteLine("Exception: " + ex.Message);
+           
+            _logger.LogError(ex, "Exception during artwork upload.");
             StateHasChanged();
         }
         finally
         {
             _isUploading = false;
-            StateHasChanged();
+            StateHasChanged(); 
         }
     }
-
+    
     // When artwork is uploaded ------
-
+    
     // View uploaded artwork
     private void ViewArtwork()
     {
         Navigation.NavigateTo($"/GalleryDetail/{_newArtworkId}");
     }
-
+    
     // Upload another artwork
     private void UploadAnother()
     {
