@@ -45,8 +45,7 @@ public class StripeWebhook_MissingSignature
             mockAdminGallery.Object,
             mockGalleryService.Object,
             mockEmailService.Object,
-            mockOrderEmail.Object,
-            fakeParser
+            mockOrderEmail.Object
         );
 
 

@@ -106,26 +106,6 @@ builder.Services.Configure<StripeConfig>(
     builder.Configuration.GetSection("Stripe"));
 builder.Services.AddScoped<IStripeService, StripeService>();
 
-// Strip event for Development
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddSingleton<StripeEventParser>((payload, sig, secret) =>
-    {
-        return new Event { Type = "payment_intent.succeeded", /* … */ };
-    });
-}
-// Strip event for Production
-else 
-{
-    builder.Services.AddSingleton<StripeEventParser>((payload, sig, secret) =>
-        EventUtility.ConstructEvent(
-            payload,
-            sig,
-            secret,
-            throwOnApiVersionMismatch: false
-        )
-    );
-}
 
 // Smtp
 builder.Services.Configure<SmtpConfig>(

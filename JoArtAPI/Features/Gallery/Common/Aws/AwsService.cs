@@ -212,7 +212,7 @@ public class AwsService : IAwsService
             };
 
             var url = _s3Client.GetPreSignedURL(request);
-            _logger.LogInformation($"Generated pre-signed URL: {url}");
+            //_logger.LogInformation($"Generated pre-signed URL: {url}");
 
             return url;
         }

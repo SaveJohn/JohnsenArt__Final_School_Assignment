@@ -11,39 +11,38 @@ using Stripe;
 
 namespace JohnsenArtAPI.Features.Payments.Controllers;
 
-public delegate Event StripeEventParser(
-    string payload,
-    string stripeSignatureHeader,
-    string secret);
+public delegate Event StripeEventParser(string json, string sigHeader, string secret);
 
 [ApiController]
 [Route("api/webhooks/stripe")]
 public class StripeWebhookController : ControllerBase
 {
     private readonly ILogger<StripeWebhookController> _logger;
-    private readonly StripeConfig _config ;
+    private readonly StripeConfig _config;
     private readonly IAdminGalleryService _adminGalleryService;
     private readonly IGalleryService _galleryService;
     private readonly IEmailService _adminMail;
     private readonly IOrderEmailService _orderEmailService;
-    private readonly StripeEventParser _parser;
-    
+    private readonly StripeEventParser _stripeEventParser;
+
     public StripeWebhookController(
-        ILogger<StripeWebhookController> logger, 
+        ILogger<StripeWebhookController> logger,
         IOptions<StripeConfig> config,
         IAdminGalleryService adminGalleryService,
         IGalleryService galleryService,
         IEmailService adminMail,
-        IOrderEmailService orderEmailService, 
-        StripeEventParser parser)
+        IOrderEmailService orderEmailService,
+        StripeEventParser? stripeEventParser = null)
     {
         _logger = logger;
-        _config  = config.Value;
+        _config = config.Value;
         _adminGalleryService = adminGalleryService;
         _galleryService = galleryService;
         _adminMail = adminMail;
         _orderEmailService = orderEmailService;
-        _parser = parser;
+        
+        _stripeEventParser = stripeEventParser ?? ((json, sig, secret) =>
+            EventUtility.ConstructEvent(json, sig, secret, throwOnApiVersionMismatch: false));
     }
 
     [HttpPost]
@@ -52,32 +51,19 @@ public class StripeWebhookController : ControllerBase
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
         
         var endpointSecret = _config.WebhookSecret;
-        
+
         if (string.IsNullOrEmpty(endpointSecret))
         {
             _logger.LogError("Webhook secret is null or empty.");
             return StatusCode(500, "Missing Stripe webhook secret.");
         }
-        
+
         try
         {
             var stripeSignature = Request.Headers["Stripe-Signature"];
-            
-            /*
-            var stripeEvent = EventUtility.ConstructEvent(
-                json,
-                stripeSignature,
-                endpointSecret,
-                throwOnApiVersionMismatch: false
-            );
-            var stripeEvent = _parser(
-                json,
-                stripeSignature,
-                endpointSecret
-            );*/
-            var stripeEvent = _parser(json, stripeSignature, endpointSecret);
 
-            
+
+            var stripeEvent = _stripeEventParser(json, stripeSignature, endpointSecret);
 
             _logger.LogInformation("the webhook endpoint hit: {EventType}", stripeEvent.Type);
 
@@ -88,7 +74,6 @@ public class StripeWebhookController : ControllerBase
                     var buyerEmail = paymentIntent?.Metadata.GetValueOrDefault("buyer_email");
                     var buyerName = paymentIntent?.Metadata.GetValueOrDefault("buyer_name");
                     var artworkIdRaw = paymentIntent?.Metadata?.GetValueOrDefault("artworkId");
-                    
 
                     if (int.TryParse(artworkIdRaw, out var artworkId))
                     {
@@ -115,16 +100,20 @@ public class StripeWebhookController : ControllerBase
                                 ToEmail = adminEmail,
                                 Subject = $"Nytt salg: {artwork.Title}",
                                 HtmlBody = $@"
-                                <p><strong>{buyerName}</strong> har kjøpt <strong>{artwork.Title}</strong> for {artwork.Price} kr.</p>
+                                <p><strong>{buyerName}</strong> har kjøpt <strong>{artwork.Title}</strong> for 
+                                {(artwork.Price ?? 0).ToString("F2")} kr.</p>
                                 <p>Kontakt e-post: {buyerEmail}</p>",
-                                ReplyTo = buyerEmail 
+                                ReplyTo = buyerEmail
                             });
-                            
-                            _logger.LogInformation("Artwork {artworkId}, {artwork.Title} marked as sold.", artworkId, artwork.Title);
+
+                            _logger.LogInformation("Artwork {artworkId}, {artwork.Title} marked as sold.", artworkId,
+                                artwork.Title);
                         }
                         else
+                        {
                             _logger.LogWarning("Artwork {artworkId} could not be updated or was already sold.",
                                 artworkId);
+                        }
                     }
                     else
                     {
