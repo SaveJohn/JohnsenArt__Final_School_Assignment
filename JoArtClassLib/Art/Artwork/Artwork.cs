@@ -18,6 +18,6 @@ public class Artwork
     [Required] public bool ForSale { get; set; }
     
     public bool HomePageRotation { get; set; }
-    public virtual List<ArtworkImage?> Images { get; set; } = new();
+    public virtual List<Image?> Images { get; set; } = new();
     
 }

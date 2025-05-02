@@ -1,4 +1,4 @@
-﻿using JoArtClassLib.AwsSecrets;
+﻿using JoArtClassLib.Configuration.Secrets;
 using JohnsenArtAPI.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +9,7 @@ public static class ServiceCollectionExtension
 {
     public static IServiceCollection AddJwtAuthentication(
         this IServiceCollection services,
-        JwtSecretConfig jwtConfig)
+        JwtConfig jwtConfig)
     {
         
         // var key = new SymmetricSecurityKey(Convert.FromBase64String(configuration["Jwt:Key"]!));
@@ -35,4 +35,6 @@ public static class ServiceCollectionExtension
         });
         return services;
     }
+    
+    
 }

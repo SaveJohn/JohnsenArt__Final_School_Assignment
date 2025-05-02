@@ -12,7 +12,7 @@ public class JoArtDbContext : DbContext
 
     public DbSet<Artwork> Artworks { get; set; }
     
-    public DbSet<ArtworkImage> ArtworkImages { get; set; }
+    public DbSet<Image> ArtworkImages { get; set; }
 
     public DbSet<Admin> Admins { get; set; }
 
@@ -25,11 +25,11 @@ public class JoArtDbContext : DbContext
             .HasKey(a => a.Id); // Id is the primary key
 
         // Configure the primary key for ArtworkImage
-        modelBuilder.Entity<ArtworkImage>()
+        modelBuilder.Entity<Image>()
             .HasKey(ai => ai.Id); // Id is the primary key
 
         // Define the relationship between Artwork and ArtworkImage
-        modelBuilder.Entity<ArtworkImage>()
+        modelBuilder.Entity<Image>()
             .HasOne(ai => ai.Artwork)
             .WithMany(a => a.Images)
             .HasForeignKey(ai => ai.ArtworkId); // FK for ArtworkImage references Artwork

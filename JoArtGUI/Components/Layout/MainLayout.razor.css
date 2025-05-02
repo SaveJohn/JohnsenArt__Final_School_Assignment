@@ -29,9 +29,26 @@
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+    
+@media (max-width: 576px) {
+    .carousel-image {
+        max-height: 70vh !important;
+        object-fit: contain;
     }
+}
+
+@media (max-width: 576px) {
+    .btn-outline-success {
+        width: 90%;
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }
+}
+
+

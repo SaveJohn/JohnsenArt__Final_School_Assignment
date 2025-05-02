@@ -3,7 +3,7 @@ using JoArtClassLib.Art;
 using JoArtClassLib.Art.Artwork;
 using JoArtClassLib.Enums;
 using JoArtDataLayer.Repositories.Interfaces;
-using JohnsenArtAPI.Features.Gallery.Aws.Interfaces;
+using JohnsenArtAPI.Features.Gallery.Common.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 
@@ -52,7 +52,7 @@ public class GalleryService : IGalleryService
             {
                 foreach (var image in response.Images)
                 {
-                    image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+                    image.FullViewUrl = _aws.GeneratePresignedUrl(image.FullViewKey);
                     image.PreviewUrl = _aws.GeneratePresignedUrl(image.PreviewKey);
                     image.ThumbnailUrl = _aws.GeneratePresignedUrl(image.ThumbnailKey);
                 }
@@ -78,14 +78,14 @@ public class GalleryService : IGalleryService
         // No artwork found
         if (response == null)
         {
-            _logger.LogWarning($"Art {artId} not found");
-            return response;
+            _logger.LogError($"Artwork with ID {artId} not found in database.");
+            throw new KeyNotFoundException($"Artwork with ID {artId} not found in database.");
         }
 
         // Setting Pre-Singed Url for each image
         foreach (var image in response.Images)
         {
-            image.ImageUrl = _aws.GeneratePresignedUrl(image.ObjectKey);
+            image.FullViewUrl = _aws.GeneratePresignedUrl(image.FullViewKey);
             image.PreviewUrl = _aws.GeneratePresignedUrl(image.PreviewKey);
             image.ThumbnailUrl = _aws.GeneratePresignedUrl(image.ThumbnailKey);
         }
@@ -101,17 +101,21 @@ public class GalleryService : IGalleryService
        
     }
 
-    public async Task<IEnumerable<string?>> GetRotationUrls()
+    public async Task<IEnumerable<ImageResponse?>> GetRotationImagesAsync()
     {
-        List<string> keys = (List<string>)await _repository.GetRotationObjectKeys();
-        List<string> urls = new ();
+        List<Image> images = (List<Image>)await _repository.GetRotationImagesAsync();
         
-        if (keys.IsNullOrEmpty()) return urls;
+        List<ImageResponse>? imagesResponse = _mapper.Map<List<ImageResponse>>(images);
+        if (imagesResponse.IsNullOrEmpty()) return imagesResponse;
         
-        foreach (var key in keys)
+        foreach (var img in imagesResponse)
         {
-            urls.Add(_aws.GeneratePresignedUrl(key));
+            img.FullViewUrl = _aws.GeneratePresignedUrl(img.FullViewKey);
+            img.PreviewUrl = _aws.GeneratePresignedUrl(img.PreviewKey);
+            img.ThumbnailUrl = _aws.GeneratePresignedUrl(img.ThumbnailKey);
         }
-        return urls;
+        return imagesResponse;
     }
+
+    
 }

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace JohnsenArtAPI.Health;
+namespace JohnsenArtAPI.Features.Health;
 
 public class APIHealthCheck : IHealthCheck
 {

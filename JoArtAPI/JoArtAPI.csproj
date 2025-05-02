@@ -6,7 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>JohnsenArtAPI</RootNamespace>
-    </PropertyGroup>
+      <UserSecretsId>8449b60e-b12a-483c-be3a-30eb83f46151</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.Core" Version="2.5.1" />
@@ -15,10 +16,11 @@
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
         <PackageReference Include="AWSSDK.S3" Version="3.7.415.18" />
-        <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.133" />
+        <PackageReference Include="AWSSDK.SecretsManager" Version="3.7.400.143" />
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
         <PackageReference Include="Eris.Serilog.Formatting.Json" Version="1.1.0" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+        <PackageReference Include="Kralizek.Extensions.Configuration.AWSSecretsManager" Version="1.7.0" />
         <PackageReference Include="MailKit" Version="4.11.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />

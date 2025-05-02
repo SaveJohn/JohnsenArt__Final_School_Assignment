@@ -11,5 +11,7 @@ public interface IGalleryService
     
     public Task<NeighborsResponse> GetGalleryNeighborsAsync(int artId, GallerySort sort, GalleryFilter filter);
     
-    public Task<IEnumerable<string?>> GetRotationUrls();
+    public Task<IEnumerable<ImageResponse?>> GetRotationImagesAsync();
+    
+    
 }

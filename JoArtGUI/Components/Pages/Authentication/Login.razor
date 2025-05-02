@@ -1,0 +1,119 @@
+﻿@page "/login"
+@inject IJSRuntime JSRuntime
+@using Microsoft.AspNetCore.WebUtilities
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ILogger<Login> _logger
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-avatar">
+            <i class="fas fa-user-circle fa-4x"></i>
+        </div>
+        <h4 class="text-center">Login</h4>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="text-danger text-center">@errorMessage</div>
+        }
+
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <InputText class="form-control" @bind-Value="loginModel.Email" placeholder="Username"/>
+            </div>
+
+            <div class="input-group mb-3">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <InputText type="@(_showPassword ? "text" : "password")" class="form-control"
+                           @bind-Value="loginModel.Password" placeholder="Password"/>
+                <span class="input-group-text password-toggle" @onclick="TogglePassword">
+                    <i class="fas @(_showPassword ? "fa-eye-slash" : "fa-eye")"></i>
+                </span>
+            </div>
+
+            <button class="btn btn-primary w-100" type="submit">Logg in</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string errorMessage = "";
+    private bool _showPassword = false;
+    private string returnUrl = "/";
+
+    // Sets redirect URL to previous page url
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+
+        if (queryParams.TryGetValue("returnUrl", out var url))
+        {
+            returnUrl = url.First()!;
+            _logger.LogDebug("if was hit : uri first ={returnUrl}", url.First());
+        }
+        else
+        {
+            returnUrl = "/";
+            _logger.LogDebug("Else was hit : sad face :<");
+        }
+    }
+
+    private void TogglePassword()
+    {
+        _showPassword = !_showPassword;
+    }
+
+    private async Task HandleLogin()
+    {
+        errorMessage = "";
+
+        try
+        {
+            // Calling JoArtAPI login endpoint on port 8080 to get the JWT.
+            var apiResponse = await Http.PostAsJsonAsync("http://localhost:8080/admin/auth/login", loginModel);
+            if (!apiResponse.IsSuccessStatusCode)
+            {
+                var errorResponse = await apiResponse.Content.ReadFromJsonAsync<LoginErrorResponse>();
+                errorMessage = errorResponse?.ErrorMessage ?? "Login failed at API.";
+                return;
+            }
+
+            // Deserialize the response to extract the JWT token.
+            var result = await apiResponse.Content.ReadFromJsonAsync<LoginResult>();
+            if (result == null || string.IsNullOrEmpty(result.Token))
+            {
+                errorMessage = "Invalid token received.";
+                return;
+            }
+
+            // Redirect to local endpoint
+            Navigation.NavigateTo($"/api/complete-signin?token={Uri.EscapeDataString(result.Token)}&urlRedirct={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+    }
+
+    public class LoginModel
+    {
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+
+    public class LoginResult
+    {
+        public string Token { get; set; } = "";
+    }
+
+    public class LoginErrorResponse
+    {
+        public string? ErrorMessage { get; set; }
+    }
+
+}

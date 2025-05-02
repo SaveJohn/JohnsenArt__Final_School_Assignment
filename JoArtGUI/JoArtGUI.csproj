@@ -21,6 +21,12 @@
 
     <ItemGroup>
       <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+      <PackageReference Include="Eris.Serilog.Formatting.Json" Version="1.1.0" />
+      <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+      <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+      <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+      <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
       <PackageReference Include="Syncfusion.Blazor.Buttons" Version="29.1.33" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
     </ItemGroup>
@@ -36,7 +42,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Pages\Login\Login.razor" />
+      <AdditionalFiles Include="Components\Pages\Authentication\Login.razor" />
+      <AdditionalFiles Include="Components\Pages\Gallery\AdminFeatures\UpdateArtwork.razor" />
+      <AdditionalFiles Include="Components\Pages\Gallery\AdminFeatures\UploadArtwork.razor" />
+      <AdditionalFiles Include="Components\Pages\Gallery\Gallery.razor" />
+      <AdditionalFiles Include="Components\Pages\Gallery\GalleryDetail.razor" />
     </ItemGroup>
 
     <ItemGroup>
@@ -104,6 +114,16 @@
       <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Pages\Stripe\PurchaseSuccess.razor" />
       <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\Routes.razor" />
       <_ContentIncludedByDefault Remove="test\JohnsenArt\JoArtGUI\Components\_Imports.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Checkout\Checkout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Checkout\PurchaseSuccess.razor" />
+      <_ContentIncludedByDefault Remove="Components\Gallery\Checkout\Checkout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Gallery\Checkout\PurchaseSuccess.razor" />
+      <_ContentIncludedByDefault Remove="Components\Gallery\Gallery.razor" />
+      <_ContentIncludedByDefault Remove="Components\Gallery\GalleryDetail.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\AdminFeatures\UpdateArtwork.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\AdminFeatures\UploadArtwork.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Gallery\Checkout\Checkout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Gallery\Checkout\PurchaseSuccess.razor" />
     </ItemGroup>
 
 </Project>

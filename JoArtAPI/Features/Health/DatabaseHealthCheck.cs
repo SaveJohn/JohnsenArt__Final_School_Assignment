@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using JoArtDataLayer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace JoArtDataLayer.Health;
+namespace JohnsenArtAPI.Features.Health;
 
 public class DatabaseHealthCheck : IHealthCheck
 {

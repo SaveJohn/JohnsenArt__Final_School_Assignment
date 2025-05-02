@@ -1,0 +1,722 @@
+﻿
+@page "/checkout/{productId:int}"
+@using System.Text
+@using System.Text.Json
+@using JoArtClassLib
+@using JoArtClassLib.Art
+@using JoArtClassLib.Error
+@using JoArtClassLib.Payment
+@using JoArtClassLib.Payment.Enums
+@inject IJSRuntime JS
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ILogger<Checkout> _logger
+
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p class="text-danger fw-bold">@ErrorMessage</p>
+}
+else if (isLoading)
+{
+    <p class="text-center pt-5"><i class="spinner-border spinner-border-sm me-2"></i>Laster produkt ...</p>
+}
+else if (!product.ForSale)
+{
+    <div class="notForSale-container text-center"> 
+        <div class="notForSale-card shadow- p-4 border-0 rounded-4">
+            <div class="card-body ">
+                <img src="images/woopsie.png" alt="Ikke for salg!" style="width: 140px;" class="mb-4"/>
+                <h2 class="fw-bold mb-1">Ojsann!</h2>
+                <h2 class="fw-bold mb-1">Dette kunstverke er vist ikke for salgs lenger...</h2>
+                <hr class="my-4" />
+                <p class="lead">
+                    Trykk
+                    <a href=@($"/GalleryDetail/{product.Id}") class="link-primary fw-semibold"><bold>
+                        her!
+                    </bold></a>
+                    for å gå tilbake til kunstverket.
+                </p>
+                <p class="lead ">
+                    Noe som ikke stemmer? Ta gjerne kontakt 
+                    <a href="/contact" class="link-primary fw-semibold"><bold>
+                        her!
+                    </bold></a>
+                </p>
+                
+                <a class="btn btn-dark mt-3" href="/gallery">Tilbake til galleriet</a>
+            </div>
+        </div>
+    </div>
+}
+else if (product is not null)
+{
+
+    <div class="checkout-container">
+        <div class="checkout-card">
+            <h3 class="text-center mb-4">Betaling</h3>
+            <hr class="my-4" />
+            <div class="row d-flex align-items-start justify-content-center px-4">
+
+                <!-- Product Summary -->
+                <h5 class="mb-4">Produkt</h5>
+                <!-- Image -->
+                <div class="col-md-auto">
+                    <img src="@image?.ThumbnailUrl"
+                         class="img-fluid rounded shadow-sm"
+                         style="max-width: 300px;"/>
+                </div>
+                <div class="col-md pt-2">
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <p class="mb-1 text-muted">Tittel:</p>
+                        <p class="fw-semibold">@product.Title</p>
+                    </div>
+                    <!-- Dimensions -->
+                    <div class="mb-3">
+                        <p class="mb-1 text-muted">Dimensjoner:</p>
+                        <p class="fw-semibold">@product.WidthDimension x @product.HeightDimension cm</p>
+                    </div>
+                    <!-- Price -->
+                    <div class="mb-3">
+                        <p class="mb-1 text-muted">Pris:</p>
+                        <p class="fw-semibold">@((product?.Price ?? 0).ToString("F2")),-</p>
+                    </div>
+                </div>
+
+            </div>
+            <hr class="my-4" />
+
+            @if (readyToPay is false)
+            {
+                <!-- Buyer Info Form-->
+                <h5 class="mb-4">Kundeinformasjon</h5>
+                <!-- Full Name -->
+                <div class="form-group mb-3">
+                    <label>Fullt navn <span class="text-danger">*</span></label>
+                    <input class="form-control" name="fullName" @bind="buyer.FullName" required />
+                </div>
+                <div class="row mb-3">
+                    <!-- Email -->
+                    <div class="col-md-8">
+                        <label>Epost <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" @bind="buyer.Email" required/>
+                    </div>
+                    <!-- Phone -->
+                    <div class="col-md-4">
+                        <label>Telefon <span class="text-danger">*</span></label>
+                        <input class="form-control" maxlength="12" placeholder="+47..." @bind="buyer.PhoneNumber"/>
+                    </div>
+                </div>
+
+                <!-- Shipping Options -->
+                <label class="fw-medium">Hvordan vil du motta kunstverket? <span class="text-danger">*</span></label>
+                <!-- Pickup -->
+                <div class="form-check mb-2">
+                    <input class="form-check-input" name="delivery" type="radio" id="pickup" value="@DeliveryMethods.PickUp.ToString()"
+                           @onchange="SetDeliveryMethod" checked="@(DeliveryMethods.PickUp.ToString() == buyer.DeliveryMethod)"/>
+                    <label class="form-check-label" for="pickup">Hentepunk: Sandefjord, Breidablikk (kr @ShippingCosts.PickUp)
+                    </label>
+                </div>
+                <!-- Post -->
+                <div class="form-check mb-2">
+                    <input class="form-check-input" name="delivery" type="radio" id="post" value="@DeliveryMethods.Post.ToString()"
+                           @onchange="SetDeliveryMethod" checked="@(DeliveryMethods.Post.ToString() == buyer.DeliveryMethod)" />
+                    <label class="form-check-label" for="post">Posten (kr @shippingCosts)</label>
+                </div>
+
+                <!-- Buyer Info Address Form if Shipping is Post-->
+                @if (buyer.DeliveryMethod == DeliveryMethods.Post.ToString())
+                {   <!-- Address -->
+                    <div class="form-group mb-3">
+                        <label>Adresse <span class="text-danger">*</span></label>
+                        <input class="form-control" @bind="buyer.AddressLine" required />
+                    </div>
+                    <div class="row mb-3">
+                        <!-- Postal Code -->
+                        <div class="col-md-3">
+                            <label>Postnummer <span class="text-danger">*</span></label>
+                            <input class="form-control" maxlength="4" @bind="buyer.PostalCode" required/>
+                        </div>
+                        <!-- City -->
+                        <div class="col-md-8">
+                            <label>By <span class="text-danger">*</span></label>
+                            <input class="form-control" @bind="buyer.City" required/>
+                        </div>
+                    </div>
+                }
+
+                <hr class="my-4" />
+            }
+
+            <!-- Total Price Summary-->
+            <h5 class="mb-4">Pris oppsummering</h5>
+            <div class="mt-2 px-4 pt-3">
+                <!-- Art Price -->
+                <div class="d-flex justify-content-between">
+                    <p class="mb-1 text-muted">Kunstverk:</p>
+                    <p class="mb-1">@((product?.Price ?? 0).ToString("F2")),-</p>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(buyer.DeliveryMethod))
+                {
+                    <!-- Shipping Costs -->
+                    <div class="d-flex justify-content-between">
+                        <p class="mb-1 text-muted">Frakt:</p>
+                        @if (buyer.DeliveryMethod == DeliveryMethods.PickUp.ToString())
+                        {
+                            <p class="mb-1">@ShippingCosts.PickUp,-</p>
+                        }
+                        else
+                        {
+                            <p class="mb-1">@((finalShippingCosts ?? 0).ToString("F2")),-</p>
+                        }
+                    </div>
+                    <!-- Total Costs -->
+                    <div class="d-flex justify-content-between">
+                        <p class="fw-bold fs-5 mb-0">Total å betale:</p>
+                        
+                        <p class="fw-bold fs-5 mb-0">
+                            @(((shippingCosts ?? 0) + (product?.Price ?? 0)).ToString("F2")),-
+
+                        </p>
+                    </div>
+                }
+            </div>
+
+
+
+            @if (readyToPay is false)
+            {
+                <hr class="my-4" />
+                <div class="text-center py-4 ">
+                    <button type="submit" role="button" class="button-payment" @onclick="GoToPayment">
+                        Gå videre til betaling
+                    </button>
+                    <p class="text-danger mt-2">@statusMessage</p>
+                </div>
+            }
+            else
+            {
+                <hr class="my-4" />
+
+                <div class=" pb-4">
+                    <button role="button" class="btn btn-outline-secondary" @onclick="GoBack">
+                        <img src="Images/left-arrow.png" alt="tilbake ikon" class="px-3" style="height: 25px;" />
+                        Tilbake til Kundeinformasjon
+                    </button>
+                </div>
+
+
+                <!-- Payment Options-->
+                <div class="d-flex justify-content-between">
+                    <h5 class="mb-4">Betalingsmetode</h5>
+                </div>
+
+                <!-- Card Option-->
+                <div class="form-check mb-2">
+                    <input class="form-check-input" name="card" type="radio" id="card-payment" value="@PaymentMethods.Card.ToString()"
+                           @onchange="SetPaymentMethod" checked="@(PaymentMethods.Card.ToString() == paymentMethod.Selected)"/>
+                    <label class="form-check-label" for="card-payment">
+                        Kredittkort eller debetkort
+                        <img src="Images/credit-card.png" alt="Kort ikon" class="px-3" style="height: 25px;" />
+
+                    </label>
+                </div>
+
+
+                @if (paymentMethod.Selected == PaymentMethods.Card.ToString())
+                {
+                    <!-- Card Info Form -->
+                    <div class="form-check mb-2">
+                        <div class="stripe-card-wrapper"style="max-width: 400px">
+                            <label for="card-number-element" class="form-label">kortnummer</label>
+                            <div id="card-number-element" class="form-control mb-3 py-2"></div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="card-expiry-element" class="form-label">Utløpsdato</label>
+                                    <div id="card-expiry-element" class="form-control"></div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="card-cvc-element" class="form-label">CVC</label>
+                                    <div id="card-cvc-element" class="form-control"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (!isStripeReady)
+                    {
+
+                        <p class="text-muted"><i class="spinner-border spinner-border-sm me-2"></i>Laster stripe ...</p>
+
+                    }
+                }
+                @if (buyer.DeliveryMethod != DeliveryMethods.PickUp.ToString())
+                {
+                    <!-- Klarna Option - only available if Shipping is Post -->
+                    <div class="form-check mb-2 pt-4">
+                        <input class="form-check-input" name="klarna" type="radio" id="klarna-payment"
+                               value="@PaymentMethods.Klarna.ToString()"
+                               @onchange="SetPaymentMethod"
+                               checked="@(PaymentMethods.Klarna.ToString() == paymentMethod.Selected)" />
+                        <label class="form-check-label" for="klarna-payment">
+                            Betal med Klarna
+                            <img src="Images/klarna.png" alt="klarna ikon" class="px-3" style="height: 25px;"/>
+                        </label>
+                    </div>
+                }
+                @if (string.IsNullOrWhiteSpace(paymentMethod.Selected))
+                {
+                    <div class="text-center py-4 ">
+                        <p class="fw-medium text-muted">
+                            Velg en betalingsmetode for å fortsette<span class="text-danger">*</span>
+                        </p>
+                    </div>
+                }
+
+                <!-- Payment Buttons -->
+                @if (paymentMethod.Selected == PaymentMethods.Card.ToString()) //  Pay with card
+                {
+
+                    <div class="text-center py-4 ">
+                        <button class="button-buy mt-4" @onclick="HandlePayment" disabled="@(isStripeReady == false)">
+                            Betal nå
+                        </button>
+                        <p class="text-danger mt-2">@statusMessage</p>
+                    </div>
+                }
+                else if (paymentMethod.Selected == PaymentMethods.Klarna.ToString()) // Pay with Klarna 
+                {
+                    <div class="text-center py-4 ">
+                        <button class="button-buy mt-2" @onclick="HandlePayment">Betal med Klarna</button>
+                        <p class="text-danger mt-2">@statusMessage</p>
+                    </div>
+                    @if (klarnaIsLoaded is false)
+                    {
+                        <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" role="dialog">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content text-centered p-4 shadow-lg border-0 rounded-3">
+                                    <h5 class="fw-bold"><i class="spinner-border spinner-border-sm me-2"></i>Henter Klarna ...</h5>
+                                    <p class="text-muted">Vennligst vent mens vi klargjør betalingsvinduet ditt.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-backdrop fade show"></div>
+                    }
+                }
+            }
+
+        </div>
+    </div>
+
+}
+else
+{
+    <p class="text-danger text-center pt-5 fw-bold">Fant ikke produktet.</p>
+}
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p class="text-danger fw-bold">@ErrorMessage</p>
+}
+
+@code {
+    // Produkt
+    private bool isLoading = true;
+
+    [Parameter]
+    public int productId { get; set; }
+    private ArtworkResponse? product;
+    private ImageResponse? image;
+
+    private decimal? shippingCosts;
+    private decimal? finalShippingCosts;
+    PaymentMethod paymentMethod = new ();
+    
+    string stripeClientSecret = "";
+    bool readyToPay;
+
+    private string statusMessage = "";
+    private List<ErrorResponse> errors = new();
+    private string? ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        _logger.LogInformation("Fetched produktId: {ProductId}", productId);
+
+        try
+        {
+            var response = await Http.GetAsync($"api/PublicGallery/artworks/{productId}");
+            var content = await response.Content.ReadAsStringAsync();
+            
+            _logger.LogDebug("Raw data from API: {Content}", content);
+
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ErrorMessage = $"Klarte ikke hente produktet. Statuskode: {response.StatusCode}";
+            }
+
+            product = JsonSerializer.Deserialize<ArtworkResponse>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+           
+            _logger.LogInformation("Product fetched: {Title}", product?.Title);
+
+
+
+            image = product?.Images?.FirstOrDefault();
+
+            if (product?.WidthDimension is not null && product.HeightDimension is not null)
+            {
+                shippingCosts = CalculateShippingCosts();
+            }
+
+            isLoading = false;
+            await InvokeAsync(StateHasChanged);
+
+        }
+        catch (Exception e)
+        {
+            ErrorMessage = "Noe gikk galt ved henting av produktet.";
+            
+            _logger.LogError(e, "Error fetching artwork data.");
+
+
+        }
+    }
+
+
+    // BuyerInfo
+    private BuyerInfo buyer = new();
+
+    private void SetDeliveryMethod(ChangeEventArgs e)
+    {
+        buyer.DeliveryMethod = e.Value?.ToString() ?? "";
+        finalShippingCosts = buyer.DeliveryMethod == DeliveryMethods.PickUp.ToString() 
+            ? ShippingCosts.PickUp 
+            : CalculateShippingCosts();
+        shippingCosts = CalculateShippingCosts();
+        
+        StateHasChanged();
+        paymentMethod.Selected = null;
+
+    }
+
+    private bool ValidateBuyerInfo()
+    {
+        // Fullname and Email required
+        if (string.IsNullOrWhiteSpace(buyer.FullName) || string.IsNullOrWhiteSpace(buyer.Email))
+        {
+            statusMessage = "Vennligst sørg for at både navn og epost er fylt ut.";
+            return false;
+        }
+
+        // Valid Email check
+        if (!System.Text.RegularExpressions.Regex.IsMatch(buyer.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        {
+            statusMessage = "Ugyldig e-postadresse.";
+            return false;
+        }
+
+        // Valid Phone check
+        if (!System.Text.RegularExpressions.Regex.IsMatch(buyer.PhoneNumber, @"^\+?\d{8,15}$"))
+        {
+            statusMessage = "Ugyldig telefonnummer.";
+            return false;
+        }
+
+        // Delivery Method required
+        if (string.IsNullOrWhiteSpace(buyer.DeliveryMethod))
+        {
+            statusMessage = "Vennligst velg en leveringsmetode";
+            return false;
+        }
+
+        // If Post method, then Address Line, City and Postalcode required
+        if (buyer.DeliveryMethod == DeliveryMethods.Post.ToString() &&
+            (string.IsNullOrWhiteSpace(buyer.AddressLine) ||
+             string.IsNullOrWhiteSpace(buyer.City) ||
+             string.IsNullOrWhiteSpace(buyer.PostalCode)))
+        {
+            statusMessage = "Vennligst fyll ut adresse, by og postnummer for postlevering.";
+            return false;
+        }
+
+        return true;
+    }
+
+    // Calculating shipping costs - estimate only; need a registered business to use Posten (Bring) API
+    public decimal CalculateShippingCosts()
+    {
+
+        var areal = product!.HeightDimension * product.WidthDimension;
+        decimal costs;
+
+        if (areal <= 2500) costs = ShippingCosts.Small;
+
+        else if (areal <= 8100) costs = ShippingCosts.Medium;
+
+        else costs = ShippingCosts.Large;
+
+
+        return costs;
+
+    }
+
+    private async Task GoToPayment()
+    {
+        // Validating buyer input
+        if (!ValidateBuyerInfo()) return;
+
+        statusMessage = "";
+
+        readyToPay = true;
+        await InvokeAsync(StateHasChanged);
+
+        // Setup Stripe
+        if (stripeModule is null || !isStripeReady)
+        {
+
+            await SetupStripeAsync();
+
+        }
+        else if (paymentMethod.Selected == PaymentMethods.Card.ToString())
+        {
+            await Task.Delay(50);
+            await stripeModule.InvokeVoidAsync("mountCardElements");
+        }
+
+    }
+
+    private async Task GoBack()
+    {
+        readyToPay = false;
+        StateHasChanged();
+    }
+
+    // Stripe Payment setup
+    private IJSObjectReference? stripeModule;
+    bool isStripeReady;
+    bool? klarnaIsLoaded = null;
+
+
+    private async Task SetupStripeAsync()
+    {
+        if (isStripeReady) return;
+
+        try
+        {
+            // Creating buyer metadata
+            var buyerJson = JsonSerializer.Serialize(buyer);
+            var content = new StringContent(buyerJson, Encoding.UTF8, "application/json");
+
+            if (string.IsNullOrWhiteSpace(buyer.FullName) || string.IsNullOrWhiteSpace(buyer.Email))
+            {
+                statusMessage = "Manglende kundeinformasjon for betaling.";
+                return;
+            }
+            // Get payment intent (client secret)
+            var response = await Http.PostAsync($"api/stripe/create-intent/{productId}", content);
+            var intent = await response.Content.ReadFromJsonAsync<PaymentIntentResponse>();
+            stripeClientSecret = intent?.ClientSecret ?? "";
+           
+            _logger.LogDebug("Stripe client secret received: {ClientSecret}", stripeClientSecret);
+
+
+            // Get publishable key
+            var keyResponse = await Http.GetFromJsonAsync<PublishableKeyResponse>("api/stripe/publishable-key");
+
+            var publishableKey = keyResponse?.PublishableKey;
+           
+            _logger.LogDebug("Stripe publishable key received: {Key}", publishableKey);
+
+
+            // Calling js method 
+            if (!string.IsNullOrWhiteSpace(stripeClientSecret) && !string.IsNullOrWhiteSpace(publishableKey))
+            {
+                // Ensure DOM is fully updated
+                await InvokeAsync(StateHasChanged);
+
+                
+                _logger.LogInformation("Loading Stripe module...");
+
+                stripeModule = await JS.InvokeAsync<IJSObjectReference>("import", "/js/stripeInterop.js");
+                
+                _logger.LogInformation("Stripe module successfully loaded.");
+
+                try
+                {
+                    await stripeModule.InvokeVoidAsync("setProductId", productId); // product Id is so Klarna can redirect back
+                    await stripeModule.InvokeVoidAsync("initializeStripe", publishableKey, stripeClientSecret);
+                }
+                catch (Exception ex)
+                {
+                    
+                    _logger.LogError(ex, "Error initializing Stripe.");
+
+                }
+                
+                _logger.LogDebug("Stripe js function 'initializeStripe' called.");
+
+
+                isStripeReady = true;
+                StateHasChanged();
+            }
+            else
+            {
+                statusMessage = "Klarte ikke hente Stripe-nøkler";
+                
+                _logger.LogWarning("Failed to fetch Stripe keys. ClientSecret: {ClientSecret}, PublishableKey: {PublishableKey}", stripeClientSecret, publishableKey);
+
+            }
+
+        }
+        catch (Exception ex)
+        {
+            
+            _logger.LogError(ex, "Stripe setup failed.");
+
+            statusMessage = "Noe gikk galt ved oppsett av Stripe.";
+        }
+
+    }
+
+    private async void SetPaymentMethod(ChangeEventArgs e)
+    {
+        // Setting payment method
+        var newType = e.Value?.ToString() ?? "";
+        paymentMethod.Selected = newType;
+
+        // if payment method is Card -> mount card elements
+        if (newType == PaymentMethods.Card.ToString())
+        {
+            // Delay to make sure DOM is updated
+            await Task.Delay(100);
+            await stripeModule.InvokeVoidAsync("mountCardElements");
+        }
+
+    }
+
+    private async Task HandlePayment()
+    {
+
+        // Checking stripe module
+        if (stripeModule is null)
+        {
+            statusMessage = "Stripe ble ikke initialisert. Prøv å laste siden på nytt.";
+            
+            _logger.LogWarning("Stripe module is null.");
+
+            return;
+        }
+
+        try
+        {
+
+            // Pay with Card
+            if (paymentMethod.Selected == PaymentMethods.Card.ToString())
+            {
+                var result = await stripeModule.InvokeAsync<StripeResult>(
+                    "confirmCardPayment",
+                    stripeClientSecret,      
+                    buyer.FullName,
+                    buyer.Email
+                    );
+                
+                _logger.LogInformation("Card payment completed.");
+
+
+                if (result?.error != null)
+                {
+                    statusMessage = result.error.message;
+                }
+                else if (result?.paymentIntent?.status == "succeeded")
+                {
+                    await JS.InvokeVoidAsync("localStorage.removeItem", "stripeKey");
+                    Navigation.NavigateTo("/takk", forceLoad: true);
+                }
+                else
+                {
+                    statusMessage = $"Betaling feilet eller ufullstendig: {result?.paymentIntent?.status}";
+                }
+            }
+            // Pay with Klarna - payment status will be handled in OnParameterAsync()
+            else
+            {
+                klarnaIsLoaded = false;
+                var result = await stripeModule.InvokeAsync<StripeResult>(
+                    "confirmKlarnaPayment",
+                    stripeClientSecret,      
+                    buyer.FullName,
+                    buyer.Email
+                );
+                klarnaIsLoaded = true;
+
+                if (result?.error != null)
+                {
+                    statusMessage = result.error.message;
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            statusMessage = "En feil oppstod under betaling.";
+            
+            _logger.LogError(ex, "Stripe payment failed.");
+
+        }
+    }
+
+    // Klarna Payment status 
+    [SupplyParameterFromQuery]
+    public string? payment_intent_client_secret { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(payment_intent_client_secret))
+        {
+            try
+            {
+                stripeModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "/js/stripeInterop.js");
+
+                var status = await stripeModule.InvokeAsync<string>("checkPaymentStatus");
+
+                
+                _logger.LogInformation("Stripe payment status: {Status}", status);
+
+
+                if (!string.IsNullOrWhiteSpace(status))
+                {
+                    switch (status)
+                    {
+                        case "succeeded":
+                            await JS.InvokeVoidAsync("localStorage.removeItem", "stripeKey");
+                            Navigation.NavigateTo("/takk", forceLoad: true);
+                            break;
+                        case "processing":
+                            statusMessage = "Betaling pågår - du vil motta en bekreftelse snart.";
+                            break;
+                        case "requires_payment_method":
+                            statusMessage = "Betaling feilet. Prøv igjen.";
+                            break;
+                        default:
+                            statusMessage = $"Status: {status}";
+                            break;
+                    }
+
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking Stripe payment status.");
+
+            }
+        }
+    }
+}
