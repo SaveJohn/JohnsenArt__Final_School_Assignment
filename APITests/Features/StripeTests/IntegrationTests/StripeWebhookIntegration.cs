@@ -56,13 +56,22 @@ public class StripeWebhookIntegration
         var json = await File.ReadAllTextAsync("Features/StripeTests/TestData/payment_intent_succeeded.json");
         
         
-        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        var signatureHeader = Stripe.SignatureUtility
-            .GenerateTestHeaderString(
-                payload:   json,
-                secret:    stripeConfig.WebhookSecret,
-                timestamp: timestamp
-            );
+        StripeEventParser fakeParser = (_, _, _) => new Event
+        {
+            Type = "payment_intent.succeeded",
+            Data = new EventData
+            {
+                Object = new PaymentIntent
+                {
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "artworkId", "1" },
+                        { "buyer_email", "buyer@example.com" },
+                        { "buyer_name", "John Doe" }
+                    }
+                }
+            }
+        };
         
 
         var controller = new StripeWebhookController(
@@ -71,7 +80,8 @@ public class StripeWebhookIntegration
             mockAdminGallery.Object,
             mockGalleryService.Object,
             mockEmailService.Object,
-            mockOrderEmail.Object
+            mockOrderEmail.Object,
+            fakeParser
         );
 
         var context = new DefaultHttpContext();

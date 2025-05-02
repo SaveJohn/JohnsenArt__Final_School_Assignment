@@ -11,6 +11,11 @@ using Stripe;
 
 namespace JohnsenArtAPI.Features.Payments.Controllers;
 
+public delegate Event StripeEventParser(
+    string payload,
+    string stripeSignatureHeader,
+    string secret);
+
 [ApiController]
 [Route("api/webhooks/stripe")]
 public class StripeWebhookController : ControllerBase
@@ -21,14 +26,16 @@ public class StripeWebhookController : ControllerBase
     private readonly IGalleryService _galleryService;
     private readonly IEmailService _adminMail;
     private readonly IOrderEmailService _orderEmailService;
-
+    private readonly StripeEventParser _parser;
+    
     public StripeWebhookController(
         ILogger<StripeWebhookController> logger, 
         IOptions<StripeConfig> config,
         IAdminGalleryService adminGalleryService,
         IGalleryService galleryService,
         IEmailService adminMail,
-        IOrderEmailService orderEmailService)
+        IOrderEmailService orderEmailService, 
+        StripeEventParser parser)
     {
         _logger = logger;
         _config  = config.Value;
@@ -36,6 +43,7 @@ public class StripeWebhookController : ControllerBase
         _galleryService = galleryService;
         _adminMail = adminMail;
         _orderEmailService = orderEmailService;
+        _parser = parser;
     }
 
     [HttpPost]
@@ -54,13 +62,22 @@ public class StripeWebhookController : ControllerBase
         try
         {
             var stripeSignature = Request.Headers["Stripe-Signature"];
+            
+            /*
             var stripeEvent = EventUtility.ConstructEvent(
                 json,
                 stripeSignature,
                 endpointSecret,
                 throwOnApiVersionMismatch: false
             );
+            var stripeEvent = _parser(
+                json,
+                stripeSignature,
+                endpointSecret
+            );*/
+            var stripeEvent = _parser(json, stripeSignature, endpointSecret);
 
+            
 
             _logger.LogInformation("the webhook endpoint hit: {EventType}", stripeEvent.Type);
 

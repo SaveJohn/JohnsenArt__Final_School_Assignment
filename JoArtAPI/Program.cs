@@ -20,6 +20,7 @@ using JohnsenArtAPI.Features.Gallery.Common.Aws;
 using JohnsenArtAPI.Features.Gallery.Common.Aws.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Features.Health;
+using JohnsenArtAPI.Features.Payments.Controllers;
 using JohnsenArtAPI.Features.Payments.Interfaces;
 using JohnsenArtAPI.Features.Payments.Services;
 using JohnsenArtAPI.Middleware;
@@ -103,8 +104,28 @@ builder.Services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 // Stripe
 builder.Services.Configure<StripeConfig>(
     builder.Configuration.GetSection("Stripe"));
-
 builder.Services.AddScoped<IStripeService, StripeService>();
+
+// Strip event for Development
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<StripeEventParser>((payload, sig, secret) =>
+    {
+        return new Event { Type = "payment_intent.succeeded", /* … */ };
+    });
+}
+// Strip event for Production
+else 
+{
+    builder.Services.AddSingleton<StripeEventParser>((payload, sig, secret) =>
+        EventUtility.ConstructEvent(
+            payload,
+            sig,
+            secret,
+            throwOnApiVersionMismatch: false
+        )
+    );
+}
 
 // Smtp
 builder.Services.Configure<SmtpConfig>(

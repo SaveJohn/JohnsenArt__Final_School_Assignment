@@ -7,13 +7,14 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using JohnsenArtAPI.Features.Payments.Controllers;
-using JohnsenArtAPI.Services.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Features.Contact.Interfaces;
 using JohnsenArtAPI.Features.Payments.Interfaces;
 using JoArtClassLib.Art;
-using JoArtClassLib.AwsSecrets;
+using JoArtClassLib.Configuration.Secrets;
 using JoArtClassLib.Payment;
+using JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
+using Microsoft.Extensions.Options;
 using Stripe;
 
 
@@ -28,7 +29,6 @@ public class StripeWebhook_PaymentIntentSuccess
     {
         //Arrange
         var mockLogger = new Mock<ILogger<StripeWebhookController>>();
-        var mockConfig = new Mock<IStripeConfigProvider>();
         var mockAdminGallery = new Mock<IAdminGalleryService>();
         var mockGalleryService = new Mock<IGalleryService>();
         var mockEmailService = new Mock<IEmailService>();
@@ -43,10 +43,12 @@ public class StripeWebhook_PaymentIntentSuccess
             Price = 2000
         };
 
-        mockConfig.Setup(c => c.GetStripeConfigAsync()).ReturnsAsync(new StripeSecretConfig
-        {
-            WebhookSecret = "whsec_testsecret"
-        });
+        var stripeConfig = new StripeConfig {
+            SecretKey      = "sk_test_xxx",
+            PublishableKey = "pk_test_xxx",
+            WebhookSecret  = "whsec_testsecret"
+        };
+        var options = Options.Create(stripeConfig);
 
         mockGalleryService.Setup(g => g.GetArtworkByIdAsync(testArtworkId)).ReturnsAsync(testArtwork);
         mockAdminGallery.Setup(a => a.MarkAsSoldAsync(testArtworkId)).ReturnsAsync(true);
@@ -72,7 +74,7 @@ public class StripeWebhook_PaymentIntentSuccess
 
         var controller = new StripeWebhookController(
             mockLogger.Object,
-            mockConfig.Object,
+            options,
             mockAdminGallery.Object,
             mockGalleryService.Object,
             mockEmailService.Object,

@@ -32,10 +32,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Features\PurchaseTests\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\JoArtAPI\JoArtAPI.csproj"/>
     </ItemGroup>
 

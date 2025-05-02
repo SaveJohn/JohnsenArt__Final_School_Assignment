@@ -1,13 +1,14 @@
 ﻿using System.Text;
-using JoArtClassLib.AwsSecrets;
+using JoArtClassLib.Configuration.Secrets;
 using JohnsenArtAPI.Features.Contact.Interfaces;
+using JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
 using JohnsenArtAPI.Features.Gallery.Common.Interfaces;
 using JohnsenArtAPI.Features.Payments.Controllers;
 using JohnsenArtAPI.Features.Payments.Interfaces;
-using JohnsenArtAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -23,21 +24,24 @@ public class StripeWebhook_MissingSignature
     {
         // arrange
         var mockLogger = new Mock<ILogger<StripeWebhookController>>();
-        var mockConfig = new Mock<IStripeConfigProvider>();
         var mockAdminGallery = new Mock<IAdminGalleryService>();
         var mockGalleryService = new Mock<IGalleryService>();
         var mockEmailService = new Mock<IEmailService>();
         var mockOrderEmail = new Mock<IOrderEmailService>();
 
-        mockConfig.Setup(c => c.GetStripeConfigAsync())
-            .ReturnsAsync(new StripeSecretConfig { WebhookSecret = "whsec_testsecret" });
+        var stripeConfig = new StripeConfig {
+            SecretKey      = "sk_test_xxx",
+            PublishableKey = "pk_test_xxx",
+            WebhookSecret  = "whsec_testsecret"
+        };
+        var options = Options.Create(stripeConfig);
 
 
         StripeEventParser fakeParser = (_, _, _) => throw new Exception("Should not be called");
 
         var controller = new StripeWebhookController(
             mockLogger.Object,
-            mockConfig.Object,
+            options,
             mockAdminGallery.Object,
             mockGalleryService.Object,
             mockEmailService.Object,
