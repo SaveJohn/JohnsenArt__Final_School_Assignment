@@ -64,12 +64,9 @@ else
                      style="min-width: 60%; max-width:  80vw;"
                      data-bs-ride="false" data-bs-interval="false">
                     
-                    
                     <!-- Image slides -->
                     <div class="carousel-inner">
-
-
-
+                        
                         @foreach (var img in artwork.Images)
                         {
                             <!-- Image -->
@@ -80,13 +77,11 @@ else
                                         @img.ThumbnailUrl 300w,
                                         @img.PreviewUrl 800w"
                                     sizes="(max-width: 992px) 80vw,  
-                                            60vw"                    
+                                            60vw"
                                     class="carousel-image img-fluid rounded"
                                     loading="lazy"
                                     alt="@artwork.Title"
-                                    @onclick="() => ShowDetailedImage(
-                                    img.ThumbnailKey, img.PreviewUrl, img.FullViewUrl)" />
-                                
+                                    @onclick="() => ShowDetailedImage(img.ThumbnailKey, img.PreviewUrl, img.FullViewUrl)"/>
                             </div>
                         }
                     </div>
@@ -127,6 +122,10 @@ else
                                 </button>
                             }
                         </div>
+                    }
+                    else
+                    {
+                        <br/>
                     }
                 </div>
                 <div class="art-detail-container">

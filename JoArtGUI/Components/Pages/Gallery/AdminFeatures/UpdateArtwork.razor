@@ -8,7 +8,7 @@
 @inject IJSRuntime JS
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager Navigation
-@inject Logger<UpdateArtwork> _logger
+@inject ILogger<UpdateArtwork> _logger
 
 <PageTitle>Oppdater kunstverk</PageTitle>
 
@@ -208,17 +208,18 @@
     {
         await LoadCurrentArtworkDataAsync();
     }
-
+     /*
     protected override async Task OnInitializedAsync()
     {
         await LoadCurrentArtworkDataAsync();
-    }
+    }*/
 
     private async Task LoadCurrentArtworkDataAsync()
     {
         try
         {
-            _artworkResponse = await Http.GetFromJsonAsync<ArtworkResponse>($"api/PublicGallery/artworks/{artworkId}?nocache={{DateTime.Now.Ticks}}");
+            _artworkResponse = await Http.GetFromJsonAsync<ArtworkResponse>(
+                $"api/PublicGallery/artworks/{artworkId}?nocache={DateTime.Now.Ticks}");
             _artworkRequest = new UpdateArtworkRequest
             {
                 Title = _artworkResponse.Title,
