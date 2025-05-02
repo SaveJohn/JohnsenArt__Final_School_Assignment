@@ -45,8 +45,6 @@
       <AdditionalFiles Include="Components\Pages\Authentication\Login.razor" />
       <AdditionalFiles Include="Components\Pages\Gallery\AdminFeatures\UpdateArtwork.razor" />
       <AdditionalFiles Include="Components\Pages\Gallery\AdminFeatures\UploadArtwork.razor" />
-      <AdditionalFiles Include="Components\Pages\Gallery\Checkout\Checkout.razor" />
-      <AdditionalFiles Include="Components\Pages\Gallery\Checkout\PurchaseSuccess.razor" />
       <AdditionalFiles Include="Components\Pages\Gallery\Gallery.razor" />
       <AdditionalFiles Include="Components\Pages\Gallery\GalleryDetail.razor" />
     </ItemGroup>
@@ -124,6 +122,8 @@
       <_ContentIncludedByDefault Remove="Components\Gallery\GalleryDetail.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\AdminFeatures\UpdateArtwork.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\AdminFeatures\UploadArtwork.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Gallery\Checkout\Checkout.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Gallery\Checkout\PurchaseSuccess.razor" />
     </ItemGroup>
 
 </Project>

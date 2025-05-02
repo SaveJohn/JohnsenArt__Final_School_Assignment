@@ -104,3 +104,16 @@ button.button-41:active {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     background-color: #fff;
 }
+
+/* Mobile */ 
+@media (max-width: 576px) {
+    .checkout-card {
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+    .button-payment,
+    .button-buy {
+        width: 100% !important;
+        min-width: 0;
+    }
+}
