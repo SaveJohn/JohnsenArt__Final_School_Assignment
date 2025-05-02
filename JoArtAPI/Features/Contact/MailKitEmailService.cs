@@ -41,7 +41,7 @@ public class MailKitEmailService : IEmailService
 
         using var smtp = new SmtpClient();
         
-        // Development test-mode certificate (TODO get real certificate for a "noreply@johnsen.art" or similar)
+        // Development test-mode certificate 
         smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
         await smtp.ConnectAsync(_config["Smtp:Host"], int.Parse(_config["Smtp:Port"]),

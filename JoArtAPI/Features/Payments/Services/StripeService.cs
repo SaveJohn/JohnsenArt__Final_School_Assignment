@@ -33,7 +33,10 @@ public class StripeService : IStripeService
                 { "artworkId", artwork.Id.ToString() },
                 { "title", artwork.Title },
                 {"buyer_email", buyer.Email },
-                {"buyer_name", buyer.FullName}
+                {"buyer_name", buyer.FullName},
+                {"buyer_phone", buyer.PhoneNumber},
+                {"buyer_delivery", buyer.DeliveryMethod},
+                {"buyer_address", $"{buyer.AddressLine} {buyer.PostalCode} {buyer.City}"}
             }
         };
 

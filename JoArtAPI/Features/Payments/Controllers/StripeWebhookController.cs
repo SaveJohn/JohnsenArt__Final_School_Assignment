@@ -1,4 +1,7 @@
-﻿using JoArtClassLib.Configuration.Secrets;
+﻿using System.Net;
+using System.Text;
+using JoArtClassLib.Configuration.Secrets;
+using JoArtClassLib.Payment.Enums;
 using JohnsenArtAPI.Features.Contact.DTO;
 using JohnsenArtAPI.Features.Contact.Interfaces;
 using JohnsenArtAPI.Features.Gallery.AdminAccess.Interfaces;
@@ -73,6 +76,9 @@ public class StripeWebhookController : ControllerBase
                     var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
                     var buyerEmail = paymentIntent?.Metadata.GetValueOrDefault("buyer_email");
                     var buyerName = paymentIntent?.Metadata.GetValueOrDefault("buyer_name");
+                    var buyerPhone = paymentIntent?.Metadata.GetValueOrDefault("buyer_phone");
+                    var buyerAddress = paymentIntent?.Metadata.GetValueOrDefault("buyer_address");
+                    var buyerDelivery = paymentIntent?.Metadata.GetValueOrDefault("buyer_delivery");
                     var artworkIdRaw = paymentIntent?.Metadata?.GetValueOrDefault("artworkId");
 
                     if (int.TryParse(artworkIdRaw, out var artworkId))
@@ -83,26 +89,56 @@ public class StripeWebhookController : ControllerBase
                         var adminEmail = await _adminMail.GetAdminEmailAsync();
                         if (updated)
                         {
+                            // Mail to customer ------------------------------------------------------------------
+                            StringBuilder hmtlBodyBuyer = new StringBuilder 
+                            ($"<p>Hei {WebUtility.HtmlEncode(buyerName)},<br/> " +
+                             $"Takk for at du kjøpte <strong>{WebUtility.HtmlEncode(artwork.Title)}</strong>!</p>");
+
+                            if (buyerEmail == DeliveryMethods.Post.ToString())
+                            {
+                                hmtlBodyBuyer.Append("<p>Du vil få beskjed når kunstverket er pakket og sendt.</p>");
+                            }
+                            else
+                            {
+                                hmtlBodyBuyer.Append("<p>Du vil bli kontaktet med informasjon om henteadresse, " +
+                                                     "og en eventuelt avtale for hetntetidspunkt.</p>");
+                            }
+                            hmtlBodyBuyer.Append("<hr/><p>Vennlig hilsen,<br/>JohnsenArt</p>");
+                            
                             await _orderEmailService.SendOrderEmailAsync(new EmailMessage
                             {
                                 ToEmail = buyerEmail,
                                 Subject = "Takk for bestillingen din hos JohnsenArt!",
-                                HtmlBody = $@"
-                                <p>Hei {buyerName},</p>
-                                <p>Takk for at du kjøpte <strong>{artwork.Title}</strong>.</p>
-                                <p>Du vil bli kontaktet angående levering/henting.</p>
-                                <hr/>
-                                <p>Vennlig hilsen,<br/>JohnsenArt</p>",
+                                HtmlBody = hmtlBodyBuyer.ToString(),
                                 ReplyTo = adminEmail
                             });
+                            
+                            // Mail to seller/admin --------------------------------------------------------------
+                            StringBuilder htmlBodySeller = new StringBuilder 
+                                ($"<p><strong>{WebUtility.HtmlEncode(buyerName)}</strong> har kjøpt " +
+                                 $"<strong>{WebUtility.HtmlEncode(artwork.Title)}</strong> for " +
+                                 $"{WebUtility.HtmlEncode((artwork.Price ?? 0).ToString("F2"))} kr.</p>");
+                            
+                            if (buyerDelivery == DeliveryMethods.Post.ToString())
+                            {
+                                htmlBodySeller.Append($"<br/>Kunden ønsker å få kunstverket sendt med posten." +
+                                                $"<br/>Adresse: {buyerAddress}<br/>");
+                            }
+                            else
+                            {
+                                htmlBodySeller.Append($"<br/>Kunden ønsker å hente kunstverket. " +
+                                                $"Send kunden en epost med henteadresse og " +
+                                                $"avtal et tidspunkt for henting.");
+                            }
+                            
+                            htmlBodySeller.Append($"</p><p>Kontakt e-post: {WebUtility.HtmlEncode(buyerEmail)}</p>");
+                            htmlBodySeller.Append($"</p><p>Kontakt telefon: {WebUtility.HtmlEncode(buyerPhone)}</p>");
+                            
                             await _orderEmailService.SendOrderEmailAsync(new EmailMessage
                             {
                                 ToEmail = adminEmail,
                                 Subject = $"Nytt salg: {artwork.Title}",
-                                HtmlBody = $@"
-                                <p><strong>{buyerName}</strong> har kjøpt <strong>{artwork.Title}</strong> for 
-                                {(artwork.Price ?? 0).ToString("F2")} kr.</p>
-                                <p>Kontakt e-post: {buyerEmail}</p>",
+                                HtmlBody = htmlBodySeller.ToString(),
                                 ReplyTo = buyerEmail
                             });
 
