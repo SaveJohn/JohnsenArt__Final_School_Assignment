@@ -59,7 +59,7 @@ CREATE TABLE `Admins` (
 --
 
 LOCK TABLES `Admins` WRITE;
-INSERT INTO `Admins` (`AdminId`, `Email`, `Name`, `HashedPassword`, `Role`) VALUES (1,'admin@email.com','Admin','$2a$11$E3H1OJ/1HMc5JskhDBOAYeEmuKXztbCyRG3TJ7J4HEF8d4W9rnC1W','Admin'),(2,'test@mail.com','Tester','$2y$10$.4l4Sd4Et647qIgEhw6TW.O0Hg1qvrGCT/aWMWAyxa0TaFIvjKT4S','Test');
+INSERT INTO `Admins` (`AdminId`, `Email`, `Name`, `HashedPassword`, `Role`) VALUES (1,'admin@email.com','Admin','$2y$10$glQPYCCg2xWDX1wFl6rX6.nnEKmag5YqUrpjorOGEZK7XJX2numn6','Admin'),(2,'test@mail.com','Tester','$2y$10$.4l4Sd4Et647qIgEhw6TW.O0Hg1qvrGCT/aWMWAyxa0TaFIvjKT4S','Test');
 UNLOCK TABLES;
 
 --
