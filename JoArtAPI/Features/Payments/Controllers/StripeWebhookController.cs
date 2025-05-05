@@ -54,6 +54,8 @@ public class StripeWebhookController : ControllerBase
         var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
         
         var endpointSecret = _config.WebhookSecret;
+        _logger.LogInformation("Webhook secret loaded: {Secret}", endpointSecret ?? "NULL");
+
 
         if (string.IsNullOrEmpty(endpointSecret))
         {
@@ -85,6 +87,11 @@ public class StripeWebhookController : ControllerBase
                     {
                         _logger.LogInformation("Successful payment for artworkId: {artworkId}", artworkId);
                         var artwork = await _galleryService.GetArtworkByIdAsync(artworkId);
+                        if (artwork == null)
+                        {
+                            _logger.LogWarning("No artwork found for ID {artworkId}", artworkId);
+                            return Ok(); 
+                        }
                         var updated = await _adminGalleryService.MarkAsSoldAsync(artworkId);
                         var adminEmail = await _adminMail.GetAdminEmailAsync();
                         if (updated)

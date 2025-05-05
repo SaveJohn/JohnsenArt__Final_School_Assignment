@@ -15,7 +15,7 @@ Built with:
 - **AWS S3** for storing uploaded images
 - **Stripe** integration for handling card and Klarna payments
 - **Docker** for local development and containerization
-- **MailKit** for sending transactional emails
+- **MailKit** for sending emails
 - **xUnit** and **Moq** for unit and integration testing
 
 ## Features
@@ -33,12 +33,96 @@ Built with:
 
 ###### These steps will assume you have .NET and Docker installed.
 
-1. ## Clone the repository
+# AWS Configuration
 
-```Bash
+#### If AWS CLI is not downloaded, run these commands:
 
-git clone https://github.com/SaveJohn/JohnsenArt.git
+```bash
+
+msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi 
 ```
+
+### Confirm with the following command:
+
+```bash
+
+aws --version
+```
+
+### The following AWS credentials will be valid until 21st of May.
+
+### These IAM give rights to read, put and delete from the S3 bucket you have been assigned.
+
+### As well as read from AWS Secrets Manager all secrets starting with Development_JoArtAPI
+
+## Sensor:
+
+**Open PowerShell and type the following:**
+
+```bash
+
+aws configure
+```
+
+**Set the following as aws settings**
+
+```bash
+
+aws configure set aws_access_key_id AKIA6ELKN637T44O67NG
+aws configure set aws_secret_access_key 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
+aws configure set region eu-north-1
+
+```
+
+### From the JoArtAPI project, run these commands:
+
+```bash
+
+dotnet user-secrets init
+dotnet user-secrets set "AwsS3Settings:BucketName" "joart-s3-sensor"
+
+```
+
+## Teacher:
+
+**Open PowerShell and type the following:**
+
+```bash
+
+aws configure
+```
+
+**Set the following as aws settings**
+
+```bash
+
+aws configure set aws_access_key_id AKIA6ELKN637QO7ZQYAT
+aws configure set aws_secret_access_key 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
+aws configure set region eu-north-1
+
+```
+
+### From the JoArtAPI project, run these commands:
+
+```bash
+
+dotnet user-secrets init
+dotnet user-secrets set "AwsS3Settings:BucketName" "joart-s3-teacher"
+
+```
+
+## Populate the MySQL database
+
+### Run the following SQL scripts
+
+[Database dump](JoArtDataLayer/MySqlFiles/joartdb_dump.sql)
+
+[Set user privileges](JoArtDataLayer/MySqlFiles/JoArtDb-UserPriveleges.sql)
+
+# Running the project using Docker
+
+1. ## Navigate to the project
+
 
 2. ## Navigate to root
 
@@ -71,6 +155,8 @@ Open your browser and navigate to:
 
 http:localhost:5008
 ```
+
+## You may also run the project without the use of Docker by navigating to the project, and manually running both the JoArtGUI and JoArtAPI configuration
 
 --
 
@@ -110,6 +196,17 @@ Admin functionality is locked behind authentication.
 
 When submitted, the written message and mail is sent to a predefined e-mail address with the help of the third party
 library **MailKit**
+
+### To test the mailservice, you can run this SQL query to make sure you receive the mails as admin:
+
+```bash
+
+UPDATE admins
+SET Email = [Enter your email here]
+WHERE Role = 'Admin'
+```
+
+#### This will also change your login email
 
 ## API Endpoints
 
@@ -205,10 +302,6 @@ Our project includes tests to both unit and integration levels of the backend AP
 
 - **StripeWebhook_MissingSignature**  
   Ensures that if the signature header is missing the webhook returns a 400 bad request.
-
-# AUTHENTICATION
-
-## Lorem ipsum etc etc
 
 ## Known Limitations
 
