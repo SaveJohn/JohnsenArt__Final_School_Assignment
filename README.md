@@ -173,8 +173,12 @@ Visitors may:
 - Browse all artwork
 - Click an individual painting to view more details such as title, dimensions, materials, and price
 - Choose to **buy the artwork immediately** via card or Klarna (no cart functionality)
-- Select either **mail delivery** or **pickup** at a predefined location
-- Get redirected to a custom **thank you screen** after successful payment
+  - Select either **mail delivery** or **pickup** at a predefined location
+  - Recommended card info to use for testing: ``4000056655665556`` Expo date: ``1234`` Security code: ``123``
+  - Get redirected to a custom **thank you screen** after successful payment
+  - Receive receipt on mail after successful order
+- Send email to the artist/admin through contact page email form
+- Read biography about the artist/admin (does only have dummy text for now)
 
 ### Admin User
 
@@ -185,6 +189,8 @@ Visitors may:
         - **Edit** the painting
         - **Delete** the painting
         - **Upload** new artwork
+- Receive order information on mail when customer buy artwork
+- Receive email from visitors through contact page
 
 Admin functionality is locked behind authentication.  
 **Authentication method:** 
@@ -205,16 +211,6 @@ Admin functionality is locked behind authentication.
 When submitted, the written message and mail is sent to a predefined e-mail address with the help of the third party
 library **MailKit**
 
-### To test the mailservice, you can run this SQL query to make sure you receive the mails as admin:
-
-```bash
-
-UPDATE admins
-SET Email = [Enter your email here]
-WHERE Role = 'Admin'
-```
-
-#### This will also change your login email
 
 ## API Endpoints
 
