@@ -160,7 +160,7 @@ Open your browser and navigate to:
 http:localhost:5008
 ```
 
-## You may also run the project without the use of Docker by navigating to the project, and manually running both the JoArtGUI and JoArtAPI configuration
+## You may also run the project without the use of Docker by navigating to the project, and manually running both the JoArtAPI and then JoArtGUI configuration. This requires that MySQL 8 is installed on your system. 
 
 --
 
