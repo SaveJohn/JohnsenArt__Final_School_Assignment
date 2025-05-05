@@ -31,7 +31,10 @@ Built with:
 
 ## Getting started
 
-###### These steps will assume you have .NET and Docker installed.
+###### These steps will assume you have .NET SDK 8 and MySQL 8.0.35 (or later).
+###### You will also need AWS CLI, but if you don't the steps will guide you. 
+###### Docker is optional
+
 
 # AWS Configuration
 
@@ -57,14 +60,7 @@ aws --version
 
 ## Sensor:
 
-**Open PowerShell and type the following:**
-
-```bash
-
-aws configure
-```
-
-**Set the following as aws settings**
+**Open PowerShell and enter the following to set your aws settings**
 
 ```bash
 
@@ -74,7 +70,7 @@ aws configure set region eu-north-1
 
 ```
 
-### From the JoArtAPI project, run these commands:
+### From the JoArtAPI project location (the JoArtFolder in the solution folder), run these commands:
 
 ```bash
 
@@ -85,14 +81,7 @@ dotnet user-secrets set "AwsS3Settings:BucketName" "joart-s3-sensor"
 
 ## Teacher:
 
-**Open PowerShell and type the following:**
-
-```bash
-
-aws configure
-```
-
-**Set the following as aws settings**
+**Open PowerShell and enter the following to set your aws settings**
 
 ```bash
 
@@ -119,6 +108,21 @@ dotnet user-secrets set "AwsS3Settings:BucketName" "joart-s3-teacher"
 
 [Set user privileges](JoArtDataLayer/MySqlFiles/JoArtDb-UserPriveleges.sql)
 
+**The database dump contain a populated art gallery with dummy data (and real artwork from our customer)**
+
+### To be able to test the mailservice later on, you can run this SQL query to make sure you receive the mails as admin:
+
+```bash
+
+UPDATE admins
+SET Email = [Enter your email here]
+WHERE Role = 'Admin'
+```
+
+#### This will also change your login email
+#### If you don't change it your admin login for the API will be using "admin@email.com" as user name
+#### Your login password will be just that: Password
+
 # Running the project using Docker
 
 1. ## Navigate to the project
@@ -135,7 +139,7 @@ cd JohnsenArt
 
 ```bash
 
-docker compose up --build
+docker compose up --build -d
 ```
 
 4. ## In a new terminal, spin up the Blazor frontend
@@ -183,11 +187,15 @@ Visitors may:
         - **Upload** new artwork
 
 Admin functionality is locked behind authentication.  
-**Authentication method:** _TODO!!
+**Authentication method:** 
+- The API uses JWT for authentication. 
+- The Client takes the jwt and stores it in a cookie.
+  - The cookie will have HttpOnly = true and CookieSecurePolicy.always in production.
+
 
 ### About & Contact Pages
 
-- The **About** page contains is to contain information about the artist and relevant picture, it has placeholder text
+- The **About** page is to contain information about the artist and relevant picture, it has placeholder text
   for now
 - The **Contact** page includes a form with:
     - Name
@@ -303,10 +311,6 @@ Our project includes tests to both unit and integration levels of the backend AP
 - **StripeWebhook_MissingSignature**  
   Ensures that if the signature header is missing the webhook returns a 400 bad request.
 
-## Known Limitations
-
-- The stripe integration is in test mode, using a sandbox environment.
-- The **about** page uses placeholder text.
 
 ## License Notice
 

@@ -57,7 +57,7 @@ builder.Services.AddScoped<ExternalApiService>();
 builder.Services.AddScoped<ILocalStorageHelper, LocalStorageHelper>();
 
 
-// TEMPORARY FIX TO PROBLEM I DO NOT KNOW HOW TO FIX YET
+// BaseAddress
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri("http://localhost:8080")

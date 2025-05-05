@@ -3,7 +3,6 @@
 -- Host: 127.0.0.1    Database: joartdb
 -- ------------------------------------------------------
 -- Server version	8.0.35
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -14,7 +13,9 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
+CREATE DATABASE IF NOT EXISTS JoArtDB;
+USE JoArtDB;
+    
 --
 -- Table structure for table `__efmigrationshistory`
 --
@@ -77,7 +78,7 @@ CREATE TABLE `ArtworkImages` (
   `PreviewKey` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`Id`),
   KEY `IX_ArtworkImages_ArtworkId` (`ArtworkId`),
-  CONSTRAINT `FK_ArtworkImages_Artworks_ArtworkId` FOREIGN KEY (`ArtworkId`) REFERENCES `artworks` (`Id`) ON DELETE CASCADE
+  CONSTRAINT `FK_ArtworkImages_Artworks_ArtworkId` FOREIGN KEY (`ArtworkId`) REFERENCES `Artworks` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=285 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
