@@ -46,12 +46,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="..\.dockerignore">
-            <Link>.dockerignore</Link>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\JoArtClassLib\JoArtClassLib.csproj" />
         <ProjectReference Include="..\JoArtDataLayer\JoArtDataLayer.csproj" />
     </ItemGroup>
@@ -59,6 +53,12 @@
     <ItemGroup>
         <Folder Include="logs\" />
         
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

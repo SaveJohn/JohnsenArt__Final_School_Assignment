@@ -75,7 +75,7 @@
         try
         {
             // Calling JoArtAPI login endpoint on port 8080 to get the JWT.
-            var apiResponse = await Http.PostAsJsonAsync("http://localhost:8080/admin/auth/login", loginModel);
+            var apiResponse = await Http.PostAsJsonAsync("http://joartapi:8080/admin/auth/login", loginModel);
             if (!apiResponse.IsSuccessStatusCode)
             {
                 var errorResponse = await apiResponse.Content.ReadFromJsonAsync<LoginErrorResponse>();

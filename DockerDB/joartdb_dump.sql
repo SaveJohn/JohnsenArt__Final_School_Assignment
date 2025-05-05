@@ -14,6 +14,13 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+--
+-- database
+--
+
+CREATE DATABASE IF NOT EXISTS JoArtDB;
+USE JoArtDB;
+
 
 --
 -- Table structure for table `__efmigrationshistory`
@@ -37,6 +44,7 @@ LOCK TABLES `__efmigrationshistory` WRITE;
 INSERT INTO `__efmigrationshistory` (`MigrationId`, `ProductVersion`) VALUES ('20250408115125_update03','8.0.10'),('20250413084926_update05','8.0.10'),('20250421214810_RemoveIsWallPreview','8.0.10'),('20250421221234_AddMaterials','8.0.10'),('20250422073446_AddImagePreviewSize','8.0.10'),('20250425081758_update06','8.0.10'),('20250430200235_ObjectKeyNameMatch','8.0.10'),('20250501110338_RoleToAdmin','8.0.10');
 UNLOCK TABLES;
 
+
 --
 -- Table structure for table `admins`
 --
@@ -59,7 +67,7 @@ CREATE TABLE `Admins` (
 --
 
 LOCK TABLES `Admins` WRITE;
-INSERT INTO `Admins` (`AdminId`, `Email`, `Name`, `HashedPassword`, `Role`) VALUES (1,'admin@email.com','Admin','$2y$10$glQPYCCg2xWDX1wFl6rX6.nnEKmag5YqUrpjorOGEZK7XJX2numn6','Admin'),(2,'test@mail.com','Tester','$2y$10$.4l4Sd4Et647qIgEhw6TW.O0Hg1qvrGCT/aWMWAyxa0TaFIvjKT4S','Test');
+INSERT INTO `Admins` (`AdminId`, `Email`, `Name`, `HashedPassword`, `Role`) VALUES (1,'admin@email.com','Admin','$2y$10$NbR48a3elkjPCIdTWOxVTeLor.rFQFHQEUt5Bw2uaiIXVKRaZOjIu','Admin'),(2,'test@mail.com','Tester','$2y$10$.4l4Sd4Et647qIgEhw6TW.O0Hg1qvrGCT/aWMWAyxa0TaFIvjKT4S','Test');
 UNLOCK TABLES;
 
 --
@@ -77,7 +85,7 @@ CREATE TABLE `ArtworkImages` (
   `PreviewKey` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`Id`),
   KEY `IX_ArtworkImages_ArtworkId` (`ArtworkId`),
-  CONSTRAINT `FK_ArtworkImages_Artworks_ArtworkId` FOREIGN KEY (`ArtworkId`) REFERENCES `artworks` (`Id`) ON DELETE CASCADE
+  CONSTRAINT `FK_ArtworkImages_Artworks_ArtworkId` FOREIGN KEY (`ArtworkId`) REFERENCES `Artworks` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=285 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

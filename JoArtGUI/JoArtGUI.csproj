@@ -10,12 +10,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\JoArtClassLib\JoArtClassLib.csproj" />
     </ItemGroup>
 
@@ -124,6 +118,12 @@
       <_ContentIncludedByDefault Remove="Components\Pages\AdminFeatures\UploadArtwork.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\Gallery\Checkout\Checkout.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\Gallery\Checkout\PurchaseSuccess.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

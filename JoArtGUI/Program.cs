@@ -57,11 +57,13 @@ builder.Services.AddScoped<ExternalApiService>();
 builder.Services.AddScoped<ILocalStorageHelper, LocalStorageHelper>();
 
 
-// TEMPORARY FIX TO PROBLEM I DO NOT KNOW HOW TO FIX YET
+var apiBaseUrl = builder.Configuration["API_BASE_URL"] ?? "http://joartapi:8080/api";
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("http://localhost:8080")
+    BaseAddress = new Uri(apiBaseUrl)
 });
+builder.WebHost.UseUrls("http://0.0.0.0:80");
+
 
 // Logging
 builder.Host.UseSerilog((context, services, loggerConfiguration) =>
@@ -71,7 +73,7 @@ builder.Host.UseSerilog((context, services, loggerConfiguration) =>
 var app = builder.Build();
 
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();

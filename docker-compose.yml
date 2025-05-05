@@ -1,43 +1,80 @@
 version: '3.8'
 services:
-
-  db:
-    image: mysql:8.0
-    container_name: JohnsenArtDB
-    restart: always
-    volumes:
-      - JoArtDB:/var/lib/mysql
-    networks:
-      - my-network
-    environment:
-      - MYSQL_ROOT_PASSWORD=YouShallNotPass
-      - MYSQL_DATABASE=JoArtDB
-      - MYSQL_USER=admin
-      - MYSQL_PASSWORD=YouShallNotPass
+  
+  
+  web:
+    container_name: joartweb
+    build:
+      context: ./DockerWeb
+      dockerfile: Dockerfile
     ports:
-      - "3306:3306"  
+      - "80:80"
+      - "81:81"
+    depends_on:
+      - api
+    networks:
+      - joartnet
+    
+  db:
+    container_name: joartdb
+    build:
+      context: ./DockerDB
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - joartnet
+    ports:
+      - "3366:3306"
 
   api:
-    container_name: JohnsenArtAPI
+    container_name: joartapi
     build:
       context: .
       dockerfile: JoArtAPI/Dockerfile  
     depends_on:
       - db
-    networks:
-      - my-network
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=JoArtDB;User ID=admin;Password=YouShallNotPass;
-      - ASPNETCORE_URLS=http://+:8080
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_REGION=${AWS_REGION}
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__DefaultConnection: "server=joartdb;Database=${MYSQL_DATABASE};User ID=${MYSQL_USER};Password=${MYSQL_PASSWORD};"
+      AwsS3Settings__BucketName: "${AWS_S3_BUCKET}"
+      AWS_REGION: "${AWS_REGION}"
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT}"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - joartnet
     ports:
       - "8080:8080"
-
+        
+  gui:
+    container_name: joartgui
+    build:
+      context: .               
+      dockerfile: JoArtGUI/Dockerfile
+    depends_on:
+      - api
+    environment:
+      API_BASE_URL: "${API_BASE_URL}"
+      ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT}"
+    networks:
+      - joartnet
+    ports:
+      - "5008:80"
+  
 networks:
-  my-network:
+  joartnet:
     driver: bridge
-
+    
 volumes:
-  JoArtDB:
+  db-data:

@@ -457,7 +457,7 @@ else
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             // 3) Call the DELETE endpoint
-            var response = await Http.DeleteAsync($"http://localhost:8080/admin/api/Gallery/delete-artwork/{artworkId}");
+            var response = await Http.DeleteAsync($"http://joartapi:8080/admin/api/Gallery/delete-artwork/{artworkId}");
 
 
             _logger.LogInformation("DELETE response status: {StatusCode}", response.StatusCode);
