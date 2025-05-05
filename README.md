@@ -198,6 +198,26 @@ Admin functionality is locked behind authentication.
 - The Client takes the jwt and stores it in a cookie.
   - The cookie will have HttpOnly = true and CookieSecurePolicy.always in production.
 
+### Webhook
+As mentioned, will both the buyer and seller receive an email upon a successful purchase.  
+**If you wish to test this you need to download stripe CLI, which you can do from here:**  
+https://github.com/stripe/stripe-cli/releases/download/v1.27.0/stripe_1.18.0_windows_x86_64.zip  
+
+Run ``stripe login``
+
+And log in with these credentials:  
+user: **sebastian.kroger.holmen97@gmail.com**  
+password: **5XS5P_iS96VE*kc**  
+###### Note: this user has been set up for development purposes and is not the real deal.  
+then you need to run this command: 
+
+`` stripe listen --forward-to localhost:8080/api/webhooks/stripe    
+``      
+  
+   
+and keep it running in the background while you make a purchase. This will make sure that stripe will reach the webhook endpoint.  
+
+  
 
 ### About & Contact Pages
 
