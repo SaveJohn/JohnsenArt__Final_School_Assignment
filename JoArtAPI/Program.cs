@@ -11,6 +11,12 @@ using JohnsenArtAPI.Configuration;
 using JohnsenArtAPI.Extensions;
 using JohnsenArtAPI.Features.Authentication;
 using JohnsenArtAPI.Features.Authentication.Interfaces;
+using JohnsenArtAPI.Features.Biography.AdminAccess;
+using JohnsenArtAPI.Features.Biography.AdminAccess.Interfaces;
+using JohnsenArtAPI.Features.Biography.Common;
+using JohnsenArtAPI.Features.Biography.Common.Aws;
+using JohnsenArtAPI.Features.Biography.Common.Aws.Interfaces;
+using JohnsenArtAPI.Features.Biography.Common.Interfaces;
 using JohnsenArtAPI.Features.Contact;
 using JohnsenArtAPI.Features.Contact.Interfaces;
 using JohnsenArtAPI.Features.Gallery.AdminAccess;
@@ -51,6 +57,10 @@ builder.Services.AddScoped<IGalleryService, GalleryService>();
 builder.Services.AddScoped<IAdminGalleryRepository, AdminGalleryRepository>();
 builder.Services.AddScoped<IGalleryRepository, GalleryRepository>();
 
+// Biography
+builder.Services.AddScoped<IAdminBioService, AdminBioService>();
+builder.Services.AddScoped<IBioService, BioService>();
+
 // Health Checks
 builder.Services.AddHealthChecks()
     .AddCheck<APIHealthCheck>("api")
@@ -58,6 +68,7 @@ builder.Services.AddHealthChecks()
 
 // AWS
 builder.Services.AddScoped<IAwsService, AwsService>();
+builder.Services.AddScoped<IBioAwsService, BioAwsService>();
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonSecretsManager>();
 builder.Services.AddAWSService<IAmazonS3>();
