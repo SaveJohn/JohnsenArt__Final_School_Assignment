@@ -44,6 +44,7 @@ public class GalleryService : IGalleryService
             _logger.LogWarning("No artworks found");
             return responses;
         }
+        await _aws.CheckIfS3BucketExists();
 
         // Set pre siged ImageUrl for each image (clearer, avoids nested lambdas)
         foreach (var response in responses)

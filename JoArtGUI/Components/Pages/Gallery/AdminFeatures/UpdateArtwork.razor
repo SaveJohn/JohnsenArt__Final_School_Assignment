@@ -215,6 +215,7 @@
         {
             _artworkResponse = await Http.GetFromJsonAsync<ArtworkResponse>(
                 $"api/PublicGallery/artworks/{artworkId}?nocache={DateTime.Now.Ticks}");
+
             _artworkRequest = new UpdateArtworkRequest
             {
                 Title = _artworkResponse.Title,
@@ -227,34 +228,57 @@
                 HeightDimension = _artworkResponse.HeightDimension
             };
 
-            // Load images
             _artworkImages.Clear();
             _artworkFiles.Clear();
 
             foreach (var image in _artworkResponse.Images)
             {
-                try
-                {
-                    var imageBytes = await Http.GetByteArrayAsync(image.FullViewUrl);
-                    var base64 = Convert.ToBase64String(imageBytes);
-                    var imageDataUrl = $"data:image/jpeg;base64,{base64}";
+                byte[]? imageBytes = null;
+                const int maxAttempts = 3;
+                StateHasChanged();
 
-
-                    _artworkImages.Add(imageDataUrl);
-                    _artworkFiles.Add((imageBytes, "image/jpeg", image.FullViewKey));
-                    
-                }
-                catch (Exception ex)
+                for (int attempt = 1; attempt <= maxAttempts; attempt++)
                 {
-                    _logger.LogWarning(ex, "Failed to load image: {FullViewKey}", image.FullViewKey);
+                    try
+                    {
+                        imageBytes = await Http.GetByteArrayAsync(image.FullViewUrl);
+                        StateHasChanged();
+                        break; // Suksess!
+                    }
+                    catch
+                    {
+                        _logger.LogWarning("Attempt {Attempt} failed to load image: {Key}", attempt, image.FullViewKey);
+                        await Task.Delay(500);
+                    }
                 }
+
+                if (imageBytes is null)
+                {
+                    _logger.LogWarning("Image could not load, even after several attempts: {Key}", image.FullViewKey);
+                    continue;
+                }
+
+                var base64 = Convert.ToBase64String(imageBytes);
+                var imageDataUrl = $"data:image/jpeg;base64,{base64}";
+
+                _artworkImages.Add(imageDataUrl);
+                _artworkFiles.Add((imageBytes, "image/jpeg", image.FullViewKey));
+            }
+
+            if (_artworkImages.Count == 0)
+            {
+                Navigation.NavigateTo(Navigation.Uri, forceLoad: true); // Full page reload
             }
         }
         catch (Exception ex)
         {
+            ErrorMessage = "En feil oppstod ved henting av kunstverkdata.";
             _logger.LogError(ex, "Error fetching artwork data");
         }
+
+        StateHasChanged();
     }
+
 
     // Load Artwork Image 
     private async Task LoadArtworkImage(InputFileChangeEventArgs e)

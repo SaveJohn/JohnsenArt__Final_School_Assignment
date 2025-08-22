@@ -174,10 +174,9 @@ else if (product is not null)
                     <!-- Total Costs -->
                     <div class="d-flex justify-content-between">
                         <p class="fw-bold fs-5 mb-0">Total å betale:</p>
-                        
-                        <p class="fw-bold fs-5 mb-0">
-                            @(((shippingCosts ?? 0) + (product?.Price ?? 0)).ToString("F2")),-
 
+                        <p class="fw-bold fs-5 mb-0">
+                            @((((buyer.DeliveryMethod == DeliveryMethods.PickUp.ToString() ? 0 : shippingCosts) ?? 0) + (product?.Price ?? 0)).ToString("F2")),-
                         </p>
                     </div>
                 }
@@ -596,7 +595,16 @@ else
         {
             // Delay to make sure DOM is updated
             await Task.Delay(100);
-            await stripeModule.InvokeVoidAsync("mountCardElements");
+            await Task.Delay(100);
+
+            if (stripeModule is not null)
+            {
+                await stripeModule.InvokeVoidAsync("mountCardElements");
+            }
+            else
+            {
+                _logger.LogWarning("stripeModule er null i SetPaymentMethod.");
+            }
         }
 
     }

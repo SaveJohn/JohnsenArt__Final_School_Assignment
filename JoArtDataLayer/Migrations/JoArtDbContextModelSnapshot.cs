@@ -22,6 +22,72 @@ namespace JoArtDataLayer.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("JoArtClassLib.About.BioBlock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BodyMarkdown")
+                        .HasColumnType("longtext");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("Layout")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BioBlocks");
+                });
+
+            modelBuilder.Entity("JoArtClassLib.About.BioImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Alt")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("BioBlockId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Caption")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("OrderIndex")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BioBlockId");
+
+                    b.ToTable("BioImages");
+                });
+
             modelBuilder.Entity("JoArtClassLib.Admin", b =>
                 {
                     b.Property<int>("AdminId")
@@ -129,6 +195,15 @@ namespace JoArtDataLayer.Migrations
                     b.ToTable("Artworks");
                 });
 
+            modelBuilder.Entity("JoArtClassLib.About.BioImage", b =>
+                {
+                    b.HasOne("JoArtClassLib.About.BioBlock", null)
+                        .WithMany("Images")
+                        .HasForeignKey("BioBlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("JoArtClassLib.Art.Image", b =>
                 {
                     b.HasOne("JoArtClassLib.Artwork", "Artwork")
@@ -138,6 +213,11 @@ namespace JoArtDataLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Artwork");
+                });
+
+            modelBuilder.Entity("JoArtClassLib.About.BioBlock", b =>
+                {
+                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("JoArtClassLib.Artwork", b =>
