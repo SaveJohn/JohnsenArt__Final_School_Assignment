@@ -1,6 +1,7 @@
 ﻿using JoArtClassLib;
-using JoArtClassLib.Art;
+using JoArtClassLib.About;
 using Microsoft.EntityFrameworkCore;
+using Image = JoArtClassLib.Art.Image;
 
 namespace JoArtDataLayer;
 
@@ -15,6 +16,9 @@ public class JoArtDbContext : DbContext
     public DbSet<Image> ArtworkImages { get; set; }
 
     public DbSet<Admin> Admins { get; set; }
+    
+    public DbSet<BioBlock> BioBlocks { get; set; }
+    public DbSet<BioImage> BioImages { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -33,5 +37,12 @@ public class JoArtDbContext : DbContext
             .HasOne(ai => ai.Artwork)
             .WithMany(a => a.Images)
             .HasForeignKey(ai => ai.ArtworkId); // FK for ArtworkImage references Artwork
+        
+        //Define the relationship between BioBlock and BioImage
+        modelBuilder.Entity<BioImage>()
+        .HasOne<BioBlock>()
+        .WithMany(b => b.Images)
+        .HasForeignKey(i => i.BioBlockId)
+        .OnDelete(DeleteBehavior.Cascade);
     }
 }

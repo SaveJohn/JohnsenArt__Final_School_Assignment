@@ -57,6 +57,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="Features\About\AdminAccess\" />
+        <Folder Include="Features\About\Common\Aws\" />
+        <Folder Include="Features\About\Common\Interfaces\" />
+        <Folder Include="Features\About\Public\" />
         <Folder Include="logs\" />
         
     </ItemGroup>
