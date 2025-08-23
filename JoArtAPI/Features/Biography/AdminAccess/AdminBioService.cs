@@ -2,7 +2,7 @@
 using JoArtClassLib.About;
 using JoArtDataLayer.Repositories.Biography.Interfaces;
 using JohnsenArtAPI.Features.Biography.AdminAccess.Interfaces;
-using JohnsenArtAPI.Features.Biography.Common.Aws.Interfaces;
+using JohnsenArtAPI.Features.Gallery.Common.Aws.Interfaces;
 
 namespace JohnsenArtAPI.Features.Biography.AdminAccess;
 
@@ -12,14 +12,14 @@ public class AdminBioService : IAdminBioService
     private readonly IMapper _mapper;
     private readonly IAdminBioRepository _repository;
     private readonly IBioRepository _repoGet;
-    private readonly IBioAwsService _aws;
+    private readonly IAwsService _aws;
 
     public AdminBioService(
         ILogger<AdminBioService> logger,
         IMapper mapper,
         IAdminBioRepository repository,
         IBioRepository repoGet,
-        IBioAwsService aws)
+        IAwsService aws)
     {
         _logger = logger;
         _mapper = mapper;
