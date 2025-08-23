@@ -17,7 +17,7 @@ public class JoArtDbContext : DbContext
 
     public DbSet<Admin> Admins { get; set; }
     
-    public DbSet<BioBlock> BioBlocks { get; set; }
+    public DbSet<BioBlock?> BioBlocks { get; set; }
     public DbSet<BioImage> BioImages { get; set; }
 
 

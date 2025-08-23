@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using JoArtClassLib.About;
 using JoArtDataLayer.Repositories.Biography.Interfaces;
 using JohnsenArtAPI.Features.Biography.AdminAccess.Interfaces;
 using JohnsenArtAPI.Features.Biography.Common.Aws.Interfaces;
@@ -26,6 +27,20 @@ public class AdminBioService : IAdminBioService
         _repoGet = repoGet;
         _aws = aws;
     }
-    
-    
+
+
+    public Task<BioBlock?> UploadBioBlockAsync(BioBlockRequest? bioBlock)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<BioBlock> UpdateBioBlockAsync(UpdateBioBlockRequest bioBlock)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<BioBlock> DeleteBioBlockAsync(int bioBlockId)
+    {
+        throw new NotImplementedException();
+    }
 }

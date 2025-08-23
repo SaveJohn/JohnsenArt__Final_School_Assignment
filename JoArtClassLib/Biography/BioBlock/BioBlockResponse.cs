@@ -2,7 +2,7 @@
 
 namespace JoArtClassLib.About;
 
-public class BioBlock
+public class BioBlockResponse
 {
     public int Id { get; set; }
     public int OrderIndex { get; set; }
@@ -14,5 +14,5 @@ public class BioBlock
     
     public ImageTextLayout? Layout { get; set; }
     
-    public virtual List<BioImage> Images { get; set; } = new();
+    public virtual List<BioImageResponse> Images { get; set; } = new();
 }
