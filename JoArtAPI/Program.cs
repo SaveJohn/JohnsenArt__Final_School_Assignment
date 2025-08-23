@@ -14,8 +14,6 @@ using JohnsenArtAPI.Features.Authentication.Interfaces;
 using JohnsenArtAPI.Features.Biography.AdminAccess;
 using JohnsenArtAPI.Features.Biography.AdminAccess.Interfaces;
 using JohnsenArtAPI.Features.Biography.Common;
-using JohnsenArtAPI.Features.Biography.Common.Aws;
-using JohnsenArtAPI.Features.Biography.Common.Aws.Interfaces;
 using JohnsenArtAPI.Features.Biography.Common.Interfaces;
 using JohnsenArtAPI.Features.Contact;
 using JohnsenArtAPI.Features.Contact.Interfaces;
@@ -68,7 +66,6 @@ builder.Services.AddHealthChecks()
 
 // AWS
 builder.Services.AddScoped<IAwsService, AwsService>();
-builder.Services.AddScoped<IBioAwsService, BioAwsService>();
 builder.Services.AddDefaultAWSOptions(builder.Configuration.GetAWSOptions());
 builder.Services.AddAWSService<IAmazonSecretsManager>();
 builder.Services.AddAWSService<IAmazonS3>();
