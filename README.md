@@ -29,6 +29,40 @@ Built with:
 - Image storage handled via AWS S3
 - Error handling and status feedback integrated across the UI
 
+## Usage
+
+### For Public Users
+
+Visitors may:
+
+- Browse all artwork
+- Click an individual painting to view more details such as title, dimensions, materials, and price
+- Choose to **buy the artwork immediately** via card or Klarna (no cart functionality)
+  - Select either **mail delivery** or **pickup** at a predefined location
+  - Recommended card info to use for testing: ``4000056655665556`` Expo date: ``1234`` Security code: ``123``
+  - Get redirected to a custom **thank you screen** after successful payment
+  - Receive receipt on mail after successful order
+- Send email to the artist/admin through contact page email form
+- Read biography about the artist/admin (does only have dummy text for now)
+
+### Admin User
+
+- A "Login" button is always visible in the top-right corner
+- Upon successful login:
+    - The button becomes **"Logout"**
+    - On artwork detail pages, new options appear:
+        - **Edit** the painting
+        - **Delete** the painting
+        - **Upload** new artwork
+- Receive order information on mail when customer buy artwork
+- Receive email from visitors through contact page
+
+Admin functionality is locked behind authentication.  
+**Authentication method:** 
+- The API uses JWT for authentication. 
+- The Client takes the jwt and stores it in a cookie.
+  - The cookie will have HttpOnly = true and CookieSecurePolicy.always in production.
+
 ## Getting started
 ```diff
 - * The following instructions are meant for sensor and teacher and will no longer work when this project goes public
@@ -166,39 +200,7 @@ http:localhost:5008
 
 --
 
-## Usage
 
-### For Public Users
-
-Visitors may:
-
-- Browse all artwork
-- Click an individual painting to view more details such as title, dimensions, materials, and price
-- Choose to **buy the artwork immediately** via card or Klarna (no cart functionality)
-  - Select either **mail delivery** or **pickup** at a predefined location
-  - Recommended card info to use for testing: ``4000056655665556`` Expo date: ``1234`` Security code: ``123``
-  - Get redirected to a custom **thank you screen** after successful payment
-  - Receive receipt on mail after successful order
-- Send email to the artist/admin through contact page email form
-- Read biography about the artist/admin (does only have dummy text for now)
-
-### Admin User
-
-- A "Login" button is always visible in the top-right corner
-- Upon successful login:
-    - The button becomes **"Logout"**
-    - On artwork detail pages, new options appear:
-        - **Edit** the painting
-        - **Delete** the painting
-        - **Upload** new artwork
-- Receive order information on mail when customer buy artwork
-- Receive email from visitors through contact page
-
-Admin functionality is locked behind authentication.  
-**Authentication method:** 
-- The API uses JWT for authentication. 
-- The Client takes the jwt and stores it in a cookie.
-  - The cookie will have HttpOnly = true and CookieSecurePolicy.always in production.
 
 ### Webhook
 As mentioned, will both the buyer and seller receive an email upon a successful purchase.  
