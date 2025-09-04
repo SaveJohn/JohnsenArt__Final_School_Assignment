@@ -30,7 +30,9 @@ Built with:
 - Error handling and status feedback integrated across the UI
 
 ## Getting started
-
+```diff
+- * The following instructions are meant for sensor and teacher and will no longer work when this project goes public
+```
 ###### These steps will assume you have .NET SDK 8 and MySQL 8.0.35 (or later).
 ###### You will also need AWS CLI, but if you don't the steps will guide you. 
 ###### Docker is optional
